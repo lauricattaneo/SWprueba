@@ -1,0 +1,16 @@
+familiar_new_ajax:
+    path:     /{id_persona}/new
+    defaults: { _controller: "SiafcaIntranetBundle:Familiar:newAjax" }
+    methods:  [POST]
+familiar_delete_ajax:
+    path:     /{id}/delete
+    defaults: { _controller: "SiafcaIntranetBundle:Familiar:deleteAjax" }
+    methods:  [POST]
+familiar_query_ajax:
+    path:     /{id}/query
+    defaults: { _controller: "SiafcaIntranetBundle:Familiar:queryAjax" }
+    methods:  [POST]
+familiar_edit_ajax:
+    path:     /edit
+    defaults: { _controller: "SiafcaIntranetBundle:Familiar:editAjax" }
+    methods:  [GET,POST]

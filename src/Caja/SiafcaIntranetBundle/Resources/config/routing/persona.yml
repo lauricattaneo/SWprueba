@@ -1,0 +1,54 @@
+persona_index:
+    path:     /
+    defaults: { _controller: "SiafcaIntranetBundle:Persona:index" }
+    methods:  [GET,POST]
+
+persona_show:
+    path:     /{id}/show
+    defaults: { _controller: "SiafcaIntranetBundle:Persona:show" }
+    methods:  GET
+
+persona_new:
+    path:     /new
+    defaults: { _controller: "SiafcaIntranetBundle:Persona:new" }
+    methods:  [GET, POST]
+
+persona_edit:
+    path:     /{id}/edit
+    defaults: { _controller: "SiafcaIntranetBundle:Persona:edit" }
+    methods:  [GET, POST]
+
+persona_delete:
+    path:     /{id}/delete
+    defaults: { _controller: "SiafcaIntranetBundle:Persona:delete" }
+    methods:  GET
+
+persona_ajax_cuil:
+    path:     /ajax
+    defaults: { _controller: "SiafcaIntranetBundle:Persona:ajaxCuil" }
+    methods:  [POST,GET]
+
+persona_historico_aportante:
+    path: /{id}/historico/aportante
+    defaults: { _controller: "SiafcaIntranetBundle:Persona:historicoAportante" }
+    methods: [GET, POST]
+
+persona_historico_firmante:
+    path: /{id}/historico/firmante
+    defaults: { _controller: "SiafcaIntranetBundle:Persona:historicoFirmante" }
+    methods: [GET, POST]
+    
+persona_buscarDni:
+    path: /buscarDni/{documento}
+    defaults: { _controller: "SiafcaIntranetBundle:Persona:buscarPersonaDocumento" }
+    methods: [GET, POST]
+
+persona_buscarApellido:
+    path: /buscarApellido/{apellido}/{nombre}
+    defaults: { _controller: "SiafcaIntranetBundle:Persona:buscarPersonaApellido" }
+    methods: [GET, POST]
+    
+persona_buscarCuil:
+    path: /buscarCuil/{cuil}
+    defaults: { _controller: "SiafcaIntranetBundle:Persona:buscarPersonaCuil" }
+    methods: [GET, POST]

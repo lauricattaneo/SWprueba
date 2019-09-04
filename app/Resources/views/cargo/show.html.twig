@@ -1,0 +1,40 @@
+{% extends "show.html.twig" %}
+{% from 'partials/section-title.html.twig' import js as section_title_js %}
+
+{% block section_title %}
+    {% embed "partials/section-title.html.twig" %}
+        {% block titulo %}{{ cargo }}
+            {% if ayuda is defined and ayuda != "" %}
+                <a href="#" data-toggle="modal"  data-target="#ayudaMessage"><i class="material-icons md-inherit md-48">help</i></a>
+            {% endif %}
+        {% endblock %}
+    {% endembed %}
+{% endblock section_title %}
+
+{% block second_row %}
+    {{ include(':partials:dataPanel.html.twig', {
+        'entidad' : cargo
+    }) }}
+{% endblock second_row %}
+
+{% block actions_panel %}
+    <div class="panel-heading">
+        <i class="material-icons">menu</i>
+        Acciones
+    </div>
+    <div class="list-group">
+        <a class="list-group-item" href="{{ path('cargo_edit', { 'id': cargo.id }) }}">
+            <i class="material-icons md-green">edit</i>
+            Editar Datos
+        </a>
+        {% if cargo.aportantes|length == 0 %}
+            {{ form_start(delete_form) }}
+                <button type="submit" class="list-group-item">
+                    <i class="material-icons md-red">delete</i>
+                    Eliminar
+                </button>
+                <input type="hidden" name="organismo" value="{{ cargo.organismo.id }}" />
+            {{ form_end(delete_form) }}
+        {% endif %}
+    </div>
+{% endblock actions_panel %}

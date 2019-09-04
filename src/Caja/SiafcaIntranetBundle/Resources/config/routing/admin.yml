@@ -1,0 +1,34 @@
+excepciones_index:
+    path:     /excepciones
+    defaults: { _controller: "SiafcaIntranetBundle:Admin:indexExcepciones" }
+    methods:  GET
+    
+importar_jos:
+    path:     /importarJos
+    defaults: { _controller: "SiafcaIntranetBundle:Admin:importarJos" }
+    methods:  [GET, POST]
+
+reporte_jos:
+    path:     /reporteJos/{fechaStr}
+    defaults: { _controller: "SiafcaIntranetBundle:Admin:reporteJos" }
+    methods:  [GET]
+
+#ver_reporte_jos:
+#    path:     /verReporteJos
+#    defaults: { _controller: "SiafcaIntranetBundle:Admin:verReporteJos" }
+#    methods:  [GET, POST]
+    
+informe_jos:
+    path:     /informeJos/{titulo}
+    defaults: { _controller: "SiafcaIntranetBundle:Admin:informeJos" }
+    methods:  [GET, POST]
+    
+id_ciudadana:
+    path:     /idCiudadana
+    defaults: { _controller: "SiafcaIntranetBundle:Admin:idCiudadana" }
+    methods:  [GET, POST]
+
+id_ciudadana_validar:
+    path:     /idCiudadanaValidar
+    defaults: { _controller: "SiafcaIntranetBundle:Admin:idCiudadanaValidar" }
+    methods:  [GET, POST]

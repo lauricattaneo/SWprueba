@@ -1,0 +1,510 @@
+{% extends 'index.html.twig' %}
+{% form_theme searchForm 'form/form_input-group.html.twig' %}
+{% from 'partials/section-title.html.twig' import js as section_title_js %}
+
+{% block section_title %}
+    {% embed 'partials/section-title.html.twig' %}
+        {% block titulo %}
+            Personas
+            {% if ayuda is defined and ayuda != "" %}
+                <a href="#" data-toggle="modal"  data-target="#ayudaMessage"><i class="material-icons md-inherit md-48">help</i></a>
+            {% endif %}
+        {% endblock %}
+        {% block subtitulo %}
+            {{ subtitulo }}
+        {% endblock %}
+        {% block extracontenttitle %}
+            {{ form_start(searchForm) }}
+            {{ form_widget(searchForm) }}
+            {{ form_rest(searchForm) }}
+            {{ form_end(searchForm) }}
+        {% endblock %}
+    {% endembed %}
+{% endblock section_title %}
+
+{% block extrabuttons %}
+    <a class="btn btn-success btn-xs" href="{{ path('amparo_new', { 'orgId': idOrganismo}) }}">
+        <i class="material-icons md-inherit md-18">add</i>
+        Nuevo Expediente de Amparo
+    </a>
+{% endblock %}
+
+{% block thead %}
+    <th> # </th>
+    <th> Expediente </th>
+    <th> Feha de Inicio del trámite </th>
+    <th> Fecha de Resolución del trámite </th>
+    <th></th>    
+{% endblock thead %}
+
+{% block tbody %}
+    {% for amparo in amparos %}
+        {{ include(':amparo:row.html.twig', { 'amparo' : amparo , 'index' : loop.index }) }}
+    {% endfor %}
+    <tr class="empty-data {% if amparos|length > 0 %}my-hide{% endif %}">
+        <td colspan="5">Este Organismo no tiene amparos registrados.</td>
+    </tr>
+{% endblock tbody %}
+{% block pagination %}
+    <div class="navigation">
+        {{ knp_pagination_render(amparos) }}
+    </div>
+    
+    {# Ventana emergente de nuevo amparo: #}
+    <div class="modal fade" id="nuevo-amparo" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Buscar Aportante</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <div class="input-group"> {# Campo de ingreso de cuil con boton search #}
+                            <input type="text" class="form-control input-cuil" maxlength="11" placeholder="C.U.I.L. de la persona">
+                            <div class="input-group-btn">
+                                <button class="btn btn-default btn-cuil" type="submit"><i class="glyphicon glyphicon-search"></i></button>
+                            </div>
+                        </div>               
+                        <br>
+                        <div class="panel panel-primary">
+                            <div class="panel-heading" id="nombre"> Aportante: </div>
+                            <div class="panel-body">
+                                <table class="table">  
+                                    <thead>
+                                        <tr>
+                                            <th> Cargo </th>
+                                            <th> Situación de Revista </th>
+                                            <th> Número de Liquidación </th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="body">
+                                        {# Cargo filas y columnas en la funcion de jquery $(".btn-cuil").click(function () #}      
+                                    </tbody>    
+                                </table>
+                            </div>
+                        </div>
+                    </div> 
+                </div>
+                <div class="modal-footer">
+                      <input type="hidden" value="" />
+                      <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                      <button type="button" class="btn btn-primary submit" disabled="disabled" title="Seleccione un aportante">Aceptar</button>
+                </div>
+            </div>
+        </div>
+    </div> {# Fin ventana emergente de nuevo amparo #}
+
+    {# Modal para confirmacion de borrado de elementos: #}
+    <div class="modal fade" id="remove-confirm" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-sm" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Confirmaci&oacute;n</h4>
+                </div>
+                <div class="modal-body">
+                    <p>¿Desea eliminar el <span class="type-placeholder"></span>?,<br />Esta acci&oacute;n no puede deshacerse.</p>
+                </div>
+                <div class="modal-footer">
+                    <input type="hidden" id="id-placeholder" value="" />
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-danger" id="remove-item">Eliminar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {# Modal para la creacion de nuevo concepto: #}
+    <div class="modal fade" id="new-concept" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Nuevo concepto</h4>
+                </div>
+                {{ form_start(conceptoForm, {'attr': {'class': 'col-xs-12 progress-form'}}) }}
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-xs-12 col-md-6">{{ form_row(conceptoForm.fechaInicio) }}</div>
+                            <div class="col-xs-12 col-md-6">{{ form_row(conceptoForm.fechaFin) }}</div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-12 col-md-6">{{ form_row(conceptoForm.concepto) }}</div>
+                            <div class="col-xs-12 col-md-6">{{ form_row(conceptoForm.porcentaje) }}</div>
+                        </div>
+                        {{ form_row(conceptoForm.descripcion) }}
+                        {{ form_row(conceptoForm.amparoItem) }}
+                        {{ form_rest(conceptoForm) }}
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                        <input type="submit" value="Agregar" class="btn btn-success" id="add-concepto" />
+                    </div>
+                {{ form_end(conceptoForm) }}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block customjavascripts %}
+    <script>
+        $(document).ready(function() {
+            {# Despliega la lista de amparados por expediente #}
+            {# Despliega la lista de conceptos por amparado #}
+            $(document).on('click', '.btn-amparos, .btn-conceptos', function() {
+                var $tableTarget = $(this).closest('tr').next().children().children('.wrapper-table'),
+                    $rowTarget = $tableTarget.closest('tr');
+                if ($rowTarget.is(':visible')) {
+                    $tableTarget.stop().slideUp(400, function() {
+                        $rowTarget.closest('tr').css('display', 'none');
+                    });
+                } else {
+                    $rowTarget.closest('tr').css('display', 'table-row');
+                    $tableTarget.stop().slideDown(400);
+                }
+            });
+
+            {# Enmascaramiento de formato moneda #}
+            $('.input-cuil').on('input', function() {
+                $(this).val($(this).val().replace(/[^\d\.]|\.(?=.*-\.)*/g, ""));
+            });
+
+            {# Limpia los campos del modal de aportante #}
+            $('#nuevo-amparo').on('hidden.bs.modal', function() {
+                var $modal = $(this);
+                $modal.find('input').val('');
+                $modal.find('tbody tr').remove();
+                $modal.find('#nombre').html('Aportante: ');
+                $modal.find('.submit')
+                    .prop('disabled', 'disabled')
+                    .attr('title', 'Seleccione un aportante');
+            });
+
+            {# Buscar un aportante por cuil #}
+            $(".btn-cuil").click(function () {
+                if ($(".input-cuil").val().length !== 11) {
+                    alert("El cuil debe tener 11 digitos");
+                    return false;
+                } else {
+                    var $modal = $(".btn-cuil").closest('.modal-content');
+                    $modal.find('td').remove();
+                    $('#nombre').html('Aportante: ');
+                    var cuil = $(".input-cuil").val();
+                    $.ajax({
+                        'url': encodeURI('{{ path('organismo_ajax_singleaportante') }}'),
+                        'dataType': 'json',
+                        'method': 'post',
+                        'data': {
+                            'cuilPersona': cuil,
+                            'idOrganismo': {{idOrganismo}},
+                            'idExpte': $modal.find('input[type=hidden]').val()
+                        },
+                        'success': function(results) {
+                            if(results.length==0 )
+                                alert('El cuil ingresado no corresponde a un aportante')
+                            else{
+                                //If para setear appellidoMat porque puede ser null
+                                if (results[0][0]['persona'].apellidoMat == null) {
+                                    results[0][0]['persona'].apellidoMat = "";
+                                }
+                                $('#nombre').html('Aportante: ' + results[0][0]['persona'].nombre + ' ' + results[0][0]['persona'].apellidoPat + results[0][0]['persona'].apellidoMat);
+
+                                var n = results.length;
+                                for (var i=0; i<n; i++) { // El aportante puede tener mas de un cargo
+                                    var option = '';
+                                    if (parseInt(results[i].disable) === 0) {
+                                        option = '<input type="radio" name="btn-radio" value="'+results[i][0].id+'" class="new-aportante-opt">'
+                                    } else {
+                                        option = '<span class="help-block small" title="Aportante previamente asociado al expediente">Vinculado</span>';
+                                    }
+                                    $('.body').append('<tr>' +
+                                        '<td>' + results[i][0]['cargo'].nombre + '</td>' +
+                                        '<td>' + results[i][0]['revista'].nombre + '</td>' +
+                                        '<td>' + results[i][0].nroLiq + '</td>' +
+                                        '<td> '+option+' </td>'
+                                    + '</tr>');
+                                } // end for
+                            } // end if results.lenght==0
+                        }, // end success
+                    }); //end ajax
+                }  // end else
+            }); // end click function
+
+            {# Acciones para nuevo concepto #}
+            {# Activa submit al elegir una opcion de amparado #}
+            $('#nuevo-amparo').on('change', '.new-aportante-opt', function() {
+                $(this).closest('.modal-content')
+                    .find('.submit')
+                        .prop('disabled', false)
+                        .removeAttr('title');
+            });
+            {# Al mostrar submit de amparado #}
+            $('#nuevo-amparo').on('show.bs.modal', function(event) {
+                var $relatedTarget = $(event.relatedTarget);
+                $(this).find('input[type=hidden]').val($relatedTarget.data('id'));
+            });
+            {# Al enviar datos al backend #}
+            $("#nuevo-amparo .btn-primary").click(function() {
+                var $modal = $(this).closest('.modal-content'),
+                    idExpte = $modal.find('input[type=hidden]').val(),
+                    idAportante = $modal.find('input:radio:checked').val();
+
+                $.ajax({
+                    'url': encodeURI('{{ path('amparo_ajax.insert.new_amparo_item') }}'),
+                    'dataType': 'json',
+                    'method': 'post',
+                    'data': {
+                        'idAportante': idAportante,
+                        'idExpte': idExpte
+                    },
+                    'success': function(response) {
+                        if(response.success) {
+                            $('#nuevo-amparo').modal('hide');
+                            var newRow1 = '<tr>'+
+                                    '<td class="grey-background">#</td>'+
+                                    '<td>'+ response.amparo.nombre +'</td>'+
+                                    '<td>'+ response.amparo.cargo +'</td>'+
+                                    '<td>'+ response.amparo.revista +'</td>'+
+                                    '<td>'+ response.amparo.liq +'</td>'+
+                                    '<td>'+
+                                        '<button class="btn btn-primary-bt btn-xs btn-conceptos">'+
+                                            '<i class="material-icons md-inherit md-18">visibility</i>'+
+                                            'Conceptos'+
+                                        '</button> '+
+                                        '<a class="btn btn-danger btn-xs" data-toggle="modal" data-target="#remove-confirm" data-type="amparado" data-id="'+response.amparo.id+'">'+
+                                            '<i class="material-icons md-inherit md-18"> remove </i> '+
+                                            'Quitar'+
+                                        '</a>'+
+                                    '</td>'+
+                                '</tr>',
+                                newRow2 = '<tr class="id-conceptos my-hide">'+
+                                    '<td></td>'+
+                                    '<td colspan="5" class="text-left">'+
+                                        '<div class="wrapper-table my-hide" style="display: block;">'+
+                                            '<div>'+
+                                                '<a class="btn btn-success btn-xs btn-conceptos" data-toggle="modal" data-target="#new-concept" data-amparado="'+response.amparo.id+'">'+
+                                                    '<i class="material-icons md-inherit md-18">add</i>'+
+                                                    '<span>Nuevo Concepto</span>'+
+                                                '</a>'+
+                                                '<table class="table table-conceptos" id="conceptos-'+response.amparo.id+'">'+
+                                                    '<thead>'+
+                                                        '<tr class="active">'+
+                                                            '<th> Concepto </th>'+
+                                                            '<th> Fecha de Inicio </th>'+
+                                                            '<th> Fecha de Fin </th>'+
+                                                            '<th> Porcentaje </th>'+
+                                                            '<th></th>'+
+                                                        '</tr>'+
+                                                    '</thead>'+
+                                                    '<tbody>'+
+                                                        '<tr class="empty-data">'+
+                                                            '<td colspan="5">No existen conceptos cargados.</td>'+
+                                                        '</tr>'+
+                                                    '</tbody>'+
+                                                '</table>'+
+                                            '</div>'+
+                                        '</div>'+
+                                    '</td>'+
+                                '</tr>';
+
+                            $('#amparos-'+idExpte+' > tbody > tr.empty-data').addClass('my-hide').before(newRow1+newRow2);
+                            reindex();
+                        } else {
+                            alert('Error al persistir el amparado, verifique los datos e intente nuevamente');
+                        }
+                    },
+                    'error': function() {
+                        alert('Error en el servidor, intente más tarde');
+                    },
+                });
+            });
+
+            {# Acciones de borrado de items (conceptos, amparados, expedientes) #}
+            $('#remove-confirm').on('show.bs.modal', function (event) {
+                var $relatedTarget = $(event.relatedTarget);
+                $(this).find('.type-placeholder').text($relatedTarget.data('type'));
+                $(this).find('#id-placeholder').val($relatedTarget.data('id'));
+            });
+            $('button#remove-item').click(function() {
+                var $modal = $(this).closest('.modal'),
+                    type = $modal.find('span.type-placeholder').first().text(),
+                    id = $modal.find('#id-placeholder').val();
+
+                $.ajax(encodeURI('{{ path('amparo_ajax.delete.related_items') }}'), {
+                    'data': {
+                        'targetId': id,
+                        'entityType': type
+                    },
+                    'dataType': 'JSON',
+                    'method': 'POST',
+                    'success': function() {
+                        $('#remove-confirm').modal('hide');
+
+                        var $relatedRow = $('a.btn-danger[data-type='+type+'][data-id='+id+']').closest('tr'),
+                            $emptyMsg = $relatedRow.siblings('.empty-data'),
+                            remainingSiblings = $relatedRow.parent('tbody').find(('a.btn-danger[data-type='+type+']')).length-1;
+
+                        $relatedRow.slideUp(300, function() {
+                            if (type !== 'concepto') { $relatedRow.next('tr.my-hide').remove(); }
+                            $relatedRow.remove();
+                            if (remainingSiblings === 0) { $emptyMsg.removeClass('my-hide'); }
+                            reindex();
+                        });
+                    },
+                    'error': function() {
+                        $('#remove-confirm').modal('hide');
+                        alert('Error al eliminar, intente más tarde');
+                    }
+                });
+            });
+
+            {# Acciones de nuevo concepto #}
+            {# Al mostrar el modal: #}
+            $('#new-concept').on('show.bs.modal', function(event) {
+                var $relatedTarget = $(event.relatedTarget)
+                    chosenConcepts = new Array();
+                $(this).find('#expte_amp_item_concepto_amparoItem').val($relatedTarget.data('amparado'));
+                // Consulta los conceptos a deshabilitar (ya estan cargados)
+                $relatedTarget.next('table').find('tr:not(.empty-data) td:first-child').each(function() {
+                    chosenConcepts.push($(this).html().trim());
+                });
+                // Habilita todos los conceptos para luego deshabilitar los obtenidos en el paso anterior
+                $(this).find('#expte_amp_item_concepto_concepto option').each(function() {
+                    if ($.inArray($(this).html().trim(), chosenConcepts) !== -1) {
+                        $(this).addClass('my-hide').attr('disabled', 'disabled');
+                    } else {
+                        $(this).removeClass('my-hide').removeAttr('disabled');
+                    }
+                });
+            });
+            {# Al esconder el modal: #}
+            $('#new-concept').on('hidden.bs.modal', function(event) {
+                $('#new-concept form')[0].reset();
+                $('#new-concept form select').trigger('change');
+            });
+            {# Al enviar datos al backend: #}
+            $('#new-concept form').on('submit', function(e) {
+                e.preventDefault();
+                $.ajax(encodeURI('{{ path('amparo_index', { 'id': idOrganismo }) }}'), {
+                    'data': $(this).serialize(),
+                    'dataType': 'JSON',
+                    'method': 'POST',
+                    'success': function(response) {
+                        $('#new-concept form .form-group.has-error').find('span.help-block').remove();
+                        $('#new-concept form .form-group.has-error').removeClass('has-error');
+                        if (response.success) {
+                            $('#new-concept').modal('hide');
+                            var newRow = '<tr>'+
+                                '<td>'+ response.concepto.nombre +'</td>'+
+                                '<td>'+ response.concepto.finicio +'</td>'+
+                                '<td>'+ response.concepto.ffin +'</td>'+
+                                '<td>'+ response.concepto.porcentaje +'</td>'+
+                                '<td>'+
+                                    '<a class="btn btn-danger btn-xs" data-toggle="modal" data-target="#remove-confirm" data-type="concepto" data-id="'+response.concepto.id+'">'+
+                                        '<i class="material-icons md-inherit md-18" >remove</i> '+
+                                        'Quitar'+
+                                    '</a>'+
+                                '</td>'+
+                            '</tr>';
+
+                            var $emptyRows = $('a.btn-danger[data-type=amparado][data-id='+$('#expte_amp_item_concepto_amparoItem').val()+']')
+                                .closest('tr').next('.id-conceptos').find('tr.empty-data');
+
+                            $emptyRows.addClass('my-hide').before(newRow);
+                        } else {
+                            if (!response.errors) {
+                                alert(response.msg);
+                            } else {
+                                Object.keys(response.errors).map(function(key, index) {
+                                    $('#expte_amp_item_concepto_'+key).closest('.form-group').addClass('has-error');
+                                    $('#expte_amp_item_concepto_'+key).closest('.input-wrapper').after($('<span class="help-block">'+response.errors[key]+'</span>'));
+                                });
+                            }
+                        }
+                    },
+                    'error': function() {
+                        $('#new-concept').modal('hide');
+                        alert('Error al dar de alta el concepto, intente más tarde');
+                    }
+                });
+            });
+            {# Validaciones y datepickers para campos de conceptos: #}
+            var topYear = new Date().getFullYear();
+            {% image '@SiafcaIntranetBundle/Resources/public/nueva_base/images/ic_event_black_24dp_2x.png' %}
+                $(".date-format").datepicker({
+                    yearRange: (topYear-120)+":"+topYear,
+                    minDate: "-150Y",
+                    buttonImage: "{{ asset_url }}",
+                });
+            {% endimage %}
+            {# Enmascaramiento: Unico signo de puntuacion #}
+            $('#expte_amp_item_concepto_porcentaje').on('keypress', function(e) {
+                if (e.key === '.') {
+                    var startPos = this.selectionStart,
+                        endPos = this.selectionEnd,
+                        actualVal = $(this).val(),
+                        selectedText = actualVal.substring(startPos, endPos),
+                        dotInVal = actualVal.indexOf('.') >= 0,
+                        dotInSelection = selectedText.indexOf('.') >= 0;
+
+                    if (selectedText === '' && dotInVal) {
+                        e.preventDefault();
+                    } else if (selectedText !== '' && dotInVal && !dotInSelection) {
+                        e.preventDefault();
+                    }
+                }
+            });
+            {# Enmascaramiento que solo permite valores numericos con unico separador decimal #}
+            $('#expte_amp_item_concepto_porcentaje').on('input', function(e) {
+                var startPos = this.selectionStart,
+                    newlVal = $(this).val(),
+                    filteredVal = newlVal.replace(/[^\d\.]|\.(?=.*\.)/g, "");
+                if (newlVal !== filteredVal) {
+                    $(this).val(filteredVal);
+                    var newCursorPos = startPos - (newlVal.length - filteredVal.length);
+                    this.selectionStart = newCursorPos;
+                    this.selectionEnd = newCursorPos;
+                }
+            });
+            {# IE (< 9) fallback de enmascaramiento anterior #}
+            $('#expte_amp_item_concepto_porcentaje').on('input', function(e) {
+                var valueChanged = false;
+                if (e.type==='propertychange') {
+                    valueChanged = e.originalEvent.propertyName === 'value';
+                } else {
+                    valueChanged = true;
+                }
+                if (valueChanged) {
+                    var startPos = this.selectionStart,
+                        newlVal = $(this).val(),
+                        filteredVal = newlVal.replace(/[^\d\.]|\.(?=.*\.)/g, "");
+                    if (newlVal !== filteredVal) {
+                        $(this).val(filteredVal);
+                        var newCursorPos = startPos - (newlVal.length - filteredVal.length);
+                        this.selectionStart = newCursorPos;
+                        this.selectionEnd = newCursorPos;
+                    }
+                }
+            });
+        });
+
+        {# Actualiza el indice numerico de cada fila luego de agregar / eliminar items #}
+        function reindex() {
+            $('td.grey-background').each(function() {
+                var parents = $(this).parents('table');
+                if (parents.length === 1) {
+                    $(this).html($(this).parent('tr').prevAll('tr:not([class^=id-])').length+1);
+                } else {
+                    $(this).html(
+                        parents.closest('tr').prevAll('tr:not([class^=id-])').length
+                        +'.'
+                        +($(this).parent('tr').prevAll('tr:not([class^=id-])').length+1).toString()
+                    );
+                }
+            });
+        }
+        {{ section_title_js() }}
+    </script>
+{% endblock %}

@@ -1,0 +1,38 @@
+{% extends 'base.html.twig' %}
+
+{% block content %}
+    <div class="table-wrapper page-header">
+        <h1><i class="material-icons md-inherit md-48">mode_edit</i>{% if delete_form is defined %}Editar Ayuda{% else %}Crear una Ayuda{% endif %} 
+            {% if ayuda is defined and ayuda != "" %}
+                <a href="#" data-toggle="modal"  data-target="#ayudaMessage"><i class="material-icons md-inherit md-48">help</i></a>
+            {% endif %}
+        </h1>
+        {% if delete_form is defined %}
+            {{ form_start(delete_form, {'attr': {'class': 'text-right'}}) }}
+            <input class="btn btn-danger" type="submit" value="Eliminar" />
+            {{ form_end(delete_form) }}
+        {% endif %}
+
+        <div> 
+            <div class="list-group">
+                <a href="{{ path('ayuda_index') }}" class="btn btn-primary pull-right" type="submit" value="Lista de Ayudas">
+                    Lista de Ayudas</a>
+            </div>
+        </div>    
+
+    </div>
+    {{ form_start(form, {'attr': {'class': 'progress-form'}}) }}
+    <div class="row">
+        <div class="col-xs-12 col-md-6">{{ form_row(form.codigo) }}</div>
+    </div>
+    <div class="row">
+        <div class="col-xs-12 col-md-6">
+            <textarea class="form-control" rows="10">{{ form_row(form.texto) }}</textarea>
+        </div>
+    </div>
+    {{ form_widget(form) }}
+    <div class="col-xs-12 text-center" style="margin-top: 12px;">
+        <input class="btn btn-primary pull-center" type="submit" value="Crear" />
+    </div>
+    {{ form_end(form) }}
+{% endblock %}

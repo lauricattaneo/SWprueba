@@ -1,0 +1,45 @@
+{% extends 'index.html.twig' %}
+{% from 'partials/section-title.html.twig' import js as section_title_js %}
+
+{% block section_title %}
+    {% embed "partials/section-title.html.twig" %}
+        {% block titulo %}
+            Aportes de {{ persona.apellidoPat ~ ' ' ~ persona.apellidoMat }} (CUIL: {{persona.cuil}})
+        {% endblock %}
+        
+    {% endembed %}
+{% endblock section_title %}
+
+{% block thead %}
+    <th>#</th>
+    <th>Periodo</th>
+    <th>Organismo</th>
+    <th>Tipo Liq.</th>
+    <th>Revista</th>
+    <th>Ap. remunerativo</th>
+    <th>Ap. personal</th>
+    <th>Ap. patronal</th>
+{% endblock thead %}
+
+{% block tbody %}
+    {% if aportes is null %}
+        <tr>
+            <td colspan="8">No hay aportes de la persona.</td>
+        </tr>
+    {% else %}
+        {% for aporte in aportes %}
+            {{ include(':aporte:row.html.twig', { 'aporte' : aporte }) }}
+        {% endfor %}
+    {% endif %}
+{% endblock tbody %}
+{% block pagination %}
+    <div class="navigation">
+        {{ knp_pagination_render(aportes) }}
+    </div>
+{% endblock %}
+
+{% block customjavascripts %}
+    <script>
+        {{ section_title_js() }}
+    </script>
+{% endblock %}

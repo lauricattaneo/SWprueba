@@ -1,0 +1,103 @@
+{% extends 'index.html.twig' %}
+{% from 'partials/section-title.html.twig' import js as section_title_js %}
+
+{% block section_title %}
+
+    {% embed "partials/section-title.html.twig" %}
+        {% block titulo %}
+            <i class="material-icons md-inherit md-48">assignment</i>
+            REPORTES LIQUIDACIONES  
+            
+            {% if ayuda is defined and ayuda != "" %}
+                <a href="#" data-toggle="modal"  data-target="#ayudaMessage"><i class="material-icons md-inherit md-48">help</i></a>
+            {%endif%}
+            
+            <div class="list-group">
+                <a id="volver" href="{{path('importar_jos')}}" class="btn btn-primary pull-right" value="Informe Liquidacion">
+                    Volver</a>
+            </div>
+        {%endblock%}
+  
+    {% endembed %}
+{% endblock section_title %}      
+
+{% block thead %}
+    <div class="panel-group">
+        <div class="panel panel-default">
+            <div class="panel-heading"> <h4><b> Archivo: {{tituloJu}}</b></h4></div>
+        </div>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th class="text-center">Codigo</th>
+                <th class="text-center">Tipo</th>
+                <th class="text-left">Descripcion</th>
+                <th class="text-left">Valor</th>
+            </tr>
+        </thead>
+    {%endblock%}
+
+{% block tbody %}
+
+    <tbody class="body" style="background-color:#ccffff">
+        {% for reporte in reporteJu %}
+            <tr class="row-index">
+                <td class="grey-background">{{loop.index}}</td>
+                <td class="text-center">{{reporte.codigo}}</td>
+                <td class="text-center">  {{reporte.tipo}}</td>
+                <td class="text-left">  {{reporte.descripcion}}</td>
+                <td class="text-left">  {{reporte.valor}}</td>
+            </tr>
+        {%endfor%}
+
+    </tbody>
+    </table> 
+    <div class="list-group">
+        <a id="volver" href="{{path('informe_jos',{'titulo' : tituloJu})}}" class="btn btn-primary pull-right" value="Informe Liquidacion">
+            InformeJu</a>
+    </div>
+
+{% endblock %}
+
+{% block extrathead %}
+    <div class="panel-group">
+        <div class="panel panel-default">
+            <div class="panel-heading"> <h4><b>Archivo: {{tituloJuAdm}}</b></h4></div>
+        </div>  
+        <thead>
+            <tr>
+                <th>#</th>
+                <th class="text-center">Codigo</th>
+                <th class="text-center">Tipo</th>
+                <th class="text-left">Descripcion</th>
+                <th class="text-left">Valor</th>
+            </tr>
+        </thead>
+    {%endblock%}
+
+{% block tbody2 %}
+
+    <tbody class="body" style="background-color:#ccffff">
+        {% for reporte in reporteJuAdm %}
+            <tr class="row-index">
+                <td class="grey-background">{{loop.index}}</td>
+                <td class="text-center">{{reporte.codigo}}</td>
+                <td class="text-center">  {{reporte.tipo}}</td>
+                <td class="text-left">  {{reporte.descripcion}}</td>
+                <td class="text-left">  {{reporte.valor}}</td>
+            </tr>
+        {%endfor%}
+
+    </tbody>
+    </table> 
+    <div class="list-group">
+        <a id="volver" href="{{path('informe_jos',{'titulo' : tituloJuAdm})}}" class="btn btn-primary pull-right" value="Informe Liquidacion">
+        InformeJuAdm</a>
+    </div>
+{% endblock %}
+
+{% block customjavascripts %}
+    <script>          
+       {{ section_title_js() }}
+        </script>
+{% endblock %}

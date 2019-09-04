@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>{% block title %}Siafca Intranet{% endblock %}</title>
+        {% block stylesheets %}
+            {% stylesheets '@bootstrap_css' '@custom_css' '@js_flick_css' output = 'css/compiled/main.css' %}
+                <link rel="stylesheet" type="text/css" media="screen" href="{{ asset_url }}"/>
+            {% endstylesheets %}
+            {% block customstylesheets '' %}
+        {% endblock %}
+        <link rel="icon" type="image/x-icon" href="{{ asset('bundles/cajasiafcaintranet/nueva_base/images/favicon.ico') }}" />
+    </head>
+
+    <body>
+        {% block top_navbar %}
+        <div class="navbar navbar-default navbar-fixed-top custom-navbar-top" role="navigation">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    {% if app.user.username is defined %}
+                        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".header-collapse" aria-expanded="false">
+                            <span class="sr-only">Toggle navigation</span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </button>
+                    {% endif %}
+                    <a class="navbar-brand" href="#">
+                        <span>
+                            {% image '@SiafcaIntranetBundle/Resources/public/nueva_base/images/gob-santafe.png' %}
+                                <img id="imagenLogoProvincia" height="35" width="96" src="{{ asset_url }}" alt="Gobierno de Santa Fe" />
+                            {% endimage %}
+                        </span>
+                    </a>
+                </div>
+            {% if app.user.username is defined %}
+                <div class="collapse navbar-collapse hidden-xs" id="navbar-collapse-1">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                                <i class="material-icons md-24 md-inherit">account_circle</i>
+                                <span>{{ app.user }}</span>
+                                <span class="caret"></span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a href="{{ path('usuario_show',{'id': app.user.id}) }}">Ver Perfil</a></li>
+                                <li><a href="{{ path('_demo_logout') }}">Salir</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            {% endif %}
+        </div>
+    </div> <!-- END NAVBAR -->
+    {% endblock top_navbar %}
+        <div class="row content-wrapper">
+            {% block body %}
+                {% block side_navbar %}
+                    {{ include('partials/sidebar.html.twig') }}
+                {% endblock side_navbar %}
+                <main class="col-xs-8">
+                    {% block section_title '' %}
+                    <div class="container-fluid">
+                        {% block content '' %}
+                    </div>
+
+                </main>
+            {% endblock body %}
+        </div>
+        {% for flash_message in app.session.flashBag.get('info') %}
+            <div class="flash flash-info alert alert-info alert-dismissible" role="alert">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                {{ flash_message }}
+            </div>
+        {% endfor %}
+        {% for flash_message in app.session.flashBag.get('success') %}
+            <div class="flash flash-success alert alert-success alert-dismissible" role="alert">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                {{ flash_message }}
+            </div>
+        {% endfor %}
+        {% for flash_message in app.session.flashBag.get('error') %}
+            <div class="flash flash-error alert alert-danger alert-dismissible" role="alert">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                {{ flash_message }}
+            </div>
+        {% endfor %}
+
+            <div class="modal fade" id="ayudaMessage" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-me" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Ayuda</h4>
+                </div>
+                <div class="modal-body">
+                    {%if ayuda is defined %}
+                    {{ayuda | raw}}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% block javascripts %}
+        {% javascripts '@jquery' '@bootstrap_js' '@forms' %}
+            <script type="text/javascript" src="{{ asset_url }}"></script>
+        {% endjavascripts %}
+        
+        <!-- Latest compiled and minified JavaScript -->
+
+
+
+        <script>
+            $(document).ready(function() {
+                var $main = document.getElementsByTagName("main")[0];
+                {# If content causes overflow, give option to hide nav #}
+                if ($main !== undefined && ($main.offsetHeight < $main.scrollHeight || $main.offsetWidth < $main.scrollWidth)) {
+                    $('#collapse-aside-btn')
+                        .removeClass("hidden")
+                        .click(function() {
+                            if ($(this).hasClass('out')) {
+                                $('#navbar-collapse-2').removeClass('moved-out');
+                                $('#collapse-aside-btn').removeClass('out');
+                                $('#imagenLogoCaja').attr('src', $('#imagenLogoCaja').attr('src').replace('-small', ''));
+                            } else {
+                                $('#navbar-collapse-2').addClass('moved-out');
+                                $('#collapse-aside-btn').addClass('out');
+                                $('#imagenLogoCaja').attr('src', $('#imagenLogoCaja').attr('src').replace('logo-caja.png', 'logo-caja-small.png'));
+                            }
+                        });
+                }
+                $('aside [data-toggle="tooltip"]').tooltip();
+                $('.navbar-toggle').click(function() {
+                    $("html, body").animate({ scrollTop: 0 }, 300);
+                    $("aside#navbar-collapse-2.moved-out").removeClass('moved-out');
+                    $('#collapse-aside-btn.out').removeClass('out');
+                    $('#imagenLogoCaja').attr('src', $('#imagenLogoCaja').attr('src').replace('-small', ''));
+                });
+            });
+        </script>
+        {% block customjavascripts '' %}
+    {% endblock javascripts %}
+    </body>
+</html>

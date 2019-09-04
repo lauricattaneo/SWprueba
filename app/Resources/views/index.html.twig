@@ -1,0 +1,81 @@
+{% extends 'base.html.twig' %}
+
+{% block content %}
+    {% block list_group %}
+        {%- if block('filterbuttons') is defined %}
+            <div class="row filtros">
+                <div class="col-xs-12 col-md-2" style="font-size: 24px;">
+                    <i class="material-icons md-inherit md-36">filter_list</i> Filtros
+                    <small class="visible-sm-inline visible-xs-inline pull-right" id="filter-visibility" title="Ver/Ocultar filtros"><span class="glyphicon glyphicon-menu-down" aria-hidden="true"></span></small>
+                </div>
+                <div class="col-xs-12 col-md-10">{{ block('filterbuttons') }}</div>
+            </div>
+        {% endif %}
+        {% if block('extrabuttons') is defined %}
+            <div class="row" style="padding: 1rem; background-color: #FFF;">{{ block('extrabuttons') }}</div>
+        {% endif %}
+        <div class="row">
+            
+            <table class="my-padding-table table table-hover table-body tablas">
+                {% block nothead %} <!-- En caso de no querer utilizar thead, sobreescribir y dejar en blanco -->
+                <thead>
+                    <tr>
+                        {% block thead %}
+                        {% endblock %}
+                    </tr>
+                        
+                   
+                </thead>
+                        {%block busqueda %}
+
+                        {%endblock busqueda %}
+                {% endblock %}
+               
+                <tbody class="tbody-border">
+                    {% block tbody %}
+                    {% endblock %}
+                </tbody>
+            </table>
+        </div>
+        <div class="row">
+            
+            <table class="my-padding-table table table-hover table-body tablas">
+                <thead>
+                    <tr>
+                        {% block extrathead %}
+                        {% endblock %}
+                    </tr>
+                </thead>
+            
+                <tbody class="tbody-border">
+                    {% block tbody2 %}
+                    {% endblock %}
+                </tbody>
+            </table>
+        </div>
+                
+        <div id="pagination" class="text-center">
+            {% block pagination '' %}
+        </div>
+    {% endblock list_group %}
+    {% block endlist %}{% endblock %}
+{% endblock content %}
+
+{% block customjavascripts %}
+    {{ parent() }}
+    <script>
+        $(document).ready(function() {
+            $('#filter-visibility').click(function() {
+                $(this).parent().siblings().children().slideToggle();
+                var $span = $(this).find('span');
+                if ($span.is('.glyphicon-menu-down')) {
+                    $span.removeClass('glyphicon-menu-down')
+                        .addClass('glyphicon-menu-up');
+                } else if ($span.is('.glyphicon-menu-up')) {
+                    $span.removeClass('glyphicon-menu-up')
+                        .addClass('glyphicon-menu-down');
+                }
+            });
+        });
+    </script>
+{% endblock customjavascripts %}

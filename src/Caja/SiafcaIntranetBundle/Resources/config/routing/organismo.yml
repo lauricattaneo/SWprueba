@@ -1,0 +1,63 @@
+organismo_index:
+    path:     /
+    defaults: { _controller: "SiafcaIntranetBundle:Organismo:index" }
+    methods:  [GET, POST]
+
+organismo_faltantes:
+    path:     /faltantes
+    defaults: { _controller: "SiafcaIntranetBundle:Organismo:faltantes" }
+    methods: [GET, POST]
+
+organismo_show:
+    path:     /{id}/show
+    defaults: { _controller: "SiafcaIntranetBundle:Organismo:show" }
+    methods:  [GET, POST]
+
+organismo_new:
+    path:     /new
+    defaults: { _controller: "SiafcaIntranetBundle:Organismo:new" }
+    methods:  [GET, POST]
+
+organismo_edit:
+    path:     /{id}/edit
+    defaults: { _controller: "SiafcaIntranetBundle:Organismo:edit" }
+    methods:  [GET, POST]
+
+organismo_hab:
+    path:     /habilitar
+    defaults: { _controller: "SiafcaIntranetBundle:Organismo:habilitar" }
+    methods:  POST
+
+organismo_delete:
+    path:     /{id}/delete
+    defaults: { _controller: "SiafcaIntranetBundle:Organismo:delete" }
+    methods:  DELETE
+    
+organismo_bloquear:
+    path:     /{id}/bloquear
+    defaults: { _controller: "SiafcaIntranetBundle:Organismo:bloquear" }
+    methods:  POST
+
+organismo_search:
+    path:     /filter
+    defaults: { _controller: "SiafcaIntranetBundle:Organismo:filter" }
+    methods:  [GET, POST]
+    
+organismo_search_by_codigo:
+    path:     /search
+    defaults: { _controller: "SiafcaIntranetBundle:Organismo:search" }
+    methods:  [GET, POST]
+
+organismo_ajax_singleaportante:
+    path:     /singleaportante
+    defaults: { _controller: "SiafcaIntranetBundle:Organismo:getSingleAportante" }
+    methods:  [POST]
+
+organismo.ajax_autocomplete:
+  path:  /ajax/autocomplete/
+  defaults: { _controller: "SiafcaIntranetBundle:Organismo:autocomplete" }
+  
+idCiudadana_organismo_ajax:
+    path:     /ajax/validarIdCiudadana
+    defaults: { _controller: "SiafcaIntranetBundle:Organismo:idCiudadanaOrganismoAjax" }
+    methods:  [GET, POST]

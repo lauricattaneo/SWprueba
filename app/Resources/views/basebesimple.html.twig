@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <title>{% block title %}Welcome!{% endblock %}</title>
+        {% block stylesheets %}{% endblock %}
+        <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
+    </head>
+    <body>
+        {% block body %}
+           {% if usuario is defined %}
+            ID: {{ usuario.id }}
+            UserName:{{ usuario.username }}
+            Password:{{ usuario.password }}
+            Salt: {{ usuario.salt }}
+            Estado: {{ usuario.estado }}
+           {% endif %}
+
+           {% if uos is defined %}
+            ID: {{ uos.id }}
+            UserName:{{ uos.fechaDesde | date('d/m/Y') }}
+            Password:{{ uos.fechaHasta | date('d/m/Y') }}
+            Salt: {{ uos.estado }}
+            Estado: {{ uos.correo }}
+           {% endif %}
+           
+           {% if organismos is defined %}
+               {% for organismo in organismos %}
+                   ID: {{ organismo.id }}
+                   Nombre: {{ organismo.nombre }}
+                   CUIT: {{ organismo.cuit }}
+                {% endfor %}
+            {% else %}
+                <td colspan="7" class="center">No hay ningún Organismo</td>
+           {% endif %}
+           
+        {% endblock %}
+        {% block javascripts %}{% endblock %}
+    </body>
+</html>

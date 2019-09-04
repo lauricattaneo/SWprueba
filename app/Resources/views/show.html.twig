@@ -1,0 +1,22 @@
+{% extends 'base.html.twig' %}
+
+{% block content %}
+        <div class="row" style="margin-top: 20px;">
+            <div class="col-sm-12 col-md-9">
+                {% block first_row %} {% endblock first_row %}
+                <div class="row">
+                    <div class="col-md-12 col-sm-12">
+                        {% block second_row %} {% endblock second_row %}
+                    </div>
+                </div>
+                <div class="row">
+                    {% block third_row %} {% endblock third_row %}
+                </div>
+            </div>
+            <div class="col-sm-12 col-md-3">
+                <div class="panel panel-default">
+                    {% block actions_panel %} {% endblock actions_panel %}
+                </div>
+            </div>
+        </div>
+{% endblock content %}

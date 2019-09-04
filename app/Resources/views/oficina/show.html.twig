@@ -1,0 +1,976 @@
+{% extends "show.html.twig" %}
+{% from 'partials/section-title.html.twig' import js as section_title_js %}
+
+{% block section_title %}
+    {% embed "partials/section-title.html.twig" %}
+        {% block titulo %}<i class="material-icons md-inherit md-48">business_center</i> {{ oficina }}
+        {% if ayuda is defined and ayuda != "" %}
+                <a href="#" data-toggle="modal"  data-target="#ayudaMessage"><i class="material-icons md-inherit md-48">help</i></a>
+            {% endif %}
+        {% endblock %}
+    {% endembed %}
+{% endblock section_title %}
+
+{% block second_row %}
+    {% embed ':partials:dataPanel.html.twig' with {'entidad': oficina, 'organismoId': oficina.id}  %}
+        {% block propLine %}
+            {# Sobreescribe los items de firmantes porque tienen una condicion bajo la cual se habilita la edicion #}
+            {% if key == 'Usuario responsable' %}
+                <div class="list-group-item">
+                    <strong class="text-bold">{{ key }}:</strong>
+                    {%if 'ROLE_CONTRALOR_ADMIN' in app.user.roles %}
+                        <a title="Agregar" class="pull-right" href="#" data-toggle="modal" data-target="#new-UsuarioResponsable"><i class="material-icons md-inherit">add_circle</i></a>
+                    {% endif %}
+                </div>
+                <ul class="list-unstyled list-group" data-type="{{ value.entityName|replace({' ': '_'}) }}" {% if value.delete.path is defined %}data-action="{{ path(value.delete.path, value.delete.params|default({})) }}"{% endif %}>
+                    {% if value.data is defined %}
+                        {% if value.data is not null %}
+                            {% for item in value.data %}
+                                <li class="list-group-item" data-id="{{ item.id }}">
+                                      {%if 'ROLE_CONTRALOR_ADMIN' in app.user.roles %}
+                                        {% if item.estado.estado == '1' %} {# estado inicial #}
+                                            <a href="#" title="Validar" data-toggle="modal" data-target="#validar-confirm"><i class="material-icons md-green">done</i></a>
+                                        {% endif %}
+                                        {% if item.estado.estado == '2' %} {# estado habilitado #}
+                                            <a href="#" title="Inhabilitar" data-toggle="modal" data-target="#inhabilitarH-confirm"><i class="material-icons md-red">block</i></a>
+                                            <a href="#" title="Bloquear" data-toggle="modal" data-target="#bloquear-confirm"><i class="material-icons md-red">lock</i></a>
+                                        {% endif %}
+                                        {% if item.estado.estado == '3' %} {# estado bloqueado #}
+                                            <a href="#" title="Inhabilitar" data-toggle="modal" data-target="#inhabilitarB-confirm"><i class="material-icons md-red">block</i></a>
+                                            <a href="#" title="Desbloquear" data-toggle="modal" data-target="#desbloquear-confirm"><i class="material-icons md-green">lock_open</i></a>
+                                        {% endif %}
+                                        {% if value.delete.enabled|default(false) %}
+                                            <a href="#" title="Eliminar" data-toggle="modal" data-target="#remove-confirm"><i class="material-icons md-red">delete</i></span></a>
+                                        {% endif %}
+                                        {% if value.edit.enabled|default(false) and (item.estado.estado == '1' or item.estado.estado == '2') %}
+                                            <a href="#" title="Editar" data-toggle="modal" data-target="#edit-UsuarioResponsable"><i class="material-icons md-green">create</i></a>
+                                        {% endif %}
+                                    {% endif %}
+                                    <span>
+                                        <a href="{{path('usuario_organismo.show', {'id': item.id}) }}">{{ item }}</a>
+                                    </span>
+                                </li>
+                            {% endfor %}
+                        {% endif %}
+                        <li class="list-group-item empty-data {% if value.data is not null %}my-hide{% endif %}">-- No hay datos cargados --</li>
+                        {% endif %}
+                </ul>
+            {% else %}
+                {{ parent() }}
+            {% endif %}
+        {% endblock propLine %}
+    {% endembed %}
+{% endblock second_row %}
+
+{% block actions_panel %}
+    <div class="modal fade" id="validar-confirm" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-sm" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Confirmaci&oacute;n</h4>
+                </div>
+                <div class="modal-body">
+                    <p>¿Desea validar el usuario <span class="usuario-placeholder"></span>?</p>
+                </div>
+                <div class="modal-footer">
+                    <form method="POST" id="validar">
+                        <input type="hidden" name="idUOrganismo" id="id-placeholder"  value="" />
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-info" id="remove-item">Validar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="inhabilitarH-confirm" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-sm" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Confirmaci&oacute;n</h4>
+                </div>
+                <div class="modal-body">
+                    <p>¿Desea inhabilitar el usuario <span class="usuario-placeholder"></span>? </br> Esta acción <b>no puede deshacerse</b>.</p>
+                </div>
+                <div class="modal-footer">
+                    <form method="POST" id="inhabilitarH">
+                        <input type="hidden" name="idUOrganismo" id="id-placeholder"  value="" />
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-danger" id="remove-item">Inhabilitar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="modal fade" id="bloquear-confirm" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-sm" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Confirmaci&oacute;n</h4>
+                </div>
+                <div class="modal-body">
+                    <p>¿Desea bloquear el usuario <span class="usuario-placeholder"></span>?</p>
+                </div>
+                <div class="modal-footer">
+                    <form method="POST" id="bloquear">
+                        <input type="hidden" name="idUOrganismo" id="id-placeholder"  value="" />
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-warning" id="remove-item">Bloquear</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+    <div class="modal fade" id="desbloquear-confirm" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-sm" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Confirmaci&oacute;n</h4>
+                </div>
+                <div class="modal-body">
+                    <p>¿Desea desbloquear el usuario <span class="usuario-placeholder"></span>?</p>
+                </div>
+                <div class="modal-footer">
+                    <form method="POST" id="desbloquear">
+                        <input type="hidden" id="id-placeholder" value="" />
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary" id="desbloquear-usuario">Desloquear</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="modal fade" id="inhabilitarB-confirm" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-sm" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Confirmaci&oacute;n</h4>
+                </div>
+                <div class="modal-body">
+                    <p>¿Desea inhabilitar el usuario <span class="usuario-placeholder"></span>? </br> Esta acción <b>no puede deshacerse</b>.</p>
+                </div>
+                <div class="modal-footer">
+                    <form method="POST" id="inhabilitarB">
+                        <input type="hidden" name="idUOrganismo" id="id-placeholder"  value="" />
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-danger" id="remove-item">Inhabilitar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="panel-heading">
+        <i class="material-icons">menu</i>
+        Acciones
+    </div>
+    <div class="list-group">
+        <a class="list-group-item" href="{{ path('oficina_edit', { 'id': oficina.id }) }}">
+            <i class="material-icons md-green">edit</i>
+            Editar Datos
+        </a>
+        <a class="list-group-item" href="{{ path('usuario_organismo', { 'id': oficina.id }) }}">
+            <i class="material-icons text-primary">account_circle</i>
+            Usuarios
+        </a>
+    </div>
+
+    {# Modal para la creacion de nuevo domicilio: #}
+    <div class="modal fade" id="new-Domicilio" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Nuevo domicilio</h4>
+                </div>
+                <div class="modal-body">
+                    {{ form_start(domicilioForm, {'attr': {'class': 'col-xs-12 progress-form'}}) }}
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-6">{{ form_row(domicilioForm.calleNumero.calle) }}</div>
+                        <div class="col-xs-12 col-sm-6">{{ form_row(domicilioForm.calleNumero.numero) }}</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-6">{{ form_row(domicilioForm.pisoDepto.piso) }}</div>
+                        <div class="col-xs-12 col-sm-6">{{ form_row(domicilioForm.pisoDepto.depto) }}</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-4">{{ form_row(domicilioForm.manzanaLoteMono.manzana) }}</div>
+                        <div class="col-xs-12 col-sm-4">{{ form_row(domicilioForm.manzanaLoteMono.lote) }}</div>
+                        <div class="col-xs-12 col-sm-4">{{ form_row(domicilioForm.manzanaLoteMono.monoblock) }}</div>
+                    </div>
+                    {{ form_row(domicilioForm.Provincia) }}
+                    {{ form_row(domicilioForm.Departamento) }}
+                    {{ form_row(domicilioForm.Localidad) }}
+                    <input type="hidden" name="persona" value="0" />
+                    <div class="text-center" style="margin-top: 12px;">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                        <input type="submit" value="Agregar" class="btn btn-success" id="add-address" />
+                    </div>
+                    {{ form_widget(domicilioForm._token) }}
+                    {{ form_end(domicilioForm, {'render_rest': false}) }}
+                </div>
+                <div class="modal-footer">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {# Modal para la edicion de domicilio: #}
+    <div class="modal fade" id="edit-Domicilio" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Editar domicilio</h4>
+                </div>
+                <div class="modal-body">
+                    {{ form_start(editDomicilioForm, {'attr': {'class': 'col-xs-12 progress-form'}}) }}
+                    {{ form_widget(editDomicilioForm.id) }}
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-6">{{ form_row(editDomicilioForm.calleNumero.calle) }}</div>
+                        <div class="col-xs-12 col-sm-6">{{ form_row(editDomicilioForm.calleNumero.numero) }}</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-6">{{ form_row(editDomicilioForm.pisoDepto.piso) }}</div>
+                        <div class="col-xs-12 col-sm-6">{{ form_row(editDomicilioForm.pisoDepto.depto) }}</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-4">{{ form_row(editDomicilioForm.manzanaLoteMono.manzana) }}</div>
+                        <div class="col-xs-12 col-sm-4">{{ form_row(editDomicilioForm.manzanaLoteMono.lote) }}</div>
+                        <div class="col-xs-12 col-sm-4">{{ form_row(editDomicilioForm.manzanaLoteMono.monoblock) }}</div>
+                    </div>
+                    {{ form_row(editDomicilioForm.Provincia) }}
+                    {{ form_row(editDomicilioForm.Departamento) }}
+                    {{ form_row(editDomicilioForm.Localidad) }}
+                    <!--<input type="hidden" name="persona" value="0" />-->
+                    <div class="text-center" style="margin-top: 12px;">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                        <input type="submit" value="Guardar cambios" class="btn btn-success" />
+                    </div>
+                    {{ form_widget(editDomicilioForm._token) }}
+                    {{ form_end(editDomicilioForm, {'render_rest': false}) }}
+                </div>
+                <div class="modal-footer">
+                </div>
+            </div>
+        </div>
+    </div>
+
+{# Modal para la edicion de entidad responsable: #}
+    <div class="modal fade" id="new-UsuarioResponsable" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Crear usuario responsable</h4>
+                </div>
+                <div class="modal-body">
+                    {{ form_start(usuarioResponsableForm, {'attr': {'class': 'col-xs-12 progress-form'}}) }}
+                   
+                     <div class="row">
+                        <div class="col-xs-12">{{ form_row(usuarioResponsableForm.idCiudadanaBuscar) }}</div>
+                    </div>
+                    <div id="existe" hidden="true">
+                            <fieldset class="disable">
+                                <div class="row" >
+                                    <div class="col-lg-12">
+                                        {{ form_row(usuarioResponsableForm.idNombre, {disabled: true}) }}<p></p>
+                                        {{ form_row(usuarioResponsableForm.idMail, {disabled: true}) }}<p></p>
+                                        {{ form_row(usuarioResponsableForm.idDn, {disabled: true}) }}<p></p>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div> 
+                     <fieldset class="disable">
+                        <legend>Usuario</legend>
+                    {{ form_row(usuarioResponsableForm.username, {disabled: true}) }}
+                    {{ form_row(usuarioResponsableForm.rol, {disabled: true}) }}
+                    {{ form_row(usuarioResponsableForm.fechaDesde, {disabled: true}) }}
+                    {# {{ form_row(usuarioResponsableForm.fechaHasta) }} #}
+                    {{ form_row(usuarioResponsableForm.correo, {disabled: true}) }}
+                    {{ form_row(usuarioResponsableForm.uid, {disabled: true}) }}
+                    </fieldset>
+              
+                    <input type="hidden" name="tipo" value="oficina" />
+                    <div class="text-center" style="margin-top: 12px;">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                        <input type="submit" value="Guardar" class="btn btn-success" />
+{#                        <input type="submit" value="Guardar" class="btn btn-success" />#}
+                    </div>
+                    {{ form_widget(usuarioResponsableForm._token) }}
+                    {{ form_end(usuarioResponsableForm, {'render_rest': false}) }}
+                </div>
+                <div class="modal-footer">
+                </div>
+            </div>
+        </div>
+    </div>
+    {# Modal para la edicion de entidad responsable: #}
+    <div class="modal fade" id="edit-UsuarioResponsable" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Editar usuario responsable</h4>
+                </div>
+                <div class="modal-body">
+                    {{ form_start(editUsuarioResponsableForm, {'attr': {'class': 'col-xs-12 progress-form'}}) }}
+                    <div class="col-xs-12 col-md-6"></div>
+{#                        <label>Nombre de usuario:</label><span id="placeholder-username"></span></div>#}
+                        {{ form_row(editUsuarioResponsableForm.username, {disabled: true}) }}
+                        {{ form_row(editUsuarioResponsableForm.rol) }}
+                        {{ form_row(editUsuarioResponsableForm.fechaDesde) }}
+                        {# {{ form_row(editUsuarioResponsableForm.fechaHasta) }} #}
+                        {{ form_row(editUsuarioResponsableForm.correo) }}
+                        {{ form_row(editUsuarioResponsableForm.uid) }}
+                    
+{#                        <input type="hidden" name="tipo" value="oficina" />#}
+                    
+                    <div class="text-center" style="margin-top: 12px;">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                        <input type="submit" value="Guardar cambios" class="btn btn-success" />
+                    </div>
+                    {{ form_widget(editUsuarioResponsableForm._token) }}
+                    {{ form_end(editUsuarioResponsableForm, {'render_rest': false}) }}
+                </div>
+                <div class="modal-footer">
+                </div>
+            </div>
+        </div>
+    </div>
+                    
+                    
+{% endblock actions_panel %}
+
+{% block customjavascripts %}
+    <script>
+        {{ section_title_js() }}
+            
+        $(document).ready(function() {
+            var topYear = new Date().getFullYear() + 1;
+        {% image '@SiafcaIntranetBundle/Resources/public/nueva_base/images/ic_event_black_24dp_2x.png' %}
+                    $(".date-format").datepicker
+                        ({
+                            yearRange: (topYear - 120) + ":" + topYear,
+                            minDate: "-150Y",
+                            maxDate: "+0Y +0m +0d",
+                            buttonImage: "{{ asset_url }}",
+    {#  
+        LINK : https://stackoverflow.com/questions/29887850/jquery-ui-datepicker-month-year-dropdown-is-not-working-in-popup-in-latest-firef
+        Se agrego el metodo beforeShow para que se pueda seleccionar mes y anio (anteriormente no permitia seleccionarlo)
+        La propiedad off desactiva un evento, en este caso que el foco este solamente en la modal
+        LINK: https://github.com/sweetalert2/sweetalert2/issues/374
+    #}
+                            beforeShow: function() 
+                                {
+                                    $(document).off('focusin.bs.modal');
+                                }
+                        });
+        {% endimage %}
+            
+
+
+            function domChange(Loc,Dep,Pro){
+                $('#edit-Domicilio [id$=Provincia]').val(Pro);
+                removeElementsButFirst(new Array('#edit-Domicilio [id$=Localidad]', '#edit-Domicilio [id$=Departamento]'));
+                searchElements2('{{ path('departamento_ajax') }}', '#edit-Domicilio [id$=Departamento]', Pro, 'provincia',Dep);
+                        
+                removeElementsButFirst(new Array('#edit-Domicilio [id$=Localidad]'));
+                searchElements2('{{ path('localidad_ajax') }}', '#edit-Domicilio [id$=Localidad]',Dep,'departamento',Loc);    
+            }
+
+            $('#validar-confirm').on('show.bs.modal', function (event) {
+                        var $relatedTarget = $(event.relatedTarget);
+                            $(this).find('#id-placeholder').val($relatedTarget.parent('li').data('id'));
+                    });
+
+            $('#validar').submit(function(e) {
+                        e.preventDefault();
+                        var $modal = $(this).closest('.modal'),
+                            url = '{{ path('usuario_organismo.validar') }}';
+
+                        $.ajax(url, { {# Ajax preferiblemente al controlador de la propia entidad #}
+                            'data': { 'id': $(this).find('#id-placeholder').val() }, // To discriminate course of action in backend
+                            'dataType': 'JSON',
+                            'method': 'POST',
+                            'success': function(response) {
+                                if (response.success) {
+                                    $('#validar-confirm').modal('hide');
+                                var $message = $('<div class="flash flash-success alert alert-success alert-dismissible" role="alert">'+
+                                '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>'+
+                                'Usuario validado correctamente'+'</div>');
+                                var $newRow = $('<li class="list-group-item" data-id="'+response.usuario.id+'">'+
+                                        '<a href="#" title="Inhabilitar" data-toggle="modal" data-target="#inhabilitarH-confirm">'+
+                                        '<i class="material-icons md-red">block</i></a> '+
+                                        '<a href="#" title="Bloquear" data-toggle="modal" data-target="#bloquear-confirm">'+
+                                        '<i class="material-icons md-red">lock</i></a> '+
+                                        '<a href="#" title="Editar" data-toggle="modal" data-target="#edit-UsuarioResponsable">'+
+                                        '<i class="material-icons md-green">create</i></a>'+
+                                        '<span><a href="\{\{path(\'usuario_organismo.show\', {\'id\':'+response.usuario.id+'}) }}">'+response.usuario.usuario+'</a></span></li>');
+
+                                $('ul[data-type=UsuarioOrganismo] li[data-id='+response.usuario.id+']').replaceWith($newRow);
+                                //$('ul[data-type=UsuarioOrganismo]').append($newRow);
+                                }else{
+                                    var $message = $('<div class="flash flash-error alert alert-error alert-dismissible" role="alert">'+
+                                '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>'+
+                                'No se pudo validar el usuario. Intente más tarde.'+
+                            '</div>');
+
+                                }
+                                $('body').append($message);
+                                {# La animacion del mesaje flash dura 5seg #}
+                                setTimeout(function() { $message.remove(); }, 6000);
+                            },
+                            'error': function() {
+                                $('#validar-confirm').modal('hide');
+                                alert('Error al validar, intente más tarde');
+                            }
+                        });
+                    });
+            $('#bloquear-confirm').on('show.bs.modal', function (event) {
+                        var $relatedTarget = $(event.relatedTarget);
+                            $(this).find('#id-placeholder').val($relatedTarget.parent('li').data('id'));
+                    });
+
+            $('#bloquear').submit(function(e) {
+                        e.preventDefault();
+                        var $modal = $(this).closest('.modal'),
+                            url = '{{ path('usuario_organismo.bloquear') }}';
+
+                        $.ajax(url, { {# Ajax preferiblemente al controlador de la propia entidad #}
+                            'data': { 'id': $(this).find('#id-placeholder').val() }, // To discriminate course of action in backend
+                            'dataType': 'JSON',
+                            'method': 'POST',
+                            'success': function(response) {
+                                if (response.success) {
+                                    $('#bloquear-confirm').modal('hide');
+                                var $message = $('<div class="flash flash-success alert alert-success alert-dismissible" role="alert">'+
+                                '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>'+
+                                'Usuario bloqueado correctamente'+'</div>');
+                                var $newRow = $('<li class="list-group-item" data-id="'+response.usuario.id+'">'+
+                                        '<a href="#" title="Inhabilitar" data-toggle="modal" data-target="#inhabilitarB-confirm">'+
+                                        '<i class="material-icons md-red">block</i></a> '+
+                                        '<a href="#" title="Desbloquear" data-toggle="modal" data-target="#desbloquear-confirm">'+
+                                        '<i class="material-icons md-green">lock_open</i></a> '+
+                                        '<span><a href="\{\{path(\'usuario_organismo.show\', {\'id\':'+response.usuario.id+'}) }}">'+response.usuario.usuario+'</a></span></li>');
+
+                                $('ul[data-type=UsuarioOrganismo] li[data-id='+response.usuario.id+']').replaceWith($newRow);
+                                //$('ul[data-type=UsuarioOrganismo]').append($newRow);
+                                }else{
+                                    var $message = $('<div class="flash flash-error alert alert-error alert-dismissible" role="alert">'+
+                                '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>'+
+                                'No se pudo bloquear el usuario. Intente más tarde.'+
+                            '</div>');
+                                }
+                                $('body').append($message);
+                                {# La animacion del mesaje flash dura 5seg #}
+                                setTimeout(function() { $message.remove(); }, 6000);
+                            },
+                            'error': function() {
+                                $('#bloquear-confirm').modal('hide');
+                                alert('Error al bloquear, intente más tarde');
+                            }
+                        });
+                    });
+
+            $('#desbloquear-confirm').on('show.bs.modal', function (event) {
+                        var $relatedTarget = $(event.relatedTarget);
+                            $(this).find('#id-placeholder').val($relatedTarget.parent('li').data('id'));
+                    });
+
+            $('#desbloquear').submit(function(e) {
+                        e.preventDefault();
+                        var $modal = $(this).closest('.modal'),
+                            url = '{{ path('usuario_organismo.desbloquear') }}';
+
+                        $.ajax(url, { {# Ajax preferiblemente al controlador de la propia entidad #}
+                            'data': { 'id': $(this).find('#id-placeholder').val() }, // To discriminate course of action in backend
+                            'dataType': 'JSON',
+                            'method': 'POST',
+                            'success': function(response) {
+                                if (response.success) {
+                                    $('#desbloquear-confirm').modal('hide');
+                                var $message = $('<div class="flash flash-success alert alert-success alert-dismissible" role="alert">'+
+                                '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>'+
+                                'Usuario desbloqueado correctamente'+'</div>');
+                                var $newRow = $('<li class="list-group-item" data-id="'+response.usuario.id+'">'+
+                                        '<a href="#" title="Inhabilitar" data-toggle="modal" data-target="#inhabilitarH-confirm">'+
+                                        '<i class="material-icons md-red">block</i></a> '+
+                                        '<a href="#" title="Bloquear" data-toggle="modal" data-target="#bloquear-confirm">'+
+                                        '<i class="material-icons md-red">lock</i></a> '+
+                                        '<a href="#" title="Editar" data-toggle="modal" data-target="#edit-UsuarioResponsable">'+
+                                        '<i class="material-icons md-green">create</i></a>'+
+                                        '<span><a href="\{\{path(\'usuario_organismo.show\', {\'id\':'+response.usuario.id+'}) }}">'+response.usuario.usuario+'</a></span></li>');
+
+                                $('ul[data-type=UsuarioOrganismo] li[data-id='+response.usuario.id+']').replaceWith($newRow);
+                                //$('ul[data-type=UsuarioOrganismo]').append($newRow);
+                                }else{
+                                    var $message = $('<div class="flash flash-error alert alert-error alert-dismissible" role="alert">'+
+                                '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>'+
+                                'No se pudo desbloquear el usuario. Intente más tarde.'+
+                            '</div>');
+                                }
+                                $('body').append($message);
+                                {# La animacion del mesaje flash dura 5seg #}
+                                setTimeout(function() { $message.remove(); }, 6000);
+                            },
+                            'error': function() {
+                                $('#desbloquear-confirm').modal('hide');
+                                alert('Error al desbloquear, intente más tarde');
+                            }
+                        });
+                    });
+
+            $('#inhabilitarB-confirm').on('show.bs.modal', function (event) {
+                        var $relatedTarget = $(event.relatedTarget);
+                            $(this).find('#id-placeholder').val($relatedTarget.parent('li').data('id'));
+                    });
+
+            $('#inhabilitarB').submit(function(e) {
+                        e.preventDefault();
+                        var $modal = $(this).closest('.modal'),
+                            url = '{{ path('usuario_organismo.inhabilitarB') }}';
+
+                        $.ajax(url, { {# Ajax preferiblemente al controlador de la propia entidad #}
+                            'data': { 'id': $(this).find('#id-placeholder').val() }, // To discriminate course of action in backend
+                            'dataType': 'JSON',
+                            'method': 'POST',
+                            'success': function(response) {
+                                if (response.success) {
+                                    $('#inhabilitarB-confirm').modal('hide');
+                                var $message = $('<div class="flash flash-success alert alert-success alert-dismissible" role="alert">'+
+                                '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>'+
+                                'Usuario inhabilitado correctamente'+'</div>');
+                                var $newRow = $('<li class="list-group-item" data-id="'+response.usuario.id+'">'+
+                                            '<span><a href="\{\{path(\'usuario_organismo.show\', {\'id\':'+response.usuario.id+'}) }}">'+response.usuario.usuario+'</a></span></li>');
+
+                                $('ul[data-type=UsuarioOrganismo] li[data-id='+response.usuario.id+']').replaceWith($newRow);
+                                //$('ul[data-type=UsuarioOrganismo]').append($newRow);
+                                }else{
+                                    var $message = $('<div class="flash flash-error alert alert-error alert-dismissible" role="alert">'+
+                                '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>'+
+                                'No se pudo inhabilitar el usuario. Intente más tarde.'+
+                            '</div>');
+                                }
+                                $('body').append($message);
+                                {# La animacion del mesaje flash dura 5seg #}
+                                setTimeout(function() { $message.remove(); }, 6000);
+                            },
+                            'error': function() {
+                                $('#inhabilitarB-confirm').modal('hide');
+                                alert('Error al inhabilitar, intente más tarde');
+                            }
+                        });
+                    });
+
+            $('#inhabilitarH-confirm').on('show.bs.modal', function (event) {
+                        var $relatedTarget = $(event.relatedTarget);
+                            $(this).find('#id-placeholder').val($relatedTarget.parent('li').data('id'));
+                    });
+
+            $('#inhabilitarH').submit(function(e) {
+                        e.preventDefault();
+                        var $modal = $(this).closest('.modal'),
+                            url = '{{ path('usuario_organismo.inhabilitarH') }}';
+
+                        $.ajax(url, { {# Ajax preferiblemente al controlador de la propia entidad #}
+                            'data': { 'id': $(this).find('#id-placeholder').val() }, // To discriminate course of action in backend
+                            'dataType': 'JSON',
+                            'method': 'POST',
+                            'success': function(response) {
+                                if (response.success) {
+                                    $('#inhabilitarH-confirm').modal('hide');
+                                    var $message = $('<div class="flash flash-success alert alert-success alert-dismissible" role="alert">'+
+                                '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>'+
+                                'Usuario inhabilitado correctamente'+'</div>');
+                                    var $newRow = $('<li class="list-group-item" data-id="'+response.usuario.id+'">'+
+                                            '<span><a href="\{\{path(\'usuario_organismo.show\', {\'id\':'+response.usuario.id+'}) }}">'+response.usuario.usuario+'</a></span></li>');
+
+                                $('ul[data-type=UsuarioOrganismo] li[data-id='+response.usuario.id+']').replaceWith($newRow);
+                                //$('ul[data-type=UsuarioOrganismo]').append($newRow);
+
+
+
+                                }else{
+                                    var $message = $('<div class="flash flash-error alert alert-error alert-dismissible" role="alert">'+
+                                '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>'+
+                                'No se pudo inhabilitar el usuario. Intente más tarde.'+
+                            '</div>');
+                                }
+
+                                $('body').append($message);
+                        {# La animacion del mesaje flash dura 5seg #}
+                        setTimeout(function() { $message.remove(); }, 6000);
+
+                            },
+                            'error': function() {
+                                $('#inhabilitarH-confirm').modal('hide');
+                                alert('Error al inhabilitar, intente más tarde');
+
+
+
+
+                            }
+                        });
+                    });
+                    
+{#     Busco el ID Ciudadana por ajax, llama al controller de organismo y valida el id por el cas#}
+$('#usuario_organismo_idCiudadanaBuscar').on('input change', function (e) {
+                    var valueChanged = false;
+                    
+                    if (e.type === 'propertychange') {
+                        valueChanged = e.originalEvent.propertyName === 'value';
+                    } else {
+                        valueChanged = true;
+                    }
+
+                    if (valueChanged) {
+                        var $this = $(this),
+                                cuil = $this.val();
+        {# Verificar existencia de persona si el cuil esta completo #}
+                        if (cuil.length === 11) {
+                            $.ajax('{{ path('idCiudadana_organismo_ajax') }}', {
+                                'data': '&cuil=' + cuil,
+                                'dataType': 'JSON',
+                                'method': 'GET',
+                                'success': function (response) {
+                                   
+                            var $usuarioResp = $this.closest('form').find("fieldset [id^='usuario']");
+                                if (response.resp['valido'] === 'S') {
+                                        $usuarioResp.removeAttr('disabled');
+                                        $usuarioResp.val('').trigger('change');
+                                        
+                                        $('#existe').show(600);
+                                        $('#usuario_organismo_idNombre').val(response.resp['nombre'][0]);
+                                        $('#usuario_organismo_idMail').val(response.resp['mail'][0]); 
+                                        $('#usuario_organismo_idDn').val(response.resp['dn']);
+                                  
+                                        $('#usuario_organismo_username').val(response.resp['cuil'][0]);
+                                      
+                                        $('#usuario_organismo_idNombre').attr('disabled','disabled');
+                                        $('#usuario_organismo_idMail').attr('disabled','disabled');
+                                        $('#usuario_organismo_idDn').attr('disabled','disabled');
+                                        $('#usuario_organismo_username').attr('disabled','disabled');
+                                        
+                                        var $message = $('<div class="flash flash-info alert alert-info alert-dismissible" role="alert">' +
+                                                '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
+                                                'La persona existe, complete los demas datos del usuario manualmente' +
+                                                '</div>');
+                                    }
+                                     else{
+					 $('#new-UsuarioResponsable').modal('hide');
+                                      	var $message = $('<div class="flash flash-success alert alert-success alert-dismissible" role="alert">' +
+                                                '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
+                                                'Persona no encontrada' +
+                                                '</div>');
+                                    }
+                                    $('body').append($message);
+        {# La animacion del mesaje flash dura 5seg #}
+                                    setTimeout(function () {
+                                        $message.remove();
+                                    }, 6000);
+                                },
+                                'error': function () {
+                                    alert('No se pudo realizar la búsqueda');
+                                }
+                            });
+                        }
+                    }
+                });
+
+                    
+ {# Al enviar datos de direccion al backend: #}
+                    $('#new-UsuarioResponsable form').on('submit', function (e) {
+                        e.preventDefault();
+                        var $disabled = $(this).find('input:disabled, select:disabled'),
+                            $form = $(this);
+                        $disabled.removeAttr('disabled');
+                  
+                        $.ajax($form.attr('action'), {
+                            'data': $form.serialize(),
+                            'dataType': 'JSON',
+                            'method': 'POST',
+                            'success': function (response) {
+                                $('#new-UsuarioResponsable form .form-group.has-error').find('span.help-block').remove();
+                                $('#new-UsuarioResponsable form .form-group.has-error').removeClass('has-error');
+                                if (response.success) {
+                                    $disabled.removeAttr('disabled');
+                                    $('#new-UsuarioResponsable').modal('hide');
+                                    var $newRow = $('<li class="list-group-item" data-id="'+ response.usuario.id +'">'+
+                                            '<a href="#" title="Validar" data-toggle="modal" data-target="#validar-confirm">'+
+                                            '<i class="material-icons md-green">done</i></a><span>'+
+                                            '<a href="#" title="Editar" data-toggle="modal" data-target="#edit-UsuarioResponsable">'+
+                                            '<i class="material-icons md-green">create</i></a>'+
+                                            '<a href="\{\{path(\'usuario_organismo.show\', {\'id\':' + response.usuario.id + '}) }}"> '
+                                            + response.usuario.username + '</a></span></li>');
+
+                                    $('ul[data-type=UsuarioOrganismo] li.empty-data').hide(300);
+                                    window.setTimeout(function () {
+                                        $('ul[data-type=UsuarioOrganismo] li:last').before($newRow);
+                                        $newRow.show(300);
+                                    }, 300);
+                                                    var $message = $('<div class="flash flash-success alert alert-success alert-dismissible" role="alert">' +
+                                                            '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
+                                                            'Usuario responsable dado de alta correctamente' +
+                                                            '</div>');
+                                                } else {
+                                                    if (response.errors) {
+                                                        forms.displayFormErrors(response.errors, $('#new-UsuarioResponsable form'));
+                                                    }
+                                                    var $message = $('<div class="flash flash-error alert alert-danger alert-dismissible" role="alert">' +
+                                                            '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
+                                                            response.msg +
+                                                            '</div>');
+                                                }
+                                                $('body').append($message);
+        {# La animacion del mesaje flash dura 5seg #}
+                                            setTimeout(function () {
+                                                $message.remove();
+                                            }, 6000);
+                                        },
+                                        'error': function () {
+                                            $('#new-UsuarioResponsable').modal('hide');
+                                            alert('Error al dar de alta el usuario responsable.');
+                                        }
+                                    });
+                                });
+
+
+                                $('#edit-UsuarioResponsable form').on('submit', function (e) {
+                                    e.preventDefault();
+                                    var $form = $(this);
+                                    $.ajax($form.attr('action'), {
+                                        'data': $form.serialize(),
+                                        'dataType': 'JSON',
+                                        'method': 'POST',
+                                        'success': function (response) {
+                                            $('#edit-UsuarioResponsable form .form-group.has-error').find('span.help-block').remove();
+                                            $('#edot-UsuarioResponsable form .form-group.has-error').removeClass('has-error');
+                                            
+                                            if (response.success) {
+                                                $('#edit-UsuarioResponsable').modal('hide');
+                                                var $message = $('<div class="flash flash-success alert alert-success alert-dismissible" role="alert">'+
+                                                '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>'+
+                                                'Usuario editado correctamente'+'</div>');
+                                                var $newRow = $('<li class="list-group-item" data-id="'+response.usuario.id+'">'+
+                                                '<span><a href="\{\{path(\'usuario_organismo.show\', {\'id\':'+response.usuario.id+'}) }}">'+response.usuario.usuario+'</a></span></li>');
+
+                                            $('ul[data-type=UsuarioOrganismo] li[data-id='+response.usuario.id+']').replaceWith($newRow);
+                                //$('ul[data-type=UsuarioOrganismo]').append($newRow);
+                                            }else{
+                                                var $message = $('<div class="flash flash-error alert alert-error alert-dismissible" role="alert">'+
+                                                '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>'+
+                                                'No se pudo inhabilitar el usuario. Intente más tarde.'+
+                                                '</div>');
+                                            }
+                                            if (response.success) {
+                                                $('#edit-UsuarioResponsable').modal('hide');
+                                            }
+                                        },
+                                        'error': function () {
+                                        }
+
+                                    });
+                                });
+
+
+                                $('#edit-UsuarioResponsable').on('show.bs.modal', function (event) {
+                                    var modal = $(this),
+                                            usuarioRespId = $(event.relatedTarget).parent('li').data('id'),
+                                            url = '{{ path('usuario_organismo.queryAjax') }}';
+
+                                    $.ajax(url, {
+                                        'data': {'uid': usuarioRespId},
+                                        'dataType': 'JSON',
+                                        'method': 'POST',
+                                        'success': function (response) {
+                                            if (response.success) {
+
+                                                $('#edit-UsuarioResponsable [id$=username]').text(response['username']);
+                                                $('#edit-UsuarioResponsable [id$=rol]').val(response['rol']);
+                                                $('#edit-UsuarioResponsable [id$=fechaDesde]').val(response['fechaDesde']);
+                                                //$('#edit-UsuarioResponsable [id$=fechaHasta]').val(response['fechaHasta']);
+                                                $('#edit-UsuarioResponsable [id$=correo]').val(response['correo']);
+                                                $('#edit-UsuarioResponsable [id$=uid]').val(response['uid']);
+
+                                            }
+                                        },
+                                        'error': function () {
+                                            $('#edit-UsuarioResponsable').modal('hide');
+                                            alert('No se pudo consultar información del usuario responsable.');
+                                        }});
+                                });
+
+            $('#edit-Domicilio [id$=Departamento]').change(function() {
+                removeElementsButFirst(new Array('#edit-Domicilio [id$=Localidad]'));
+                searchElements('{{ path('localidad_ajax') }}', '#edit-Domicilio [id$=Localidad]', '#edit-Domicilio [id$=Departamento]', 'departamento');
+                $('#edit-Domicilio [id$=Localidad] option.select-placeholder').prop('selected', 'selected');
+                $('#edit-Domicilio [id$=Localidad]').change();
+            });
+            
+            $('#edit-Domicilio [id$=Provincia]').change(function() {
+                removeElementsButFirst(new Array('#edit-Domicilio [id$=Localidad]', '#edit-Domicilio [id$=Departamento]'));
+                searchElements('{{ path('departamento_ajax') }}', '#edit-Domicilio [id$=Departamento]', '#edit-Domicilio [id$=Provincia]', 'provincia');
+                $('#edit-Domicilio [id$=Localidad] option.select-placeholder, #edit-Domicilio [id$=Departamento] option.select-placeholder').prop('selected', 'selected');
+                $('#edit-Domicilio [id$=Localidad], #edit-Domicilio [id$=Departamento]').change();
+            });
+            
+            $('#new-Domicilio [id$=Departamento]').change(function() {
+                removeElementsButFirst(new Array('#domicilio_Localidad'));
+                searchElements('{{ path('localidad_ajax') }}', '#new-Domicilio [id$=Localidad]', '#new-Domicilio [id$=Departamento]', 'departamento');
+                $('#new-Domicilio [id$=Localidad] option.select-placeholder').prop('selected', 'selected');
+                $('#new-Domicilio [id$=Localidad]').change();
+            });
+            
+            $('#new-Domicilio [id$=Provincia]').change(function() {
+                removeElementsButFirst(new Array('#domicilio_Localidad', '#new-Domicilio [id$=Departamento]'));
+                searchElements('{{ path('departamento_ajax') }}', '#new-Domicilio [id$=Departamento]', '#new-Domicilio [id$=Provincia]', 'provincia');
+                $('#new-Domicilio [id$=Localidad] option.select-placeholder, #new-Domicilio [id$=Departamento] option.select-placeholder').prop('selected', 'selected');
+                $('#new-Domicilio [id$=Localidad], #new-Domicilio [id$=Departamento]').change();
+            });
+            
+
+            {# Al esconder el modal de direccion: #}
+            $('#new-Domicilio').on('hidden.bs.modal', function() {
+                $('#new-Domicilio form')[0].reset();
+                $('#new-Domicilio form select').change();
+            });
+            {# Al enviar datos de direccion al backend: #}
+            $('#new-Domicilio form').on('submit', function(e) {
+                e.preventDefault();
+                $.ajax($(this).attr('action'), {
+                    'data': $(this).serialize()+'&ajax=1',
+                    'dataType': 'JSON',
+                    'method': 'POST',
+                    'success': function(response) {
+                        $('#new-Domicilio form .form-group.has-error').find('span.help-block').remove();
+                        $('#new-Domicilio form .form-group.has-error').removeClass('has-error');
+                        if (response.success) {
+                            $('#new-Domicilio').modal('hide');
+                            
+                            var $newRow = $('<li class="list-group-item" data-id="'+response.address.id+'" style="display=none;">'+
+                                                ((typeof $('ul[data-type=Domicilio]').data('action') !== 'undefined')? '<a href="#" title="Eliminar" data-toggle="modal" data-target="#remove-confirm"><i class="material-icons md-red">delete</i></span></a>' : '' )+
+                                                '<span>'+response.address.calle+' '+response.address.numero+' ('+response.address.localidad+' - '+response.address.codPostal+')'+
+                                                '</span>'+
+                                            '</li>');
+                            
+                            {# Oficina y organismos solo pueden tener una direccion de cada tipo #}
+                            {# Por lo que la nueva direccion reemplaza las existentes #}
+                            $('ul[data-type=Domicilio] li').hide(300);
+                            window.setTimeout(function() {
+                                $('ul[data-type=Domicilio] li:not(.empty-data)').remove();
+                                $('ul[data-type=Domicilio] li:last').before($newRow);
+                                $newRow.show(300);
+                            }, 300);
+                        } else {
+                            if (response.errors) { forms.displayFormErrors(response.errors, $('#new-Domicilio form')); }
+                            alert(response.msg);
+                        }
+                    },
+                    'error': function() {
+                        $('#new-Domicilio').modal('hide');
+                        alert('Error al dar de alta la dirección, intente más tarde');
+                    }
+                });
+            });
+            
+            $('#edit-Domicilio form').on('submit', function(e) {
+                e.preventDefault();
+                var $form = $(this);
+                $.ajax($form.attr('action'), {
+                    'data': $form.serialize()+'&ajax=1',
+                    'dataType': 'JSON',
+                    'method': 'POST',
+                    'success': function(response) {
+                        $('#edit-Domicilio form .form-group.has-error').find('span.help-block').remove();
+                        $('#edit-Domicilio form .form-group.has-error').removeClass('has-error');
+                        if (response.success) {
+                            $('#edit-Domicilio').modal('hide');
+
+                            var $message = $('<div class="flash flash-success alert alert-success alert-dismissible" role="alert">'+
+                                '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>'+
+                                'Datos modificados'+
+                            '</div>');
+
+                            $('ul[data-type=Domicilio] li[data-id='+$form.find('#domicilio_id').val()+'] span').text(response.domicilio.text);
+                        } else {
+                            if (response.errors) { forms.displayFormErrors(response.errors, $('#edit-Domicilio form')); }
+                            var $message = $('<div class="flash flash-error alert alert-danger alert-dismissible" role="alert">'+
+                                '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>'+
+                                response.msg+
+                            '</div>');
+                        }
+                        $('body').append($message);
+                        {# La animacion del mesaje flash dura 5seg #}
+                        setTimeout(function() { $message.remove(); }, 6000);
+                    },
+                    'error': function() {
+                        $('#edit-Domicilio').modal('hide');
+                        alert('Error al editar el domicilio.');
+                    }
+                });
+            });
+            {# Al mostrar popup de edicion de Domicilio: se consultan sus datos #}
+            $('#edit-Domicilio').on('show.bs.modal', function (event) {
+                var modal = $(this),
+                    domicilioId = $(event.relatedTarget).parent('li').data('id'),
+                    url = '{{ path('domicilio_query_ajax', {id: '-domicilioId-'}) }}'.replace('-domicilioId-', domicilioId);
+
+                $.ajax(url, {
+                    'dataType': 'JSON',
+                    'method': 'POST',
+                    'success': function(response) {
+                        {# Mostrar valores y llenar campos #}
+                        
+                        var Loc = response['Localidad'];
+                        var Dep = response['Departamento'];
+                        var Pro = response['Provincia'];
+                        
+                        
+                        Object.keys(response).map(function(key) {
+                            $('#edit-Domicilio [id$='+key+']')
+                                .val(response[key]);
+                        });
+                        
+                        
+                        domChange(Loc,Dep,Pro);
+                        
+                        Object.keys(response.calleNumero).map(function(key) {
+                            $('#edit-Domicilio [id$='+key+']')
+                                .val(response.calleNumero[key]);
+                        });
+                        Object.keys(response.pisoDepto).map(function(key) {
+                            $('#edit-Domicilio [id$='+key+']')
+                                .val(response.pisoDepto[key]);
+                        });
+                        Object.keys(response.manzanaLoteMono).map(function(key) {
+                            $('#edit-Domicilio [id$='+key+']')
+                                .val(response.manzanaLoteMono[key]);
+                        });
+                        
+                        
+                        
+                    },
+                    'error': function() {
+                        $('#edit-Domicilio').modal('hide');
+                        alert('No se pudo consultar información del domicilio.');
+                    }
+                });
+
+            });
+        });
+    </script>
+{% endblock %}

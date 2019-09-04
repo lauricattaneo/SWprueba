@@ -1,0 +1,86 @@
+<tr class="row-index">
+    <td class="grey-background">{{ organismos.getPaginationData.firstItemNumber + loop.index - 1 }}</td>
+    <td class="text-left">
+            {% if organismo.nombre|length > 20 %}
+                <span rel="tooltip" title="{{ organismo.nombre }}">{{ organismo.nombre|slice(0, 20) ~ '...' }} </span>
+            {% else %}
+                {{ organismo.nombre }}
+            {% endif %}
+    </td>
+    <td class="text-left">{{ organismo.codigo }}</td>
+    <td class="text-left">
+        <span class="label 
+        {% if organismo.tipoOrganismo.codigo == '0' %}
+            label-primary
+        {% elseif organismo.tipoOrganismo.codigo == '1' %}
+            label-info
+        {% elseif organismo.tipoOrganismo.codigo == '2' %}
+            label-grey
+        {% elseif organismo.tipoOrganismo.codigo == '4' %}
+            label-green
+        {% else %}
+            label-success
+        {% endif %}
+        ">
+            {{ organismo.tipoOrganismo }}
+        </span>
+    </td>
+    
+    {% if organismo.domicilio is not null %}
+        <td class="text-left">{{ organismo.domicilio.localidad }}</td>
+    {% else %}
+        <td></td>
+    {% endif %}
+    
+    <td>{% if organismo.cuit is not empty %}{{ organismo.cuit|slice(0, 2) ~ '-' ~ organismo.cuit|slice(2, 8) ~ '-' ~ organismo.cuit|slice(10, 1) }}{% endif %}</td>
+    <td>
+         <span class="label 
+        {% if organismo.estado.estado == '0' %}
+            label-info
+        {% elseif organismo.estado.estado == '1' %}
+            label-success
+        {% elseif organismo.estado.estado == '2' %}
+            label-warning
+         {% elseif organismo.estado.estado == '3' %}
+            label-danger
+        {% elseif organismo.estado.estado == '4' %}
+            label-primary
+        {% else %}
+            label-default
+        {% endif %}
+        ">
+            {{ organismo.estado }}
+        </span>
+    </td>
+    <td>
+
+        <div class="actions"  role="toolbar" aria-label="acciones-item">
+             <div>
+                <a class="btn btn-default btn-xs" href="{{ path('organismo_show', {'id': organismo.id}) }}">
+                    <i class="material-icons md-18 md-inherit">visibility</i>
+                    <span>Ver</span>
+                </a>
+            </div>
+            
+            <div>
+                <a class="btn btn-default btn-xs" href="{{ path('amparo_index', {'id': organismo.id}) }}">
+                    <i class="material-icons md-18 md-inherit">gavel</i>
+                    <span>Amparo</span>
+                </a>
+            </div>
+                    <div>
+                <a class="btn btn-default btn-xs" href="{{ path('liquidacion_index', {'organismo': organismo.id}) }}">
+                    <i class="material-icons md-18 md-inherit">assignment</i>
+                    <span>Liquidaciones</span>
+                </a>
+
+                    </div>
+                    <div>
+                <a class="btn btn-default btn-xs" title="Enviar e-mail" href="{{ path('contacto.index', {'id': organismo.id}) }}">
+                    <i class="material-icons md-18 md-inherit">contact_mail</i>
+                    <span>Contacto</span>
+                </a>
+                    </div>
+        </span>
+    </td>
+</tr>

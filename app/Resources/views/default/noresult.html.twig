@@ -1,0 +1,19 @@
+{% extends 'index_base2.html.twig' %}
+
+{% block sectiontitle %}
+    {{ titulo }}
+{% endblock %}
+
+{% block list_items %}
+    <li class="list-group-item">
+        <h4 class="list-group-item-heading">{{ noResultText }}</h4>
+    </li>
+{% endblock list_items %}
+
+{% block customjavascripts %}
+    <script>
+        $( document ).ready(function() {
+            $( '#barraBuscar' ).addClass('hidden');
+        });
+    </script>
+{% endblock %}

@@ -1,0 +1,157 @@
+{% extends "show.html.twig" %}
+{% from 'partials/section-title.html.twig' import js as section_title_js %}
+
+{% block section_title %}
+    {% embed "partials/section-title.html.twig" %}
+        {% block titulo %}<i class="material-icons md-inherit md-48">assignment</i>{{ liquidacion.NombreMes ~ '/' ~ liquidacion.anio ~ ' | Liquidación Nro.: ' ~ liquidacion.id ~ " | " ~ liquidacion.estado}}
+                    {% if ayuda is defined and ayuda != "" %}
+                <a href="#" data-toggle="modal"  data-target="#ayudaMessage"><i class="material-icons md-inherit md-48">help</i></a>
+            {% endif %}
+                 <div class="list-group">
+                    <a id="volver" href="{{path('liquidacion_index')}}" class="btn btn-primary pull-right" value="Volver">
+                        Volver</a>
+                </div>
+            {% endblock %}
+        {% block subtitulo %}{{ liquidacion.organismo }} ({{liquidacion.organismo.codigo}}){% endblock subtitulo %}
+    {% endembed %}
+{% endblock section_title %}
+
+{% block second_row %}
+    {{ include(':partials:dataPanel.html.twig', {
+        'entidad' : liquidacion
+    }) }}
+{% endblock second_row %}
+
+{% block third_row %}
+    {{ include(':liquidacion:resume.html.twig', {
+        'liquidacion' : liquidacion
+    }) }}
+    {#{% if liquidacion.informe is not null %}
+        {% if liquidacion.informe.cantidadAportantes < 100 %}
+            {{ include(':liquidacion:showDatos.html.twig', {
+                'liquidacion' : liquidacion
+            }) }}
+        {% endif %}
+    {% endif %}#}
+{% endblock third_row %}
+
+{% block actions_panel %}
+    <div class="panel-heading">
+        <i class="material-icons">menu</i>
+        Acciones
+    </div>
+    <div class="list-group">
+        {% if liquidacion.estado.estado == '08' %}
+            <a class="list-group-item trans" code="T10" href="#">
+                <i class="material-icons md-18 md-inherit">check</i>
+                        <span>Aceptar</span>
+            </a>
+              <a class="list-group-item trans" code="T20" href="#">
+                <i class="material-icons md-18 md-inherit">highlight_off</i>
+                        <span>Rechazar</span>
+            </a>
+                {%elseif liquidacion.estado.estado == '09'%}
+                 <a class="list-group-item trans" code="T11" href="#">
+                <i class="material-icons md-18 md-inherit">forward</i>
+                        <span>Exportar</span>
+                 </a>
+                {%elseif liquidacion.estado.estado == '10' %}
+                    <a class="list-group-item trans" code="T12" href="#">
+                        <i class="material-icons md-18 md-inherit">get_app</i>
+                        <span>Aplicar</span>
+                    </a>
+                    <a class="list-group-item trans" code="T26" href="#">
+                        <i class="material-icons md-18 md-inherit">get_app</i>
+                        <span>Rechazar</span>
+                    </a>
+                {% elseif liquidacion.estado.estado == '10' or liquidacion.estado.estado == '11' %}
+                    <a class="list-group-item" href="#" id="jubidat">
+                        <i class="material-icons md-18 md-inherit">get_app</i>
+                   <span>Descargar JUBI.DAT</span>
+               </a>
+                {%endif%}
+                {%if liquidacion.getinforme %}
+        <a class="list-group-item" href="{{path('liquidacion_informepdf',{id : liquidacion.id })}}" target="_blank">
+            <i class="material-icons text-default">assignment</i>
+            Ver Informe
+        </a>
+
+            {% endif %}
+            <a class="list-group-item" href="{{ path('organismo_show', {'id': liquidacion.organismo.id}) }}">
+                <i class="material-icons md-grey">home</i>
+                Ver organismo
+            </a>
+            <a class="list-group-item" href="{{ path('liquidacion_aportantes', {'liquidacionId' : liquidacion.id
+            }) }}">
+                <i class="material-icons md-grey">account_circle</i>
+                Ver aportantes
+            </a>
+
+    </div>
+{% endblock actions_panel %}
+
+{% block customjavascripts %}
+    <script>
+        {{ section_title_js() }}
+
+            $('#jubidat').click(function(e){
+                e.preventDefault();
+                var url = '{{path('liquidacion_download') }}';
+                $.ajax(url,{
+                'data' : { 'id': {{liquidacion.id}} },
+                'dataType' : 'JSON',
+                'method' : 'POST',
+                'success' : function(response){
+                                if(response.success){
+                                    window.open(window.location.href+"/../../../../"+response.file);
+                                }
+                            },
+                'error' :   function(response){
+
+                            }
+                });
+            });
+
+
+            $('.trans').click(function(e){
+                e.preventDefault();
+                var url = '{{path('liquidacion_trans')}}';
+                var trans = $(this).attr('code');
+                $.ajax(url, {
+                    'data' : { 'id':{{liquidacion.id}},'trans': trans},
+                    'dataType' : 'JSON',
+                    'method' : 'POST',
+                    'success' : function(response){
+
+                        if(response.success){
+                            if(trans === "T11"){
+                                console.log(response);
+                                window.open(window.location.href+"/../../../../"+response.file);
+
+
+                            }
+                            var $message = $('<div class="flash flash-success alert alert-success alert-dismissible" role="alert">'+
+                                '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>'+
+                                response.mensaje+'</div>');
+                        }else{
+                            var $message = $('<div class="flash flash-error alert alert-error alert-dismissible" role="alert">'+
+                                '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>'+
+                                response.mensaje+
+                            '</div>');
+                        }
+                        $('body').append($message);
+                        {# La animacion del mesaje flash dura 5seg #}
+                                if(trans !== 'T11'){
+                        setTimeout(function() { location.reload(); }, 3000);
+                        //location.reload();
+                                }
+
+                    },
+                    'error' : function(response){
+                    }
+                });
+
+            });
+
+    </script>
+{% endblock %}

@@ -1,0 +1,18 @@
+<tr class="row-index">
+    <td class="grey-background">{{ cargos.getPaginationData.firstItemNumber + loop.index - 1 }}</td>
+    <td class="text-left">{{ cargo.nombre }}</td>
+    <td class="text-left">{{ cargo.codigo }}</td>
+    <td class="text-left">{{ cargo.area }}</td>
+    <td class="text-left">{{ cargo.sectorPasivo }}</td>
+    <td>{{ cargo.subsidio }} %</td>
+    <td>
+        <div class="actions" role="toolbar" aria-label="acciones-item">
+            <div>
+        <a class="btn btn-default btn-xs" href="{{ path('cargo_show', {'id': cargo.id}) }}">
+            <i class="material-icons md-18 md-inherit">visibility</i>
+             <span>Ver</span>
+                </a>
+            </div>
+        </div>
+    </td>
+</tr>

@@ -1,0 +1,60 @@
+{% extends 'index.html.twig' %}
+{% form_theme searchForm 'form/form_input-group.html.twig' %}
+{% from 'partials/section-title.html.twig' import js as section_title_js %}
+
+{% block section_title %}
+    {% embed "partials/section-title.html.twig" %}
+        {% block titulo %}<i class="material-icons md-inherit md-48">bug_report</i>
+            Excepciones
+            {% if ayuda is defined and ayuda != "" %}
+                <a href="#" data-toggle="modal"  data-target="#ayudaMessage"><i class="material-icons md-inherit md-48">help</i></a>
+            {% endif %}
+        {% endblock %}
+        {% block subtitulo %}
+            {{ subtitulo }}
+        {% endblock %}
+        {% block extracontenttitle %}
+            {{ form_start(searchForm) }}
+            {{ form_widget(searchForm) }}
+            {{ form_rest(searchForm) }}
+            {{ form_end(searchForm) }}
+        {% endblock %}
+    {% endembed %}
+{% endblock section_title %}
+
+{% block thead %}
+    <th class="grey-background">#</th>
+    <th>{{ knp_pagination_sortable(excepciones, 'Id', 'ex.id', { Title: 'Ordenar por id' }) }}</th>
+    <th class="col-sm-1">{{ knp_pagination_sortable(excepciones, 'Fecha', 'ex.fecha', { Title: 'Ordenar por fecha' }) }}</th>
+    <th>{{ knp_pagination_sortable(excepciones, 'Código', 'ex.codigo', { Title: 'Ordenar por código' }) }}</th>
+    <th>Archivo (script)</th>
+    <th>Línea</th>
+    <th>{{ knp_pagination_sortable(excepciones, 'Mensaje', 'ex.mensaje', { Title: 'Ordenar por mensaje' }) }}</th>
+    <th>Usuario</th>
+    <th>{{ knp_pagination_sortable(excepciones, 'Ruta', 'ex.ruta', { Title: 'Ordenar por ruta' }) }}</th>
+    <th>Controlador</th>
+    <th>Parámetros</th>
+{% endblock thead %}
+
+{% block tbody %}
+    {% if excepciones is null %}
+        <tr>
+            <td colspan="8">No hay información en el log de excepciones.</td>
+        </tr>
+    {% else %}
+        {% for excepcion in excepciones %}
+            {{ include(':admin:rowExcepcion.html.twig', { 'excepcion' : excepcion }) }}
+        {% endfor %}
+    {% endif %}
+{% endblock tbody %}
+{% block pagination %}
+    <div class="navigation">
+        {{ knp_pagination_render(excepciones) }}
+    </div>
+{% endblock %}
+
+{% block customjavascripts %}
+    <script>
+        {{ section_title_js() }}
+    </script>
+{% endblock %}

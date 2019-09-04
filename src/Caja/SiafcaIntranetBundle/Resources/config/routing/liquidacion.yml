@@ -1,0 +1,74 @@
+liquidacion_index:
+    path:     /{organismo}
+    defaults: { _controller: "SiafcaIntranetBundle:Liquidacion:index", organismo: null }
+    methods:  [GET, POST]
+    requirements: { organismo: \d+}
+
+liquidacion_aportantes:
+    path:     /{liquidacionId}/aportantes
+    defaults: { _controller: "SiafcaIntranetBundle:Liquidacion:aportantes" }
+    methods:  [GET, POST]
+
+liquidacion_download:
+    path:     /download
+    defaults: { _controller: "SiafcaIntranetBundle:Liquidacion:downloadJubidat" }
+    methods:  POST
+
+liquidacion_show:
+    path:     /{id}/show
+    defaults: { _controller: "SiafcaIntranetBundle:Liquidacion:show" }
+    methods:  GET
+
+liquidacion_new:
+    path:     /new
+    defaults: { _controller: "SiafcaIntranetBundle:Liquidacion:new" }
+    methods:  [GET, POST]
+
+liquidacion_trans:
+    path:     /trans/
+    defaults: { _controller: "SiafcaIntranetBundle:Liquidacion:transicion" }
+    methods:  [GET, POST]
+
+liquidacion_informepdf:
+    path:     /{id}/informepdf
+    defaults: { _controller: "SiafcaIntranetBundle:Liquidacion:informePDF" }
+    methods:  [GET, POST]
+    requirements: { liId: \d+}
+
+liquidacion_edit:
+    path:     /{id}/edit
+    defaults: { _controller: "SiafcaIntranetBundle:Liquidacion:edit" }
+    methods:  [GET, POST]
+    requirements: { liId: \d+}
+
+liquidacion_delete:
+    path:     /{id}/delete
+    defaults: { _controller: "SiafcaIntranetBundle:Liquidacion:delete" }
+    requirements: { liId: \d+}
+    methods: DELETE
+
+liquidacion_native:
+    path: native/{liqId}
+    defaults: { _controller: "SiafcaIntranetBundle:Liquidacion:native" }
+    requirements: { liId: \d+}
+    methods: GET
+
+liquidacion_search:
+    path:     /filter
+    defaults: { _controller: "SiafcaIntranetBundle:Liquidacion:filter" }
+    methods:  [GET, POST]
+
+liquidacion_aportante_buscar_cuil:
+    path:    /buscarAportanteCuil/{idliq}/{cuil}/{mes}/{anio}
+    defaults: { _controller: "SiafcaIntranetBundle:Liquidacion:buscarAportanteCuil" }
+    methods:  [GET, POST]
+    
+liquidacion_aportante_buscar_apellido:
+    path:    /buscarAportanteApellido/{idliq}/{apellido}/{nombre}/{mes}/{anio}
+    defaults: { _controller: "SiafcaIntranetBundle:Liquidacion:buscarAportanteApellido" }
+    methods:  [GET, POST]
+    
+liquidacion_aportante_buscar_dni:
+    path:    /buscarAportanteDni/{idliq}/{dni}/{mes}/{anio}
+    defaults: { _controller: "SiafcaIntranetBundle:Liquidacion:buscarAportanteDni" }
+    methods:  [GET, POST]

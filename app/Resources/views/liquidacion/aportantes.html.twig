@@ -1,0 +1,263 @@
+{% extends 'index.html.twig' %}
+{#{% form_theme searchForm 'form/form_input-group.html.twig' %}#}
+{% from 'partials/section-title.html.twig' import js as section_title_js %}
+
+{% block section_title %}
+    {% embed "partials/section-title.html.twig" %}
+        {% block titulo %}
+            Aportantes Liquidación: {{idLiq}}
+            {% if ayuda is defined and ayuda != "" %}
+                    <a href="#" data-toggle="modal"  data-target="#ayudaMessage">
+                        <i class="material-icons md-inherit md-48">
+                            help
+                        </i>
+                    </a>
+            {% endif %}
+        {%endblock %}
+          
+        
+       {% block subtitulo %}
+           {% if (anio is defined and anio != "")
+                 and
+                 (mes is defined and mes != "")
+           %}
+                Período: {{mes}} de {{anio}}
+            {% endif %}
+       {% endblock %}
+       
+        {% block extracontenttitle %}
+            {% if bandera == true %}
+                <div class="list-group">
+                    <a id="buscar" 
+                       href="javascript:void(0);" 
+                       class="btn btn-primary pull-right" 
+                       type="submit" value="Buscar">
+                        Buscar
+                    </a>
+                </div>
+            {% else %}
+                <div class="list-group">
+                    <a class="btn btn-primary pull-right" 
+                       href="{{ 
+                                path('liquidacion_aportantes',
+                                {
+                                    'liquidacionId' : idLiq
+                                })
+                             }}" title="Volver al listado">Volver</a>
+                </div> 
+            {% endif %}
+        {% endblock %}
+    {% endembed %}
+
+{% endblock section_title %}
+
+{% block thead %}
+    <thead>
+        <tr>
+            <th>#</th>
+            <th class="text-left">{{ knp_pagination_sortable(aportantes, 'Aportante','p.apellidoPat', { Title: 'Ordenar por apellido' }) }}</th>
+            <th class="text-left">{{ knp_pagination_sortable(aportantes, 'C.U.I.L.','p.cuil', { Title: 'Ordenar por cuil' }) }}</th> 
+            <th class="text-left">Cargo</th>
+            <th>Conceptos</th>
+        </tr>
+    </thead>
+{% endblock thead %}
+{%block busqueda %}
+{% if bandera == true %}
+    <div class="row">
+        <div class="panel-body my-hide">
+            <div class="col-md-16 col-md-16">
+
+                <div class="panel panel-info" style = "background-color: #bdbdbd">
+                    <div class="panel-heading">Seleccione una opción de busqueda</div><p></p>
+
+                    {{ form_start(form, {'custom_options': {'avoid_required_message': true}})}}
+                    <p></p>
+                    <div class="col-lg-6">
+                        {{ form_row(form.busqueda) }}<p></p>
+                        <div id="condicion">
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <div id="ape">
+                                        {{ form_row(form.campoApellido) }}<p></p>
+                                        {{ form_row(form.campoNombre) }}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <div id="doc">
+                                        {{ form_row(form.campoDni) }}<p></p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <div id="cuil">
+                                        {{ form_row(form.campoCuil) }}<p></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="enviar">    
+                            <input type="submit" class="btn btn-primary" value="Enviar" /><p></p>
+                        </div> 
+                        {{ form_rest(form)}}
+                        {{ form_end(form) }}
+                    </div>  
+                </div>
+            </div>
+        </div> 
+    </div>
+{%endif%}
+{%endblock %}
+{% block tbody %}
+    <tbody class="table-body" style="background-color:#ccffff">
+        {% for item in aportantes %}
+            <tr>
+                <td class="grey-background">{{ aportantes.getPaginationData.firstItemNumber + loop.index - 1 }}</td>
+                <td class="text-left">{{ item.aportante.persona.getNombreCompleto() }}</td>
+                <td class="text-left">{{ item.aportante.CuilShow() }}</td>
+                <td class="text-left">{{ item.aportante.cargo }}</td>
+                <td>
+                    <a href="javascript:void(0)" data-toggle="collapse" data-target=
+                       {% if liqnumber is defined %}
+                           {{ "#conceptos#{ liqnumber ~ loop.index }" }}
+                       {% else %} 
+                           {{ "#conceptos#{ loop.index }" }}
+                       {% endif %} 
+                       aria-expanded="true" role="button" aria-controls="conceptos{{ loop.index }}">
+                        <i class="material-icons md-green" style="vertical-align: middle;">expand_more</i>
+                    </a>
+                </td>
+            </tr>
+            <tr class="collapse" id=
+                {% if liqnumber is defined %}
+                    {{ "conceptos#{ liqnumber ~ loop.index }" }}
+                {% else %}
+                    {{ "conceptos#{ loop.index }" }}
+                {% endif %}
+                >
+                <td colspan="5">
+                    <table class="table table-hover table-bordered">
+                        <thead class="white-thead">
+                            <tr>
+                                <th class="grey-background">#</th>
+                                <th>Concepto</th>
+                                <th>Importe</th>
+                            </tr>
+                        </thead>
+                        <tbody class="tbody-border">
+                            {% for conceptoItem in item.conceptosItem %}
+                                <tr>
+                                    <td class="grey-background"  >{{ loop.index }}</td>
+                                    <td class="concepto">{{ conceptoItem.concepto }}</td>
+                                    <td class="importe">{{ conceptoItem.importe }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<div class="list-group">
+    <a class="btn btn-primary pull-right" href="{{path('liquidacion_show', {'id' : idLiq})}}" title="Volver atras">Volver</a>
+</div> 
+{#{% if subtitulo != "Todos"%}
+    <div class="list-group">
+    <a class="btn btn-primary pull-right" href="{{ path('liquidacion_aportantes', { 'liquidacionId': idLiq } ) }}" title="Volver al listado">Volver</a>
+</div> 
+{% else %}
+    <div class="list-group">
+    <a class="btn btn-primary pull-right" href="{{ path('liquidacion_show', { 'id': idLiq } ) }}" title="Volver al listado">Cancelar</a>
+</div> 
+{%endif %}#}
+
+{% endblock tbody %}
+
+{% block pagination %}
+    <div class="navigation">
+        {{ knp_pagination_render(aportantes) }}
+    </div>
+{% endblock %}
+{% block customjavascripts %}
+<script>
+$( document ).ready(function() {
+
+        //elimino los - (si los hay)
+        $('#form_campoCuil').on('change',function(){
+            var cuilIngresado = $("#form_campoCuil").val();
+            var patron = /-/g;
+            $("#form_campoCuil").val(cuilIngresado.replace(patron,''));
+        });
+        //elimino los . (si los hay)
+        $('#form_campoDni').on('change',function(){
+            var dniIngresado = $("#form_campoDni").val();
+            var patron = /\./g;
+            $("#form_campoDni").val(dniIngresado.replace(patron,''));
+        });
+
+        //remuevo el atributo required 
+        //para que en la busqueda por apellido
+        //no sea necesario ingresar el nombre
+        $('#form_campoNombre').removeAttr('required');
+        
+        //si hay errores muestro el panel con los errores
+        //el theme del form, se encuentra en 
+        //* app/resources/views/form/form_theme.html.twig
+        if (document.getElementById('error') !== null)
+        {
+            $('.panel-body').slideToggle(400);
+        }
+
+        $('.list-group-item').click(function(){
+            $(this).toggleClass('active');
+        });
+        $('#buscar').click(function(){
+            $('.panel-body').slideToggle(400);
+        });
+
+        $('#form_campoApellido').change(function(){
+            $('#form_campoApellido').val(($('#form_campoApellido').val()).toUpperCase());
+        });
+        $('#form_campoNombre').change(function(){
+            $('#form_campoNombre').val(($('#form_campoNombre').val()).toUpperCase());
+        });
+        
+        //remuevo el atributo required 
+        //para que en la busqueda por apellido
+        //no sea necesario ingresar el nombre
+        $('#form_campoNombre').removeAttr('required');
+
+        var elementToShow;
+        $('#ape, #doc, #cuil').hide();
+        $('#condicion input, #condicion select, #condicion textarea').removeAttr('required');
+        $('#form_busqueda').change(function(){
+        $('#condicion input, #condicion select, #condicion textarea').removeAttr('required');    
+        $('#ape, #doc, #cuil').hide(400);
+           switch ($('#form_busqueda').val()) {
+                case 'apellido': elementToShow = '#ape'; break;
+                case 'documento': elementToShow = '#doc'; break;
+                case 'cuil': elementToShow = '#cuil'; break;
+           }
+            $(elementToShow).show(600);
+            $('#condicion select').trigger("change");
+
+        });
+
+        switch ($('#form_busqueda').val()) {
+            case 'apellido': elementToShow = '#ape'; break;
+            case 'documento': elementToShow = '#doc'; break;
+            case 'cuil': elementToShow = '#cuil'; break;
+        }
+        $(elementToShow).show(600);
+        $(elementToShow).find('input, select, textarea').prop('required', true);
+        $('#condicion select').trigger("change");
+
+        });
+
+    {{ section_title_js() }}
+</script>
+{% endblock customjavascripts %}

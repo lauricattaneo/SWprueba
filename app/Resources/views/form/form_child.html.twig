@@ -1,0 +1,47 @@
+{% block form_row %}
+    <div class="form-group">
+        {{ form_label(form) }}
+        {{ form_errors(form) }}
+        {{ form_widget(form) }}
+    </div>
+{% endblock form_row %}
+
+{% block _domicilio_calleNumero_calle_row %}
+    <div class="form-group width60">
+        {{ form_label(form) }}
+        {{ form_errors(form) }}
+        {{ form_widget(form) }}
+    </div>
+{% endblock %}
+
+{% block _domicilio_calleNumero_numero_row %}
+    <div class="form-group width30">
+        {{ form_label(form) }}
+        {{ form_errors(form) }}
+        {{ form_widget(form) }}
+    </div>
+{% endblock %}
+
+{% block _domicilio_manzanaLoteMono_manzana_row %}
+    <div class="form-group width20">
+        {{ form_label(form) }}
+        {{ form_errors(form) }}
+        {{ form_widget(form) }}
+    </div>
+{% endblock %}
+
+{% block _domicilio_manzanaLoteMono_lote_row %}
+    <div class="form-group width20">
+        {{ form_label(form) }}
+        {{ form_errors(form) }}
+        {{ form_widget(form) }}
+    </div>
+{% endblock %}
+
+{% block _domicilio_manzanaLoteMono_monoblock_row %}
+    <div class="form-group width20">
+        {{ form_label(form) }}
+        {{ form_errors(form) }}
+        {{ form_widget(form) }}
+    </div>
+{% endblock %}

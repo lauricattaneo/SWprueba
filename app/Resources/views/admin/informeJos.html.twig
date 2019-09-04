@@ -1,0 +1,83 @@
+{% extends 'index.html.twig' %}
+{% from 'partials/section-title.html.twig' import js as section_title_js %}
+
+    
+{% block section_title %}
+
+    {% embed "partials/section-title.html.twig" %}
+        {% block titulo %}
+            <i class="material-icons md-inherit md-48">assignment</i>
+            LIQUIDACIONES CARGADAS  
+            {% if ayuda is defined and ayuda != "" %}
+                <a href="#" data-toggle="modal"  data-target="#ayudaMessage"><i class="material-icons md-inherit md-48">help</i></a>
+            {%endif%}
+            <div class="list-group">
+                <a id="volver" href="{{path('importar_jos')}}" class="btn btn-primary pull-right" value="Informe Liquidacion">
+                    Volver</a>
+            </div>
+        {%endblock%}
+
+        {% block subtitulo %}
+            Archivo: {{titulo}} - Cantidad: {{cant}}
+        {% endblock %}
+    {% endembed %}
+{% endblock section_title %}      
+
+
+{% block thead %}
+    {% if liquidaciones is not null %}  
+        <thead>
+            <tr>
+                <th>#</th>
+                <th class="text-center">Id</th>
+                <th class="text-left">Codigo</th>
+                <th class="text-left">Nombre</th>
+                <th class="text-center">Anio</th>
+                <th class="text-center">Mes</th>
+                <th class="text-center">Nro. Liq</th>
+                <th class="text-center">Cod. Liq</th>
+                <th class="text-center">Tipo Liq</th>
+            </tr>
+        </thead>
+    {% endif %}     
+{%endblock%}
+
+{% block tbody %}
+    {% if liquidaciones is null %}
+        <tr>
+            <td colspan="7">No hay liquidaciones presentadas.</td>
+        </tr>
+    {% else %}
+        <tbody class="body" style="background-color:#ccffff">
+            {% for liquidacion in liquidaciones %}
+                <tr class="row-index">
+                    <td class="grey-background">{{liquidaciones.getPaginationData.firstItemNumber + loop.index - 1}}</td>
+                    <td class="text-center">{{liquidacion.id}}</td>
+                    <td class="text-left">  {{liquidacion.codigo}}</td>
+                    <td class="text-left">  {{liquidacion.nombre|trim }}</td>
+                    <td class="text-center">  {{liquidacion.anio}}</td>
+                    <td class="text-center">  {{liquidacion.mes}}</td>
+                    <td class="text-center">  {{liquidacion.nroLiq}}</td>
+                    <td class="text-center">  {{liquidacion.codigoLiq}}</td>
+                    <td class="text-left">  {{liquidacion.nombreLiq}}</td>
+                </tr>
+            {%endfor%}
+        {% endif %}
+    </tbody>
+</table> 
+{% endblock %}
+
+{% block pagination %}
+    {% if liquidaciones is not null %}
+        <div class="navigation">
+            {{ knp_pagination_render(liquidaciones) }}
+        </div>
+    {%endif%}
+
+{% endblock %}
+
+{% block customjavascripts %}
+    <script>          
+        {{ section_title_js() }}
+    </script>
+{% endblock %}

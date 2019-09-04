@@ -1,0 +1,34 @@
+{% extends 'base.html.twig' %}
+
+{% block content %}
+    <div class="table-wrapper page-header">
+        <h1><i class="material-icons md-inherit md-48">mode_edit</i>{% if delete_form is defined %}Editar Cargo{% else %}Agregar{% endif %} 
+        {% if ayuda is defined and ayuda != "" %}
+                <a href="#" data-toggle="modal"  data-target="#ayudaMessage"><i class="material-icons md-inherit md-48">help</i></a>
+            {% endif %}
+        </h1>
+        {% if delete_form is defined %}
+            {{ form_start(delete_form, {'attr': {'class': 'text-right'}}) }}
+                <input class="btn btn-danger" type="submit" value="Eliminar" />
+            {{ form_end(delete_form) }}
+        {% endif %}
+    </div>
+    {{ form_start(form, {'attr': {'class': 'progress-form'}}) }}
+        <div class="row">
+            <div class="col-xs-12 col-md-6">{{ form_row(form.codigo) }}</div>
+            <div class="col-xs-12 col-md-6">{{ form_row(form.nombre) }}</div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-md-6">{{ form_row(form.area) }}</div>
+            <div class="col-xs-12 col-md-6">{{ form_row(form.descripcion) }}</div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-md-6">{{ form_row(form.estado) }}</div>
+        </div>
+        {{ form_row(form.sectorPasivo) }}
+        <div class="col-xs-12 text-center" style="margin-top: 12px;">
+            <a class="btn btn-default" href="{{ path('cargo_show', {'id': cargo.id}) }}" title="Volver al listado">Cancelar</a>
+            <input class="btn btn-primary" type="submit" value="{% if delete_form is defined %}Guardar{% else %}Crear{% endif %}" />
+        </div>
+    {{ form_end(form) }}
+{% endblock %}

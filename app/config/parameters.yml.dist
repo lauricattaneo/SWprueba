@@ -1,0 +1,38 @@
+# This file is a "template" of what your parameters.yml file should look like
+# Set parameters here that may be different on each deployment target of the app, e.g. development, staging, production.
+# http://symfony.com/doc/current/best_practices/configuration.html#infrastructure-related-configuration
+parameters:
+    database_driver: 
+    database_host: 
+    database_port: 
+    database_name: 
+    database_user: 
+    database_password: 
+    database_type: 
+    database_service: 
+    mailer_transport: 
+    mailer_host: 
+    mailer_user: 
+    mailer_password: 
+    secret: ThisTokenIsNotSoSecretChangeIt
+    cas_url: 
+    cas_server: 
+    cas_cert: 
+    cas_username_attribute: 
+    cas_proxy:
+    besimple_services_namespace:
+    besimple_services_binding:
+    besimple_services_resource:
+    besimple_services_resource_type:
+    besimple_cache_type:
+    besimple_cache_lifetime:
+    besimple_cache_limit:
+    besimple_clients_wsdl:
+    knp_paginator_page_range:
+    knp_paginator_page_name:
+    knp_paginator_sort_field_name:
+    knp_paginator_sort_direction_name:
+    knp_paginator_distinct:
+    knp_paginator_pagination:
+    knp_paginator_sortable:
+    twig_form_theme:

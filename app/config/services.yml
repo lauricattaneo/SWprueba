@@ -1,0 +1,61 @@
+# Learn more about services, parameters and containers at
+# http://symfony.com/doc/current/book/service_container.html
+parameters:
+
+services:
+    organismo.post_voter:
+        class: Caja\SiafcaIntranetBundle\Security\OrganismoVoter
+        arguments: ['@security.access.decision_manager']
+        public: false
+        tags:
+            - { name: security.voter }
+            
+    paginacion:
+        class: Caja\SiafcaIntranetBundle\Services\Paginacion
+        public: true
+        arguments: ["@knp_paginator"]
+        calls:
+        - [setPaginator, ["@knp_paginator"]]
+            
+    datetime_normalizer:
+        class: Caja\SiafcaIntranetWsBundle\Services\DateTimeNormalizer
+        tags:
+            - { name: serializer.normalizer }
+            
+    array_normalizer:
+        class: Symfony\Component\Serializer\Normalizer\ArrayDenormalizer
+        tags:
+            - { name: serializer.normalizer, priority: 1 }
+            
+    app.form.type.localidad:
+        class: Caja\SiafcaIntranetBundle\Form\LocalidadType
+        arguments: ["@doctrine.orm.entity_manager"]
+        tags:
+            - { name: form.type }
+    app.form.type.domicilio:
+        class: Caja\SiafcaIntranetBundle\Form\DomicilioType
+        arguments: ["@doctrine.orm.entity_manager"]
+        tags:
+            - { name: form.type }
+    app.form.type.autocomplete:
+        class: Caja\SiafcaIntranetBundle\Form\Type\AutocompleteType
+        arguments: ["@router"]
+        tags:
+            - { name: form.type }
+    
+    kernel.listener.eventos:
+        class: Caja\SiafcaIntranetBundle\EventListener\EventListener
+        arguments: [@security.context, @router, @security.encoder_factory]
+        tags:
+            - { name: kernel.event_listener, event: kernel.request, method: onRequest, priority: 1 }
+            
+    validator.valid_fechaNacimiento:
+        class: Caja\SiafcaIntranetBundle\Validator\Constraints\ValidaFechaNacValidator
+        tags:
+            - { name: validator.constraint_validator }
+            
+    excepciones.log:
+        class: Caja\SiafcaIntranetBundle\Util\ExceptionPersist
+        arguments: ["@service_container"]     
+imports:
+    - { resource: '@SiafcaIntranetBundle/Resources/config/services.yml' }

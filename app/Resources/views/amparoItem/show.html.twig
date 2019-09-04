@@ -1,0 +1,40 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Expediente de Amparo</h1>
+
+    <table>
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ expteAmparo.id }}</td>
+            </tr>
+            <tr>
+                <th>Número de Expediente</th>
+                <td>{{ expteAmparo.numero }}</td>
+            </tr>
+            <tr>
+                <th>Fecha de Inicio del Trámite</th>
+                <td>{{ expteAmparo.fechaInicio|date }}</td>
+            </tr>
+            <tr>
+                <th>Fecha de Resolución</th>
+                <td>{{ expteAmparo.fechaResolucion|date }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <ul>
+        <li>
+            <a href="{{ path('amparo_index', 'orgId': orgId) }}">Back to the list</a>
+        </li>
+        <li>
+            <a href="{{ path('amparo_edit', { 'id': expteAmparo.id }) }}">Editar</a>
+        </li>
+        <li>
+            {{ form_start(delete_form) }}
+                <input type="submit" value="Delete">
+            {{ form_end(delete_form) }}
+        </li>
+    </ul>
+{% endblock %}

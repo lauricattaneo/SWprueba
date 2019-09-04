@@ -1,0 +1,20 @@
+<tr class="row-index">
+    <td class="grey-background">{{ usuarios.getPaginationData.firstItemNumber + loop.index - 1 }}</td>
+    <td class="text-left">{{ usuarioOrganismo.usuario.username }}</td>
+    <td class="text-left">{{ usuarioOrganismo.estado }}</td>
+    <td class="text-left">{{ usuarioOrganismo.fechaDesde|date('d/m/Y') }}</td>
+    <td class="text-left">{% if usuarioOrganismo.fechaHasta is defined and usuarioOrganismo.fechaHasta is not null %}{{ usuarioOrganismo.fechaHasta|date('d/m/Y') }}{% endif %}</td>
+    <td class="text-left">{{ usuarioOrganismo.rol }}</td>
+    <td>
+        <div class="actions" role="toolbar" aria-label="acciones-item">
+            <div>
+                <a class="btn btn-default btn-xs" href="{{ path('usuario_organismo.show',{'id': usuarioOrganismo.id}) }}">
+                    <i class="material-icons md-18 md-inherit">visibility</i>
+                    <span>Ver</span>
+                </a>
+            </div>
+        </div>
+    </td>
+                     
+                    
+</tr>

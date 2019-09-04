@@ -1,0 +1,88 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Expediente de Amparo Creado</h1>
+
+    {# form_start(form) #}
+    {{ form_start(form, {'attr': {'class': 'progress-form'}}) }}
+        {# form_widget(form) #}
+        {{ form_row(form.numero) }}
+        {{ form_row(form.fechaInicio) }}
+        {{ form_row(form.fechaResolucion) }}
+{#        
+        <h3>Aportantes Amparados</h3>
+        <ul class="items" data-prototype="{{ form_widget(form.amparoItems.vars.prototype)|e('html_attr') }}>
+            {% for item in form.amparoItems %}
+                <li>{{ form_row(item) }}</li>
+            {% endfor %}
+        </ul>
+#}       
+        <input type="submit" value="Crear" />
+    {{ form_end(form) }}
+
+    <ul>
+        <li>
+            <a href="{{ path('amparo_index', { 'id': idOrganismo}) }}">Back to the list</a>
+        </li>
+    </ul>
+{% endblock %}
+
+{% block customjavascripts %}
+    <script>
+        var $collectionHolder;
+
+        // setup an "add a tag" link
+        var $addTagLink = $('<a href="#" class="add_tag_link">Agregar</a>');
+        var $newLinkLi = $('<li></li>').append($addTagLink);
+
+        function addTagForm($collectionHolder, $newLinkLi) {
+            // Get the data-prototype explained earlier
+            var prototype = $collectionHolder.data('prototype');
+
+            // get the new index
+            var index = $collectionHolder.data('index');
+
+            // Replace '__name__' in the prototype's HTML to
+            // instead be a number based on how many items we have
+            var newForm = prototype.replace(/__name__/g, index);
+
+            // increase the index with one for the next item
+            $collectionHolder.data('index', index + 1);
+
+            // Display the form in the page in an li, before the "Add a tag" link li
+            var $newFormLi = $('<li></li>').append(newForm);
+            $newLinkLi.before($newFormLi);
+        }
+
+        $(document).ready(function() {
+            
+            // Get the ul that holds the collection of tags
+            $collectionHolder = $('ul.items');
+
+            // add the "add a tag" anchor and li to the tags ul
+            $collectionHolder.append($newLinkLi);
+
+            // count the current form inputs we have (e.g. 2), use that as the new
+            // index when inserting a new item (e.g. 2)
+            $collectionHolder.data('index', $collectionHolder.find(':input').length);
+
+            $addTagLink.on('click', function(e) {
+                // prevent the link from creating a "#" on the URL
+                e.preventDefault();
+
+                // add a new tag form (see next code block)
+                addTagForm($collectionHolder, $newLinkLi);
+            });
+    
+            var topYear = new Date().getFullYear()+1;
+            {% image '@SiafcaIntranetBundle/Resources/public/nueva_base/images/ic_event_black_24dp_2x.png' %}
+                $(".date-format").datepicker({
+                    yearRange: (topYear-120)+":"+topYear,
+                    minDate: "-150Y",
+                    buttonImage: "{{ asset_url }}",
+                });
+            {% endimage %}
+        });
+        
+    </script>
+{% endblock %}

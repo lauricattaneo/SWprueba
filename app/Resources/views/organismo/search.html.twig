@@ -1,0 +1,91 @@
+{% extends 'index.html.twig' %}
+{% from 'partials/section-title.html.twig' import js as section_title_js %}
+
+{% block section_title %}
+    {% embed "partials/section-title.html.twig" %}{% block titulo %}<i class="material-icons md-inherit md-48">search</i>  Búsqueda de organismos
+            {% if ayuda is defined and ayuda != "" %}
+                <a href="#" data-toggle="modal"  data-target="#ayudaMessage"><i class="material-icons md-inherit md-48">help</i></a>
+            {% endif %}{%endblock%}
+
+            {% endembed %}
+{% endblock section_title %}
+
+{% block filterbuttons %}
+    {{ form_start(form) }}
+        <div class="row">
+            <div class="col-xs-12 col-sm-6 col-md-4">{{ form_row(form.nombre) }}</div>
+            <div class="col-xs-12 col-sm-6 col-md-4">{{ form_row(form.cuit) }}</div>
+            <div class="col-xs-12 col-sm-6 col-md-4">{{ form_row(form.tipoOrganismo) }}</div>
+            <div class="col-xs-12 col-sm-6 col-md-4">{{ form_row(form.fechaInicio) }}</div>
+            <div class="col-xs-12 col-sm-6 col-md-4">{{ form_row(form.fechaAprobacion) }}</div>
+            <div class="col-xs-12 col-sm-6 col-md-4">{{ form_row(form.fechaFinal) }}</div>
+            <div class="col-xs-12 col-sm-6 col-md-4">{{ form_row(form.expediente) }}</div>
+            <div class="col-xs-12 col-sm-6 col-md-4">{{ form_row(form.codigo) }}</div>
+            <div class="col-xs-12 col-sm-6 col-md-4">{{ form_row(form.resolucion) }}</div>
+            <div class="col-xs-12 col-sm-6 col-md-4">{{ form_row(form.zona) }}</div>
+            <div class="col-xs-12 col-sm-6 col-md-4">{{ form_row(form.estado) }}</div>
+            <div class="col-xs-12 col-sm-6 col-md-4 text-right">
+                <a href="{{ path('organismo_search') }}" class="btn btn-default btn-sm">Limpiar</a>
+                <input class="btn btn-primary btn-sm" type="submit" value="Filtrar" />
+            </div>
+        </div>
+        {{ form_rest(form) }}
+    {{ form_end(form) }}
+{% endblock filterbuttons %}
+
+{% block thead %}
+    {%if organismos|length > 1%}
+    <th class="grey-background">#</th>
+    <th>{{ knp_pagination_sortable(organismos, 'Nombre', 'o.nombre', { Title: 'Ordenar por nombre' }) }}</th>
+    <th>{{ knp_pagination_sortable(organismos, 'Código', 'o.codigo', { Title: 'Ordenar por código' }) }}</th>
+    <th>{{ knp_pagination_sortable(organismos, 'Tipo', 't.id', { Title: 'Ordenar por tipo' }) }}</th>
+    <th>{{ knp_pagination_sortable(organismos, 'Localidad', 'l.nombre', { Title: 'Ordenar por localidad' }) }}</th>
+    <th>Cuit</th>
+    <th>Estado</th>
+    <th></th>
+    {%endif%}
+    
+{% endblock thead %}
+
+{% block tbody %}
+    <tbody class="table-body" style="background-color:#ccffff">
+    {% if organismos is null %}
+        <tr><td colspan="7">No hay Organismos.</td></tr>
+    {% else %}
+        {% for organismo in organismos %}
+            {{ include(':organismo:row.html.twig', { 'organismo' : organismo }) }}
+        {% endfor %}
+    {% endif %}
+     </tbody>
+</table>
+
+ <div class="list-group">
+    <a class="btn btn-primary pull-right" href="{{ path('organismo_index') }}" title="Volver al listado">Volver</a>
+</div> 
+{% endblock tbody %}
+
+{% block pagination %}
+    <div class="navigation">
+        {{ knp_pagination_render(organismos) }}
+    </div>
+{% endblock %}
+
+{% block customjavascripts %}
+    {{ parent() }}
+    <script>
+        $(document).ready(function() {
+            var topYear = new Date().getFullYear()+1;
+            {% image '@SiafcaIntranetBundle/Resources/public/nueva_base/images/ic_event_black_24dp_2x.png' %}
+                $(".date-format").datepicker({
+                    yearRange: (topYear-120)+":"+topYear,
+                    minDate: "-150Y",
+                    buttonImage: "{{ asset_url }}",
+                });
+            {% endimage %}
+            $('#search_organismo_nombre').change(function(){
+            $('#search_organismo_nombre').val(($('#search_organismo_nombre').val()).toUpperCase());
+            });
+        });
+        {{ section_title_js() }}
+    </script> 
+{% endblock customjavascripts %}

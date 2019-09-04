@@ -1,0 +1,22 @@
+<tr class="row-index">
+    <td class="grey-background">{{ oficinas.getPaginationData.firstItemNumber + loop.index - 1 }}</td>
+    <td>
+        
+            {% if oficina.nombre|length > 20 %}
+                <span rel="tooltip" title="{{ oficina.nombre }}">{{ oficina.nombre|slice(0, 20) ~ '...' }} </span>
+            {% else %}
+                {{ oficina.nombre }}
+            {% endif %}
+     </td>
+    <td>{% if oficina.domicilio is not null %}{{ oficina.domicilio.localidad }}{% endif %}</td>
+    <td>
+         <div class="actions" role="toolbar" aria-label="acciones-item">
+            <div>
+        <a class="btn btn-default btn-xs" href="{{ path('oficina_show',{'id': oficina.id}) }}">
+            <i class="material-icons md-18 md-inherit">visibility</i>
+                    <span>Ver</span>
+        </a> 
+            </div>
+         </div>
+    </td>
+</tr>

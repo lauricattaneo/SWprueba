@@ -1,0 +1,66 @@
+{% extends 'index.html.twig' %}
+{% from 'partials/section-title.html.twig' import js as section_title_js %}
+
+{% block section_title %}
+    {% embed "partials/section-title.html.twig" %}{% block titulo %}<i class="material-icons md-inherit md-48">search</i> Búsqueda de oficinas 
+                {% if ayuda is defined and ayuda != "" %}
+                <a href="#" data-toggle="modal"  data-target="#ayudaMessage"><i class="material-icons md-inherit md-48">help</i></a>
+            {% endif %}
+            {% endblock titulo %}
+            {% endembed %}
+            
+{% endblock section_title %}
+
+{% block filterbuttons %}
+    {{ form_start(form) }}
+        <div class="row">
+            <div class="col-xs-12 col-sm-6 col-md-4">{{ form_row(form.nombre) }}</div>
+            <div class="col-xs-12 col-sm-6 col-md-4">{{ form_row(form.cuit) }}</div>
+            <div class="col-xs-12 col-sm-6 col-md-4">{{ form_row(form.zona) }}</div>
+            <div class="col-xs-12 col-sm-6 col-md-12 text-right">
+                <a href="{{ path('oficina_search') }}" class="btn btn-default btn-sm">Limpiar</a>
+                <input class="btn btn-primary btn-sm" type="submit" value="Filtrar" />
+            </div>
+        </div>
+        {{ form_rest(form) }}
+    {{ form_end(form) }}
+{% endblock filterbuttons %}
+
+{% block thead %}
+    <th class="grey-background">#</th>
+    <th>{{ knp_pagination_sortable(oficinas, 'Nombre', 'o.nombre', { Title: 'Ordenar por nombre' }) }}</th>
+    <th>{{ knp_pagination_sortable(oficinas, 'Localidad', 'l.nombre', { Title: 'Ordenar por localidad' }) }}</th>
+{% endblock thead %}
+
+{% block tbody %}
+    {% for oficina in oficinas %}
+        {{ include(':oficina:row.html.twig', { 'oficina' : oficina }) }}
+    {% else %}
+        <tr>
+            <td colspan="3">No hay Oficinas.</td>
+        </tr>
+    {% endfor %}
+{% endblock tbody %}
+
+{% block pagination %}
+    <div class="navigation">
+        {{ knp_pagination_render(oficinas) }}
+    </div>
+{% endblock %}
+
+{% block customjavascripts %}
+    {{ parent() }}
+    <script>
+        $(document).ready(function() {
+            var topYear = new Date().getFullYear()+1;
+            {% image '@SiafcaIntranetBundle/Resources/public/nueva_base/images/ic_event_black_24dp_2x.png' %}
+                $(".date-format").datepicker({
+                    yearRange: (topYear-120)+":"+topYear,
+                    minDate: "-150Y",
+                    buttonImage: "{{ asset_url }}",
+                });
+            {% endimage %}
+        });
+        {{ section_title_js() }}
+    </script>
+{% endblock customjavascripts %}

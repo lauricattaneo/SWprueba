@@ -1,0 +1,707 @@
+{% extends "show.html.twig" %}
+{% from 'partials/section-title.html.twig' import js as section_title_js %}
+
+{% block section_title %}
+    {% embed "partials/section-title.html.twig" %}
+        {% block titulo %}<i class="material-icons md-inherit md-48">group</i>{{ persona }}
+        {% if ayuda is defined and ayuda != "" %}
+                <a href="#" data-toggle="modal"  data-target="#ayudaMessage"><i class="material-icons md-inherit md-48">help</i></a>
+            {% endif %}
+        {% endblock %}
+    {% endembed %}
+{% endblock section_title %}
+
+
+
+{% block second_row %}
+
+
+    {% embed ':partials:dataPanel.html.twig' with {'entidad': persona}  %}
+        {% block propLine %}
+            {# Quitar botones de alta, baja o edicion de aportantes y firmantes #}
+            {% if key == 'Firmantes' or key == 'Aportante' %}
+                <div class="list-group-item">
+                    <strong class="text-bold">{{ key }}:</strong>
+                    <a href="{% if key == 'Firmantes' %}{{ path(value.historic, {'id': persona.id}) }}{% else %}{{ path(value.historic, {'id': persona.id}) }}{% endif %}" class="btn-link pull-right" title="Ver historial completo"><i class="material-icons md-green">send</i></a></a>
+                </div>
+                <ul class="list-unstyled list-group">
+                    {% if attribute(persona, value.data) is defined %}
+                        {% set prepared_array = attribute(persona, value.data).getValues %}
+                        {% set already_printed = [] %}
+                        {% for item in prepared_array if item.organismo not in already_printed %}
+                            <li class="list-group-item">
+                                {% if key == 'Firmantes' %}
+                                    <a href="{{path('organismo_show', {'id': item.organismo.id }) }}">{{ item.organismo ~ ' ( ' ~ item.fechaDesde|date ~ ' - '~ (item.fechaHasta == "-" ? 'Actualidad' : item.fechaHasta|date) ~ ' )' }}</a>
+                                {% elseif key == 'Aportante' %}
+                                    <a href="{{path('organismo_show', {'id': item.organismo.id }) }}">{{ item.organismo ~ ' ( ' ~ item.fechaAlta|date ~ ' - '~ (item.fechaBaja is empty ? 'Actualidad' : item.fechaBaja|date) ~ ' )' }}</a>
+                                {% endif %}
+                            </li>
+                            {% set already_printed = already_printed|merge([item.organismo]) %}
+                        {% endfor %}
+                        <li class="list-group-item empty-data {% if attribute(persona, value.data).getValues|length > 0 %}my-hide{% endif %}">-- No hay datos cargados --</li>
+                    {% endif %}
+                </ul>
+            {% else %}
+                {{ parent() }}
+            {% endif %}
+        {% endblock propLine %}
+    {% endembed %}
+{% endblock second_row %}
+
+{% block actions_panel %}
+    
+    
+    
+    <div class="panel-heading">
+        <i class="material-icons">menu</i>
+        Acciones
+    </div>
+    <div class="list-group">
+        <a class="list-group-item" href="{{ path('persona_edit', { 'id': persona.id }) }}">
+            <i class="material-icons md-green">edit</i>
+            Editar Datos
+        </a>
+        <a class="list-group-item" href="{{ path('aportes_show', { 'persona': persona.id }) }}">
+            <i class="material-icons md-green">edit</i>
+            Ver aportes
+        </a>
+        <a class="list-group-item" id="deletePersona" href="{{ path('persona_delete', { 'id': persona.id }) }}">
+            <i class="material-icons md-red">delete</i>
+            Eliminar
+        </a>
+    </div>
+
+    <div id="mensajeEliminar" style="display:none;" class="alert alert-warning alert-dismissable">
+        <strong> No se puede eliminar por: </strong>
+        <div id="texto1MensajeEliminar"> </div>
+        <div id="texto2MensajeEliminar"> </div>
+        <div id="texto3MensajeEliminar"> </div>
+    </div>
+    {# Modal para la creacion de nuevo domicilio: #}
+    <div class="modal fade" id="new-Domicilio" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Nuevo domicilio</h4>
+                </div>
+                <div class="modal-body">
+                    {{ form_start(domicilioForm, {'attr': {'class': 'col-xs-12 progress-form'}}) }}
+                        <div class="row">
+                            {{ form_row(domicilioForm.tipoDomicilio) }}
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-6">{{ form_row(domicilioForm.calleNumero.calle) }}</div>
+                            <div class="col-xs-12 col-sm-6">{{ form_row(domicilioForm.calleNumero.numero) }}</div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-6">{{ form_row(domicilioForm.pisoDepto.piso) }}</div>
+                            <div class="col-xs-12 col-sm-6">{{ form_row(domicilioForm.pisoDepto.depto) }}</div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-4">{{ form_row(domicilioForm.manzanaLoteMono.manzana) }}</div>
+                            <div class="col-xs-12 col-sm-4">{{ form_row(domicilioForm.manzanaLoteMono.lote) }}</div>
+                            <div class="col-xs-12 col-sm-4">{{ form_row(domicilioForm.manzanaLoteMono.monoblock) }}</div>
+                        </div>
+                        {{ form_row(domicilioForm.Provincia) }}
+                        {{ form_row(domicilioForm.Departamento) }}
+                        {{ form_row(domicilioForm.Localidad) }}
+                        <input type="hidden" name="persona" value="1" />
+                        <div class="text-center" style="margin-top: 12px;">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                            <input type="submit" value="Agregar" class="btn btn-success" id="add-address" />
+                        </div>
+                        {{ form_widget(domicilioForm._token) }}
+                    {{ form_end(domicilioForm, {'render_rest': false}) }}
+                </div>
+                <div class="modal-footer">
+                </div>
+            </div>
+        </div>
+    </div>
+  
+                                            {# Modal para la edicion de domicilio: #}
+    <div class="modal fade" id="edit-Domicilio" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Editar domicilio</h4>
+                </div>
+                <div class="modal-body">
+                    {{ form_start(editDomicilioForm, {'attr': {'class': 'col-xs-12 progress-form'}}) }}
+                      {{ form_widget(editDomicilioForm.id) }}
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-6">{{ form_row(editDomicilioForm.calleNumero.calle) }}</div>
+                            <div class="col-xs-12 col-sm-6">{{ form_row(editDomicilioForm.calleNumero.numero) }}</div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-6">{{ form_row(editDomicilioForm.pisoDepto.piso) }}</div>
+                            <div class="col-xs-12 col-sm-6">{{ form_row(editDomicilioForm.pisoDepto.depto) }}</div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-4">{{ form_row(editDomicilioForm.manzanaLoteMono.manzana) }}</div>
+                            <div class="col-xs-12 col-sm-4">{{ form_row(editDomicilioForm.manzanaLoteMono.lote) }}</div>
+                            <div class="col-xs-12 col-sm-4">{{ form_row(editDomicilioForm.manzanaLoteMono.monoblock) }}</div>
+                        </div>
+                        {{ form_row(editDomicilioForm.Provincia) }}
+                        {{ form_row(editDomicilioForm.Departamento) }}
+                        {{ form_row(editDomicilioForm.Localidad) }}
+                        <input type="hidden" name="persona" value="1" />
+                        <div class="text-center" style="margin-top: 12px;">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                            <input type="submit" value="Guardar cambios" class="btn btn-success" />
+                        </div>
+                        {{ form_widget(editDomicilioForm._token) }}
+                    {{ form_end(editDomicilioForm, {'render_rest': false}) }}
+                </div>
+                <div class="modal-footer">
+                </div>
+            </div>
+        </div>
+    </div>
+                
+    {# Modal para la creacion de nuevo familiar: #}
+    <div class="modal fade" id="new-Familiar" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Nuevo Familiar</h4>
+                </div>
+                <div class="modal-body">
+                    {{ form_start(familiarForm, {'attr': {'class': 'col-xs-12 progress-form'}}) }}
+                        <div class="row">
+                            <div class="col-xs-12">{{ form_row(familiarForm.personaSearch) }}</div>
+                            
+                            {{ form_widget(familiarForm.familiarId) }}
+                        </div>
+                        <fieldset class="disable">
+                            <legend>Persona</legend>
+                            <div class="help-block">Realice una búsqueda por CUIL para habilitar la edición o cargar datos automáticamente.</div>
+                            <div class="row">
+                                <div class="col-xs-12 col-sm-6">{{ form_row(familiarForm.familiar.apellidoPat, {disabled: true}) }}</div>
+                                <div class="col-xs-12 col-sm-6">{{ form_row(familiarForm.familiar.nombre, {disabled: true}) }}</div>
+                              {#  <div class="col-xs-12 col-sm-6">{{ form_row(familiarForm.familiar.apellidoMat, {disabled: true}) }}</div>#}
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-12 col-sm-6">{{ form_row(familiarForm.familiar.sexo, {disabled: true}) }}</div>
+                                <div class="col-xs-12 col-sm-6">{{ form_row(familiarForm.familiar.estadoCivil, {disabled: true}) }}</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-12 col-sm-6">{{ form_row(familiarForm.familiar.cuil, {disabled: true}) }}</div>
+                                <div class="col-xs-12 col-sm-6">{{ form_row(familiarForm.familiar.documento, {disabled: true}) }}</div>
+                              {#  <div class="col-xs-12 col-sm-6">{{ form_row(familiarForm.familiar.tipoDocumento, {disabled: true}) }}</div> #}
+                            </div>
+                          
+                            <div class="row">
+                                <div class="col-xs-12 col-sm-6">{{ form_row(familiarForm.familiar.fechaNac, {disabled: true}) }}</div>
+                                <div class="col-xs-12 col-sm-6">{{ form_row(familiarForm.familiar.nacionalidad, {disabled: true}) }}</div>
+                              
+                            </div>
+                        </fieldset>
+                        <fieldset>
+                            <legend>Datos de familiar</legend>
+                            <div class="row">
+                                <div class="col-xs-12 col-sm-6">{{ form_row(familiarForm.Parentezco) }}</div>
+                                <div class="col-xs-12 col-sm-6">{{ form_row(familiarForm.fechaValidacion) }}</div>
+                                <div class="col-xs-12 col-sm-6">{{ form_row(familiarForm.fechaVencimiento) }}</div>
+                            </div>
+                        </fieldset>
+                        <div class="text-center" style="margin-top: 12px;">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                            <input type="submit" value="Agregar" class="btn btn-success" />
+                        </div>
+                        {{ form_widget(familiarForm._token) }}
+                    {{ form_end(familiarForm, {'render_rest': false}) }}
+                </div>
+                <div class="modal-footer">
+                </div>
+            </div>
+        </div>
+    </div>
+                
+    {# Modal para la edicion de un familiar: #}
+    <div class="modal fade" id="edit-Familiar" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Editar Familiar</h4>
+                </div>
+                <div class="modal-body">
+                    {{ form_start(editFamiliarForm, {'attr': {'class': 'col-xs-12 progress-form'}}) }}
+                        <div class="row">
+                            {{ form_widget(editFamiliarForm.familiarId) }}
+                            {{ form_widget(editFamiliarForm.id) }}
+                        </div>
+                        <fieldset class="disable">
+                            <legend>Persona</legend>
+                            <div class="row">
+                                <div class="col-xs-12 col-sm-6"><b>Apellido paterno:</b> <span id="placeholder-apellidoPat"></span></div>
+                                <div class="col-xs-12 col-sm-6"><b>Apellido materno:</b> <span id="placeholder-apellidoMat"></span></div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-12 col-sm-6"><b>Nombre:</b> <span id="placeholder-nombre"></span></div>
+                                <div class="col-xs-12 col-sm-6"><b>Estado Civil:</b> <span id="placeholder-estadoCivil"></span></div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-12 col-sm-6"><b>Cuil:</b> <span id="placeholder-cuil"></span></div>
+                                <div class="col-xs-12 col-sm-6"><b>Tipo documento:</b> <span id="placeholder-tipoDocumento"></span></div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-12 col-sm-6"><b>Documento:</b> <span id="placeholder-documento"></span></div>
+                                <div class="col-xs-12 col-sm-6"><b>Sexo:</b> <span id="placeholder-sexo"></span></div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-12 col-sm-6"><b>Nacionalidad:</b> <span id="placeholder-nacionalidad"></span></div>
+                                <div class="col-xs-12 col-sm-6"><b>Fecha de Nacimiento:</b> <span id="placeholder-fechaNac"></span></div>
+                            </div>
+                        </fieldset>
+                        <fieldset>
+                            <legend>Datos de familiar</legend>
+                            <div class="row">
+                                <div class="col-xs-12 col-sm-6">{{ form_row(editFamiliarForm.Parentezco) }}</div>
+                                <div class="col-xs-12 col-sm-6">{{ form_row(editFamiliarForm.fechaValidacion) }}</div>
+                                <div class="col-xs-12 col-sm-6">{{ form_row(editFamiliarForm.fechaVencimiento) }}</div>
+                            </div>
+                        </fieldset>
+                        <div class="text-center" style="margin-top: 12px;">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                            <input type="submit" value="Agregar" class="btn btn-success" />
+                        </div>
+                        {{ form_widget(editFamiliarForm._token) }}
+                    {{ form_end(editFamiliarForm, {'render_rest': false}) }}
+                </div>
+                <div class="modal-footer">
+                </div>
+            </div>
+        </div>
+    </div>            
+                    
+{% endblock actions_panel %}
+
+{% block customjavascripts %}
+    <script>
+
+        $(document).ready(function() {
+            
+           
+            
+            function domChange(Loc,Dep,Pro){
+                $('#edit-Domicilio [id$=Provincia]').val(Pro);
+                removeElementsButFirst(new Array('#edit-Domicilio [id$=Localidad]', '#edit-Domicilio [id$=Departamento]'));
+                searchElements2('{{ path('departamento_ajax') }}', '#edit-Domicilio [id$=Departamento]', Pro, 'provincia',Dep);
+                        
+                removeElementsButFirst(new Array('#edit-Domicilio [id$=Localidad]'));
+                searchElements2('{{ path('localidad_ajax') }}', '#edit-Domicilio [id$=Localidad]',Dep,'departamento',Loc);    
+            }
+            
+            
+            $('#deletePersona').click(function(event){
+                var firm = {{persona.firmantes|length}};
+                var apor = {{persona.aportantes|length}};
+                var fami = {{persona.familiares|length}};
+                if(firm>0 || apor>0 || fami>0){
+                    event.preventDefault();
+                    if(firm>0){
+                        $('#texto1MensajeEliminar').text("Ser firmante");
+                    }
+                    if(apor>0){
+                        $('#texto2MensajeEliminar').text("Ser aportante");
+                    }
+                    if(fami>0){
+                        $('#texto3MensajeEliminar').text("Tener familiares registrados");
+                    }
+                    $('#mensajeEliminar').show();
+                }else $('#mensajeEliminar').hide();
+            });
+                        var topYear = new Date().getFullYear()+1;
+            {% image '@SiafcaIntranetBundle/Resources/public/nueva_base/images/ic_event_black_24dp_2x.png' %}
+                $(".date-format").datepicker({
+                    yearRange: (topYear-120)+":"+topYear,
+                    minDate: "-150Y",
+                    buttonImage: "{{ asset_url }}",
+                });
+            {% endimage %}
+        {{ section_title_js() }}
+            
+            $('#edit-Domicilio [id$=Localidad]').change(function(){
+                console.log($('#edit-Domicilio [id$=Localidad]').val());
+            });
+                
+
+            
+            
+            $('#edit-Domicilio [id$=Departamento]').change(function() {
+                removeElementsButFirst(new Array('#edit-Domicilio [id$=Localidad]'));
+                searchElements('{{ path('localidad_ajax') }}', '#edit-Domicilio [id$=Localidad]', '#edit-Domicilio [id$=Departamento]', 'departamento');
+                $('#edit-Domicilio [id$=Localidad] option.select-placeholder').prop('selected', 'selected');
+                $('#edit-Domicilio [id$=Localidad]').change();
+            });
+            
+            $('#edit-Domicilio [id$=Provincia]').change(function() {
+                removeElementsButFirst(new Array('#edit-Domicilio [id$=Localidad]', '#edit-Domicilio [id$=Departamento]'));
+                searchElements('{{ path('departamento_ajax') }}', '#edit-Domicilio [id$=Departamento]', '#edit-Domicilio [id$=Provincia]', 'provincia');
+                $('#edit-Domicilio [id$=Localidad] option.select-placeholder, #edit-Domicilio [id$=Departamento] option.select-placeholder').prop('selected', 'selected');
+                $('#edit-Domicilio [id$=Localidad], #edit-Domicilio [id$=Departamento]').change();
+            });
+            
+            $('#new-Domicilio [id$=Departamento]').change(function() {
+                removeElementsButFirst(new Array('#domicilio_Localidad'));
+                searchElements('{{ path('localidad_ajax') }}', '#new-Domicilio [id$=Localidad]', '#new-Domicilio [id$=Departamento]', 'departamento');
+                $('#new-Domicilio [id$=Localidad] option.select-placeholder').prop('selected', 'selected');
+                $('#new-Domicilio [id$=Localidad]').change();
+            });
+            
+            $('#new-Domicilio [id$=Provincia]').change(function() {
+                removeElementsButFirst(new Array('#domicilio_Localidad', '#new-Domicilio [id$=Departamento]'));
+                searchElements('{{ path('departamento_ajax') }}', '#new-Domicilio [id$=Departamento]', '#new-Domicilio [id$=Provincia]', 'provincia');
+                $('#new-Domicilio [id$=Localidad] option.select-placeholder, #new-Domicilio [id$=Departamento] option.select-placeholder').prop('selected', 'selected');
+                $('#new-Domicilio [id$=Localidad], #new-Domicilio [id$=Departamento]').change();
+            });
+            
+            
+            
+
+           $('#edit-Domicilio form').on('submit', function(e) {
+                e.preventDefault();
+                var $form = $(this);
+                $.ajax($form.attr('action'), {
+                    'data': $form.serialize()+'&ajax=1',
+                    'dataType': 'JSON',
+                    'method': 'POST',
+                    'success': function(response) {
+                        $('#edit-Domicilio form .form-group.has-error').find('span.help-block').remove();
+                        $('#edit-Domicilio form .form-group.has-error').removeClass('has-error');
+                        if (response.success) {
+                            $('#edit-Domicilio').modal('hide');
+
+                            var $message = $('<div class="flash flash-success alert alert-success alert-dismissible" role="alert">'+
+                                '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>'+
+                                'Datos modificados'+
+                            '</div>');
+
+                            $('ul[data-type=Domicilio] li[data-id='+$form.find('#domicilio_id').val()+'] span').text(response.domicilio.text);
+                        } else {
+                            if (response.errors) { forms.displayFormErrors(response.errors, $('#edit-Domicilio form')); }
+                            var $message = $('<div class="flash flash-error alert alert-danger alert-dismissible" role="alert">'+
+                                '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>'+
+                                response.msg+
+                            '</div>');
+                        }
+                        $('body').append($message);
+                        {# La animacion del mesaje flash dura 5seg #}
+                        setTimeout(function() { $message.remove(); }, 6000);
+                    },
+                    'error': function() {
+                        $('#edit-Domicilio').modal('hide');
+                        alert('Error al editar el domicilio.');
+                    }
+                });
+            });
+            {# Al mostrar popup de edicion de Domicilio: se consultan sus datos #}
+            $('#edit-Domicilio').on('show.bs.modal', function (event) {
+                var modal = $(this),
+                    domicilioId = $(event.relatedTarget).parent('li').data('id'),
+                    url = '{{ path('domicilio_query_ajax', {id: '-domicilioId-'}) }}'.replace('-domicilioId-', domicilioId);
+
+                $.ajax(url, {
+                    'dataType': 'JSON',
+                    'method': 'POST',
+                    'success': function(response) {
+                        {# Mostrar valores y llenar campos #}
+                        
+                        var Loc = response['Localidad'];
+                        var Dep = response['Departamento'];
+                        var Pro = response['Provincia'];
+                        
+                        
+                        Object.keys(response).map(function(key) {
+                            $('#edit-Domicilio [id$='+key+']')
+                                .val(response[key]);
+                        });
+                        
+                        
+                        
+                        domChange(Loc,Dep,Pro);
+                        
+                        
+                        
+                        
+                        
+                        
+                        Object.keys(response.calleNumero).map(function(key) {
+                            $('#edit-Domicilio [id$='+key+']')
+                                .val(response.calleNumero[key]);
+                        });
+                        Object.keys(response.pisoDepto).map(function(key) {
+                            $('#edit-Domicilio [id$='+key+']')
+                                .val(response.pisoDepto[key]);
+                        });
+                        Object.keys(response.manzanaLoteMono).map(function(key) {
+                            $('#edit-Domicilio [id$='+key+']')
+                                .val(response.manzanaLoteMono[key]);
+                        });
+                        
+                        
+                        
+                    },
+                    'error': function() {
+                        $('#edit-Domicilio').modal('hide');
+                        alert('No se pudo consultar información del domicilio.');
+                    }
+                });
+
+            });
+
+            {# Al esconder el modal de direccion: #}
+            $('#new-Domicilio').on('hidden.bs.modal', function() {
+                $('#new-Domicilio form')[0].reset();
+                $('#new-Domicilio form select').change();
+            });
+                    
+            {# Al enviar datos de direccion al backend: #}
+            $('#new-Domicilio form').on('submit', function(e) {
+                e.preventDefault();
+                $.ajax($(this).attr('action'), {
+                    'data': $(this).serialize()+'&ajax=1',
+                    'dataType': 'JSON',
+                    'method': 'POST',
+                    'success': function(response) {
+                        $('#new-Domicilio form .form-group.has-error').find('span.help-block').remove();
+                        $('#new-Domicilio form .form-group.has-error').removeClass('has-error');
+                        if (response.success) {
+                            $('#new-Domicilio').modal('hide');
+                            
+                            var $newRow = $('<li class="list-group-item" data-id="'+response.address.id+'" style="display=none;">'+
+                                                ((typeof $('ul[data-type=Domicilio]').data('action') !== 'undefined')? '<a href="#" title="Eliminar" data-toggle="modal" data-target="#remove-confirm"><i class="material-icons md-red">delete</i></span></a>' : '' )+
+                                                '<span>'+response.address.calle+' '+response.address.numero+' ('+response.address.localidad+' - '+response.address.codPostal+')'+
+                                                '</span>'+
+                                            '</li>');
+                            
+                            {# Oficina y organismos solo pueden tener una direccion de cada tipo #}
+                            {# Por lo que la nueva direccion reemplaza las existentes #}
+                            $('ul[data-type=Domicilio] li.empty-data').hide(300);
+                            if (response.address.deleted !== null) { $('ul[data-type=Domicilio] li[data-id='+response.address.deleted+']').hide(300); }
+                            window.setTimeout(function() {
+                                if (response.address.deleted !== null) { $('ul[data-type=Domicilio] li[data-id='+response.address.deleted+']').remove(); }
+                                $('ul[data-type=Domicilio] li:last').before($newRow);
+                                $newRow.show(300);
+                            }, 300);
+                        } else {
+                            if (response.errors) { forms.displayFormErrors(response.errors, $('#new-Domicilio form')); }
+                            alert(response.msg);
+                        }
+                    },
+                    'error': function() {
+                        $('#new-Domicilio').modal('hide');
+                        alert('Error al dar de alta la dirección, intente más tarde');
+                    }
+                });
+            });
+            
+        
+         {# Al esconder el modal de familiar: #}
+            $('#new-Familiar').on('hidden.bs.modal', function() {
+                $('#new-Familiar form')[0].reset();
+                $('#new-Familiar form select').change();
+            });
+            
+            {# Al enviar datos de familiar al backend: #}
+            $('#new-Familiar form').on('submit', function(e) {
+                e.preventDefault();
+                var $disabled = $(this).find('input:disabled, select:disabled'),
+                $form = $(this);
+                $disabled.removeAttr('disabled');
+                $.ajax($form.attr('action'), {
+                    'data': $form.serialize()+'&ajax=1',
+                    'dataType': 'JSON',
+                    'method': 'POST',
+                    'success': function(response) {
+                        $('#new-Familiar form .form-group.has-error').find('span.help-block').remove();
+                        $('#new-Familiar form .form-group.has-error').removeClass('has-error');
+                        if (response.success) {
+                           
+                             $('#new-Familiar').modal('hide');
+
+                            var $newRow = $('<li class="list-group-item" data-id="'+response.familiar.id+'" style="display=none;">'+
+                                             ((typeof $('ul[data-type=Familiar]').data('action') !== 'undefined')? '<a href="#" title="Eliminar" data-toggle="modal" data-target="#remove-confirm"><i class="material-icons md-red">delete</i></span></a>' : '' )+
+                                             ((response.edit)? ' <a href="#" title="Editar" data-toggle="modal" data-target="#edit-Familiar"><i class="material-icons md-green">create</i></a>' : '' )+
+                                             ' <span>'+response.familiar.text+'</span>'+
+                                         '</li>');
+
+                            $('ul[data-type=Familiar] li.empty-data').hide(300);
+                            window.setTimeout(function() {
+                                $('ul[data-type=Familiar] li:last').before($newRow);
+                                $newRow.show(300);
+                            }, 300);
+
+                            var $message = $('<div class="flash flash-success alert alert-success alert-dismissible" role="alert">'+
+                                '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>'+
+                                'Familiar dado de alta correctamente'+
+                            '</div>');
+
+                            if (!response.edit) {
+                                $('ul[data-type=Familiar] li[data-id='+$form.find('#familiar_familiarId').val()+'] [title=Editar]').remove();
+                            }
+                        } else {
+                            if (response.errors) { forms.displayFormErrors(response.errors, $('#new-Familiar form')); }
+                            var $message = $('<div class="flash flash-error alert alert-danger alert-dismissible" role="alert">'+
+                                '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>'+
+                                response.msg+
+                            '</div>');
+                            
+                        }
+                        $('body').append($message);
+                        {# La animacion del mesaje flash dura 5seg #}
+                        setTimeout(function() { $message.remove(); }, 6000);
+                    },
+                    'error': function() {
+                        $('#new-Familiar').modal('hide');
+                        alert('2. Error al dar de alta al Familiar.');
+                    }
+                });
+                $disabled.attr('disabled', 'disabled');
+            });
+            
+            
+            
+             {# Al mostrar popup de edicion de Familiar: se consultan sus datos #}
+            $('#edit-Familiar').on('show.bs.modal', function (event) {
+                var modal = $(this),
+                    familiarId = $(event.relatedTarget).parent('li').data('id'),
+                    url = '{{ path('familiar_query_ajax', {id: '-familiarId-'}) }}'.replace('-familiarId-', familiarId);
+
+                $.ajax(url, {
+                    'dataType': 'JSON',
+                    'method': 'POST',
+                    'success': function(response) {
+                        {# Mostrar valores y llenar campos #}
+                        Object.keys(response.persona).map(function(key) {
+                            $('#edit-Familiar [id$='+key+']')
+                                .text(response.persona[key]);
+                        });
+                        Object.keys(response.familiar).map(function(key) {
+                            $('#edit-Familiar [id$='+key+']')
+                                .val(response.familiar[key])
+                                .trigger('change');
+                        });
+                        $('#edit-Familiar [id$=familiar_id]').val(response.persona.id);
+                        $('#edit-Familiar [id$=familiar_familiarId]').val(response.familiar.id);
+                        
+                    },
+                    'error': function() {
+                        $('#edit-Familiar').modal('hide');
+                        alert('No se pudo consultar información del familiar.');
+                    }
+                });
+
+            });
+            
+            {# Al enviar datos de edicion de familiar al backend: #}
+            $('#edit-Familiar form').on('submit', function(e) {
+                e.preventDefault();
+                var $disabled = $(this).find('input:disabled, select:disabled'),
+                $form = $(this);
+                $disabled.removeAttr('disabled');
+                $.ajax($form.attr('action'), {
+                    'data': $form.serialize()+'&ajax=1',
+                    'dataType': 'JSON',
+                    'method': 'POST',
+                    'success': function(response) {
+                        $('#edit-Familiar form .form-group.has-error').find('span.help-block').remove();
+                        $('#edit-Familiar form .form-group.has-error').removeClass('has-error');
+                        if (response.success) {
+                           
+                             $('#edit-Familiar').modal('hide');
+
+                            
+                            var $message = $('<div class="flash flash-success alert alert-success alert-dismissible" role="alert">'+
+                                '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>'+
+                                'Familiar editado correctamente'+
+                            '</div>');
+
+                            if (!response.edit) {
+                                $('ul[data-type=Familiar] li[data-id='+$form.find('#familiar_familiarId').val()+'] [title=Editar]').remove();
+                            }
+                        } else {
+                            if (response.errors) { forms.displayFormErrors(response.errors, $('#edit-Familiar form')); }
+                            var $message = $('<div class="flash flash-error alert alert-danger alert-dismissible" role="alert">'+
+                                '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>'+
+                                response.msg+
+                            '</div>');
+                            
+                        }
+                        $('body').append($message);
+                        {# La animacion del mesaje flash dura 5seg #}
+                        setTimeout(function() { $message.remove(); }, 6000);
+                    },
+                    'error': function() {
+                        $('#edit-Familiar').modal('hide');
+                        alert('2. Error al editar el Familiar.');
+                    }
+                });
+                $disabled.attr('disabled', 'disabled');
+            });
+            
+            
+            $('#familiar_personaSearch').on('input change', function(e) {
+                var valueChanged = false;
+                if (e.type === 'propertychange') {
+                    valueChanged = e.originalEvent.propertyName === 'value';
+                } else {
+                    valueChanged = true;
+                }
+
+                if (valueChanged) {
+                    var $this = $(this),
+                        cuil = $this.val();
+                    {# Verificar existencia de persona si el cuil esta completo #}
+                    if (cuil.length === 11) {
+                        $.ajax('{{ path('persona_ajax_cuil') }}', {
+                            'data': '&cuil='+cuil,
+                            'dataType': 'JSON',
+                            'method': 'GET',
+                            'success': function(response) {
+                                var $personFields = $this.closest('form').find("fieldset [id^='familiar_familiar']");
+                                if (response.length === 1) {
+                                    $('#familiar_familiarId').val(response[0]['id']);
+                                    {# CUIL existe: Cargar datos encontrados y deshabilitar campos #}
+                                    $personFields.attr('disabled', 'disabled');
+                                    for (var i=0; i<response.length; i++) {
+                                        Object.keys(response[i]).map(function(key) {
+                                            $('#new-Familiar form [id$='+key+']')
+                                                .val(response[i][key])
+                                                .trigger('change');
+                                        });
+                                    }
+                                    var $message = $('<div class="flash flash-success alert alert-success alert-dismissible" role="alert">'+
+                                        '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>'+
+                                        'Persona encontrada, complete los datos de familiar'+
+                                    '</div>');
+                                } else if (response.length === 0) {
+                                    $('#familiar_familiarId').val('');
+                                    {# CUIL no existe: Permitir cargar manualmente #}
+                                    $personFields.removeAttr('disabled');
+                                    $personFields.val('').trigger('change');
+                                    $('#familiar_familiar_cuil').val(cuil);
+                                    var $message = $('<div class="flash flash-info alert alert-info alert-dismissible" role="alert">'+
+                                        '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>'+
+                                        'La persona no existe, complete los datos manualmente'+
+                                    '</div>');
+                                }
+                                $('body').append($message);
+                                {# La animacion del mesaje flash dura 5seg #}
+                                setTimeout(function() { $message.remove(); }, 6000);
+                            },
+                            'error': function() {
+                                alert('No se pudo realizar la búsqueda');
+                            }
+                        });
+                    }
+                }
+            });
+        });
+    </script>
+{% endblock %}

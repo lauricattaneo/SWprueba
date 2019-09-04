@@ -1,0 +1,4 @@
+localidad_ajax:
+    path:     /ajax
+    defaults: { _controller: "SiafcaIntranetBundle:Localidad:ajax" }
+    methods:  [POST,GET]

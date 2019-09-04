@@ -1,0 +1,21 @@
+services:
+    form.filter:
+        class: Caja\SiafcaIntranetBundle\FormFilter\FormFilterManager
+        arguments: ['@form.factory']
+    util:
+        class: Caja\SiafcaIntranetBundle\Util\Util
+    form.type.expte_amp_item_concepto:
+        class: Caja\SiafcaIntranetBundle\Form\ExpteAmpItemConceptoType
+        arguments: ["@doctrine.orm.entity_manager"]
+        tags:
+            - { name: form.type }
+    menuhandler:
+        class: Caja\SiafcaIntranetBundle\Services\MenuHandler
+    form.extension.help_message:
+        class: Caja\SiafcaIntranetBundle\Form\Extension\HelpOption
+        tags:
+          - { name: form.type_extension, extended_type: Symfony\Component\Form\Extension\Core\Type\FormType }
+    doctrine.dbal.oracle_platform.type_mapping.listener:
+        class: Caja\SiafcaIntranetBundle\EventListener\OracleDoctrineTimestampFormat
+        tags:
+            - { name: doctrine.event_listener, event: postConnect }

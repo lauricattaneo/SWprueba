@@ -1,0 +1,13 @@
+<tr class="row-index">
+    <td class="grey-background" scope="row">{{loop.index}}</td>
+    <td>{{ expteAmparoItem.aportante ~ ': ' ~ expteAmparoItem.aportante.persona.cuil }}</td>
+    <td>{{ expteAmparoItem.aportante.cargo.codigo ~ ': ' ~ expteAmparoItem.aportante.cargo }}</td>
+    <td>{{ expteAmparoItem.aportante.nroLiq }}</td>
+    <td>
+        
+        <a class="btn btn-block btn-primary-bt" href="{{ path('amparo_item_concepto_index', { 'id': expteAmparoItem.id }) }}">
+            <i class="material-icons md-inherit">visibility</i>
+            Conceptos
+        </a>
+    </td>
+</tr>

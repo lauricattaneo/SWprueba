@@ -1,0 +1,60 @@
+firmante_new:
+    path:     /{id}/new
+    defaults: { _controller: "SiafcaIntranetBundle:Firmante:new"}
+    methods:  [GET, POST]
+
+firmante_show:
+    path:     /{id}/show
+    defaults: { _controller: "SiafcaIntranetBundle:Firmante:show"}
+    methods:  [GET, POST]    
+
+firmante_activar:
+    path:     /ajax/activar/{id}
+    defaults: { _controller: "SiafcaIntranetBundle:Firmante:ajaxActivar"}
+    methods:  [GET, POST]    
+
+firmante_rechazar:
+    path:     /rechazar
+    defaults: { _controller: "SiafcaIntranetBundle:Firmante:rechazar"}
+    methods:  [GET, POST]   
+
+firmante_query_ajax:
+    path:     /ajax/{id}/query
+    defaults: { _controller: "SiafcaIntranetBundle:Firmante:queryAjax"}
+    methods:  [POST]
+
+firmante_new_ajax:
+    path:     /ajax/{id}/new
+    defaults: { _controller: "SiafcaIntranetBundle:Firmante:newAjax"}
+    methods:  [POST]
+
+firmante_delete_ajax:
+    path:     /ajax/{id}/delete
+    defaults: { _controller: "SiafcaIntranetBundle:Firmante:deleteAjax"}
+    methods:  [POST]
+
+firmante_edit_ajax:
+    path:     /ajax/edit
+    defaults: { _controller: "SiafcaIntranetBundle:Firmante:editAjax"}
+    methods:  [POST]
+    
+firmante_edit:
+    path:     /{id}/edit
+    defaults: { _controller:    "SiafcaIntranetBundle:Firmante:edit"}
+    methods:  [GET, POST]
+    
+firmante_bloquear:
+    path:     /{id}/delete
+    defaults: { _controller: "SiafcaIntranetBundle:Firmante:bloquear" }
+    methods:  [DELETE]
+    
+firmante_render:
+    path:     /{id}/render
+    defaults: { _controller: "SiafcaIntranetBundle:Domicilio:render" }
+    methods:  GET
+    
+firmante_pendientes:
+    path:     /firmantes/pendientes
+    defaults: { _controller: "SiafcaIntranetBundle:Firmante:indexFirmantesPendientes" }
+    methods:  GET
+    

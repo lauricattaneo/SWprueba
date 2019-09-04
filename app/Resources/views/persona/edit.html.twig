@@ -1,0 +1,123 @@
+{% extends 'base.html.twig' %}
+
+{% block content %}
+    <div class="table-wrapper page-header">
+        <h1>{% if delete_form is defined %}<i class="material-icons md-inherit md-48">mode_edit</i> Editar{% else %}<i class="material-icons md-inherit md-48">person_add</i> Agregar{% endif %} Persona
+        {% if ayuda is defined and ayuda != "" %}
+                <a href="#" data-toggle="modal"  data-target="#ayudaMessage"><i class="material-icons md-inherit md-48">help</i></a>
+            {% endif %}
+
+        </h1>
+    </div>
+    {{ form_start(form, {'attr': {'class': 'progress-form'}}) }}
+        {{ form_errors(form) }}
+        <fieldset>
+            <div class="row">
+                <div class="col-xs-12 col-md-6">{{ form_row(form.nombre) }}</div>
+                <div class="col-xs-12 col-md-6">{{ form_row(form.apellidoPat) }}</div>
+            </div>
+            <div class="row">
+               {# <div class="col-xs-12 col-md-6">{{ form_row(form.apellidoMat) }}</div> #}
+                <div class="col-xs-12 col-md-6">{{ form_row(form.sexo) }}</div>
+                <div class="col-xs-12 col-md-6">{{ form_row(form.estadoCivil) }}</div>
+            </div>
+            <div class="row">
+                {#<div class="col-xs-12 col-md-6">{{ form_row(form.tipoDocumento) }}</div>#}
+            </div>
+            <div class="row">
+                <div class="col-xs-12 col-md-6">{{ form_row(form.cuil) }}</div>
+                  <div class="col-xs-12 col-md-6">{{ form_row(form.documento) }}</div>
+            </div>
+            <div class="row">
+                <div class="col-xs-12 col-md-6">{{ form_row(form.fechaNac) }}</div>
+                <div class="col-xs-12 col-md-6">{{ form_row(form.nacionalidad) }}</div>
+            </div>
+        </fieldset>
+        {% if delete_form is not defined %}
+            <fieldset>
+                <legend>Domicilio</legend>
+                <div class="row">
+                    <div class="col-xs-12">{{ form_row(form.domicilios[0].tipoDomicilio) }}</div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-4">{{ form_row(form.domicilios[0].Provincia) }}</div>
+                    <div class="col-xs-12 col-sm-4">{{ form_row(form.domicilios[0].Departamento) }}</div>
+                    <div class="col-xs-12 col-sm-4">{{ form_row(form.domicilios[0].Localidad) }}</div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-6">{{ form_row(form.domicilios[0].calleNumero.calle) }}</div>
+                    <div class="col-xs-12 col-sm-6">{{ form_row(form.domicilios[0].calleNumero.numero) }}</div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-6">{{ form_row(form.domicilios[0].pisoDepto.piso) }}</div>
+                    <div class="col-xs-12 col-sm-6">{{ form_row(form.domicilios[0].pisoDepto.depto) }}</div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-4">{{ form_row(form.domicilios[0].manzanaLoteMono.manzana) }}</div>
+                    <div class="col-xs-12 col-sm-4">{{ form_row(form.domicilios[0].manzanaLoteMono.lote) }}</div>
+                    <div class="col-xs-12 col-sm-4">{{ form_row(form.domicilios[0].manzanaLoteMono.monoblock) }}</div>
+                </div>
+            </fieldset>
+        {% endif %}
+        <div class="col-xs-12 text-center" style="margin-top: 12px;">
+            <a class="btn btn-default" href="{{ path('persona_index') }}" title="Volver al listado">Cancelar</a>
+            <input class="btn btn-primary" type="submit" value="{% if delete_form is defined %}Guardar{% else %}Crear{% endif %}" />
+        </div>
+        {{ form_widget(form._token) }}
+    {{ form_end(form, {'render_rest': false}) }}
+{% endblock %}
+
+{% block customjavascripts %}
+    <script>
+        $( document ).ready(function() {
+            $('#persona_domicilios_0_Provincia').change(function() {
+                removeElementsButFirst(new Array('#persona_domicilios_0_Localidad', '#persona_domicilios_0_Departamento'));
+                searchElements('{{ path('departamento_ajax') }}', '#persona_domicilios_0_Departamento', '#persona_domicilios_0_Provincia', 'provincia');
+                $('#persona_domicilios_0_Localidad option.select-placeholder, #persona_domicilios_0_Departamento option.select-placeholder').prop('selected', 'selected');
+                $('#persona_domicilios_0_Localidad, #persona_domicilios_0_Departamento').change();
+            });
+            $('#persona_domicilios_0_Departamento').change(function() {
+                removeElementsButFirst(new Array('#persona_domicilios_0_Localidad'));
+                searchElements('{{ path('localidad_ajax') }}', '#persona_domicilios_0_Localidad', '#persona_domicilios_0_Departamento', 'departamento');
+                $('#persona_domicilios_0_Localidad option.select-placeholder').prop('selected', 'selected');
+                $('#persona_domicilios_0_Localidad').change();
+            });
+
+            var topYear = new Date().getFullYear();
+            {% image '@SiafcaIntranetBundle/Resources/public/nueva_base/images/ic_event_black_24dp_2x.png' %}
+                $(".date-format").datepicker({
+                    yearRange: (topYear-120)+":"+topYear,
+                    minDate: "-150Y",
+                    buttonImage: "{{ asset_url }}",
+                });
+            {% endimage %}
+            
+            //$("#persona_documento").attr("readonly").val(true);
+            $("#persona_cuil").change(function(){
+                $("#persona_documento").val($("#persona_cuil").val().substring(2,10));
+            });
+            
+            $("#persona_fechaNac").on("change",function(){
+                var fecha = $("#persona_fechaNac").val();
+                if(existeFecha(fecha) === false)
+                {   
+                    alert('La fecha ingresada no es valida, ingresela nuevamente');
+                }
+            });
+            
+            function existeFecha(fecha)
+            {
+                    var fechaf = fecha.split("/");
+                    var day = fechaf[0];
+                    var month = fechaf[1];
+                    var year = fechaf[2];
+                    var date = new Date(year,month,'0');
+                    if((day-0)>(date.getDate()-0)){
+                          return false;
+                    }
+                    return true;
+            }
+              
+        });
+    </script>
+{% endblock customjavascripts %}

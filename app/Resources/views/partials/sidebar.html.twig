@@ -1,0 +1,93 @@
+{% set currentPath = app.request.requestUri %}
+<aside class="collapse navbar-collapse header-collapse col-xs-4" id="navbar-collapse-2">
+    <img id="imagenLogoCaja" height="73" width="200" src="{{ asset( 'bundles/siafcaintranet/nueva_base/images/logo-caja.png' ) }}" alt="Caja de Jubilaciones y Pensiones">
+    <nav>
+        <ul class="nav nav-sidebar panel-group" id="nav-accordion" role="tablist" aria-multiselectable="false">
+                            
+            {% for key,elemento in nav_menu.menuStructure %}
+                {% set mainPath = elemento['path'] is defined? path(elemento['path']) : 'javascript:void(0)' %}
+                {% set mainActive = mainPath in currentPath %}
+                {% set mainIsCurrent = currentPath == path(elemento['path']) %}
+                
+                {% if (key == 'Oficinas' and app.user.orgAdm.adm == 'oficina' ) %}
+                    <li class="panel {% if mainActive %}active{% endif %}">
+                        <div id="menu-label-{{ loop.index }}">
+                            <a href="{{ path('oficina_show', {id: app.user.orgAdm.id}) }}">
+                                <i class="material-icons md-inherit" data-toggle="tooltip" data-placement="right" title="Oficina">business_center</i>
+                                <span>Oficina</span>
+                            </a>
+                        </div>
+                    </li>
+                {% endif %}
+
+                {# if (key != 'Oficinas' and key != 'Administrador') or is_granted(['ROLE_ADMIN'])#}
+                
+                    <li class="panel {% if mainActive %}active{% endif %}">
+                        <div id="menu-label-{{ loop.index }}">
+                            <a href="{% if not mainIsCurrent %}{{ mainPath }}{% else %}javascript:void(0){% endif %}" class="{% if mainIsCurrent %}disabled-link{% endif %} {% if elemento['submenu'] is defined %}menu-label{% endif %}">
+                                <i class="material-icons md-inherit" data-toggle="tooltip" data-placement="right" title="{{ key }}">{{ elemento['icon'] }}</i>
+                                <span>{{ key }}</span>
+                            </a>
+                            {% if elemento['submenu'] is defined %}
+                                <a href="#menu-item-{{ loop.index }}" {% if not mainActive %}class="collapsed"{% endif %} role="button" data-toggle="collapse" data-parent="#nav-accordion" aria-expanded="{% if mainActive %}true{% else %}false{% endif %}" aria-controls="menu-item-{{ loop.index }}">
+                                    <span class="glyphicon glyphicon-menu-right" aria-hidden="true"></span>
+                                </a>
+                            {% endif %}
+                        </div>
+                        {% if elemento['submenu'] is defined %}
+                            <div id="menu-item-{{ loop.index }}" class="panel-collapse collapse {% if mainActive %}in{% endif %} subnav" role="tabpanel" aria-labelledby="menu-label-{{ loop.index }}">
+                                <ul class="nav">
+                                    {% for keysub,submenu in elemento['submenu'] %}
+                                        {% set subPath = submenu['path'] is defined? path(submenu['path']) : 'javascript:void(0)' %}
+                                        {% set subIsCurrent = currentPath == subPath %}
+                                        <li {% if subIsCurrent %}class="active"{% endif %}>
+                                            <a href="{% if not subIsCurrent %}{{ subPath }}{% else %}javascript:void(0){% endif %}" {% if subIsCurrent %}class="disabled-link"{% endif %}>
+                                                <i class="material-icons md-inherit" data-toggle="tooltip" data-placement="right" title="{{ submenu['name'] }}">{{ submenu['icon'] }}</i>
+                                                <span class="badge red-gradient">{{ submenu['d'] }}</span>
+                                                <span>{{ submenu['name'] }}</span>
+                                                
+                                            </a>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        {% endif %}
+                    </li>
+                {#endif#} 
+            {% endfor %}
+        </ul>
+        <ul class="nav nav-sidebar">
+            <li>
+                <a href="#">
+                    <span>
+                        <i class="material-icons md-dark" data-toggle="tooltip" data-placement="right" title="Notificaciones">notifications</i>
+                        <span class="badge green-badge">15</span>
+                    </span>
+                    <span>Notificaciones</span>
+                </a>
+            </li>
+            {% if app.user.username is defined %}
+                <li class="visible-xs panel">
+                    <div id="user-aside-label">
+                        <a href="javascript:void(0)" class="menu-label">
+                            <i class="material-icons md-24 md-inherit" data-toggle="tooltip" data-placement="right" title="{{ app.user.username }}">account_circle</i>
+                            <span>{{ app.user.username }}</span>
+                        </a>
+                        <a href="#user-aside-menu" class="collapsed" role="button" data-toggle="collapse" data-parent="#user-accordion" aria-expanded="false" aria-controls="user-aside-menu">
+                            <span class="glyphicon glyphicon-menu-right" aria-hidden="true"></span>
+                        </a>
+                    </div>
+                    <div id="user-aside-menu" class="panel-collapse collapse subnav" role="tabpanel" aria-labelledby="user-aside-label">
+                        <ul class="nav">
+                            <li><a href="{{ path('usuario_show',{'id': app.user.id}) }}">Ver Perfil</a></li>
+                            <li><a href="{{ path('_demo_logout') }}">Salir</a></li>
+                        </ul>
+                    </div>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
+    <div id="collapse-aside-btn" class="hidden-xs hidden" title="Ver/Ocultar menú">
+        <span class="glyphicon glyphicon-menu-left" aria-hidden="true"></span>
+    </div>
+</aside>

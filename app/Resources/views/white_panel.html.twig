@@ -1,0 +1,27 @@
+<div class="{% if smallPanel == true %}
+                col-lg-3 col-md-4
+            {% else %}
+                {% if extraBig is defined %}
+                    {%if extraBig == true %}
+                        col-lg-6 col-md-6
+                    {% endif %}
+                {% else %}
+                    col-lg-4 col-md-6
+                {% endif %}
+            {% endif %}">
+    <div class="panel">
+        <div class="panel-heading">
+            <div class="row">
+                <div class="col-xs-3">
+                    <i class="material-icons md-68 {{ iconColor }}">
+                        {{ icon }}
+                    </i>
+                </div>
+                <div class="col-xs-9 text-right">
+                    <div class="huge">{{ bigText }}</div>
+                    <div>{{ smallText }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

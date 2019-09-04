@@ -1,0 +1,181 @@
+{%- block form_start -%}
+    {{ block('form_start', "form_div_layout.html.twig") }}
+    {% if attr.class is defined and 'progress-form' in attr.class %}
+        <div class="progress">
+            <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 100%">
+                <span class="sr-only">0% Complete (success)</span>
+            </div>
+        </div>
+    {% endif %}
+    {% set required_exist = false %}
+    {% set error_exist = not form.vars.valid %}
+    {% if not custom_options.avoid_required_message|default(false) %}
+        {% set required_exist = false %}
+        {% for item in form.children if not break|default(false) %}
+            {% if item.vars.required %}
+                {% set required_exist = true %}
+                {% set break = true %}
+            {% endif %}
+        {% endfor %}
+    {%- endif -%}
+    {%- if required_exist and not error_exist -%}
+        <div id="error" class="alert alert-info alert-dismissible" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <span class="glyphicon glyphicon-asterisk" aria-hidden="true"></span> Completar todos los campos obligatorios
+        </div>
+    {%- elseif not required_exist and error_exist -%}
+        <div id="error" class="alert alert-danger alert-dismissible" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span> Verificar los campos erroneos
+        </div>
+    {%- elseif required_exist and error_exist -%}
+        <div id="error" class="alert alert-danger alert-dismissible" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            Completar todos los campos obligatorios (<span class="glyphicon glyphicon-asterisk" aria-hidden="true"></span>)
+            y verificar erroneos (<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>)
+        </div>
+    {%- elseif not required_exist and not error_exist -%}
+        {# no alerts #}
+    {%- endif -%}
+    {{ form_errors(form) }}
+{%- endblock form_start -%}
+
+{% block form_row %}
+    {% if not compound -%}
+        <div class="form-group{% if errors|length > 0 %} has-error{% endif %}">
+            <div class="input-wrapper">
+                {{ form_widget(form, { 'attr': { 'class': (attr.class|default('')~' custom-control')|trim } }) }}
+                {{ form_label(form, form.vars.label, { 'label_attr': {'class' : (label_attr.class|default('')~' positioned-label control-label')|trim} }) }}
+                <span class="glyphicon"></span>
+            </div>
+            {{ form_errors(form) }}
+        </div>
+        {% if help is defined %}
+            <span class="help-block">{{ help|raw }}</span>
+        {% endif %}
+    {%- else -%}
+        {{ form_widget(form) }}
+    {%- endif -%}
+{% endblock form_row %}
+
+{% block integer_widget %}
+    {% set type = type|default('number') %}
+    {{ block('form_widget_simple') }}
+{% endblock integer_widget %}
+    
+{% block form_widget_simple %}
+    {% set type = type|default('text') %}
+    {% if not ('form-control' in attr.class|default('')) %}
+        {% set attr = attr|merge({'class': (attr.class|default('')~' form-control')|trim}) %}
+    {% endif %}
+    <input type="{{ type }}" {{ block('widget_attributes') }} {% if value is not empty %}value="{{ value }}" {% endif %}/>
+{% endblock form_widget_simple %}
+
+{% block form_errors %}
+    {% spaceless %}
+        {% if compound %}
+            {% if errors|length > 0 %}
+                <div class="alert alert-danger alert-dismissible" role="alert">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span><span style="padding-left: 0.5rem;">Revise los siguientes errores:</span>
+                    <ul>
+                        {% for error in errors %}
+                            <li>{{ error.message }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+            <div class="alert alert-danger js-validation hidden" role="alert">
+                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span><span style="padding-left: 0.5rem;">Verifique los campos resaltados e intente nuevamente</span>
+            </div>
+        {% else %}
+            {% if errors|length > 0 %}
+                <ul class="list-unstyled errors">
+                    {% for error in errors %}
+                        <li><span class="help-block">{{ error.message }}</span></li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endif %}
+    {% endspaceless %}
+{% endblock form_errors %}
+
+{% block textarea_widget %}
+    {% if not ('form-control' in attr.class|default('')) %}
+        {% set attr = attr|merge({'class': (attr.class|default('')~' form-control')|trim}) %}
+    {% endif %}
+    <textarea {{ block('widget_attributes') }}>{{ value }}</textarea>
+{% endblock textarea_widget %}
+
+{%- block choice_widget_expanded -%}
+    {%- if required is defined and required %}
+        {% set attr = attr|merge({'class': ((attr.class|default('')) ~ ' optionsGroup')|trim}) %}
+    {%- endif %}
+    <div {{ block('widget_container_attributes') }}>
+    {%- for child in form %}
+        {{- form_widget(child) -}}
+        {{- form_label(child, null, {translation_domain: choice_translation_domain}) -}}
+    {% endfor -%}
+    </div>
+{%- endblock choice_widget_expanded -%}
+
+{%- block choice_widget_collapsed -%}
+    {%- if required and placeholder is none and not placeholder_in_choices and not multiple and (attr.size is not defined or attr.size <= 1) -%}
+        {% set required = false %}
+    {%- endif -%}
+    {%- if placeholder is not none -%}
+        {% set attr = attr|merge({'class': ((attr.class|default('')) ~ ' hasPlaceholder')|trim}) %}
+    {%- endif -%}
+    {%- if placeholder is not none and value is empty -%}
+        {% set attr = attr|merge({'class': ((attr.class|default('')) ~ ' phSelected')|trim}) %}
+    {%- endif -%}
+    {% set attr = attr|merge({'class': (attr.class|default('')~' form-control')|trim}) %}
+    <select {{ block('widget_attributes') }}{% if multiple %} multiple="multiple"{% endif %}>
+        {%- if placeholder is not none -%}
+            <option class="select-placeholder" {% if required and value is empty %} disabled="disabled" {% endif %} value=""{% if required and value is empty %} selected="selected"{% endif %}>{{ placeholder != '' ? (translation_domain is same as(false) ? placeholder : placeholder|trans({}, translation_domain)) }}</option>
+        {%- endif -%}
+        {%- if preferred_choices|length > 0 -%}
+            {% set options = preferred_choices %}
+            {{- block('choice_widget_options') -}}
+            {%- if choices|length > 0 and separator is not none -%}
+                <option disabled="disabled">{{ separator }}</option>
+            {%- endif -%}
+        {%- endif -%}
+        {%- set options = choices -%}
+        {{- block('choice_widget_options') -}}
+    </select>
+    {% if not multiple %}<span class="caret"></span>{% endif %}
+{%- endblock choice_widget_collapsed -%}
+
+{%- block form_widget_compound -%}
+    <fieldset {{ block('widget_container_attributes') }}>
+        {% if form.vars.label|default(false) is not same as(false) %}
+            <legend>{{ form.vars.label }}</legend>
+        {%- endif -%}
+        {%- if form.parent is empty -%}
+            {{ form_errors(form) }}
+        {%- endif -%}
+        {{- block('form_rows') -}}
+        {{- form_rest(form) -}}
+    </fieldset>
+{%- endblock form_widget_compound -%}
+
+{%- block form_rows -%}
+    <div class="row">
+        {% for child in form %}
+            {% if not child.vars.compound -%}
+                <span class="col-xs-12 col-sm-6">{{- form_row(child) -}}</span>
+            {% else %}
+                <span class="col-xs-12">{{- form_row(child) -}}</span>
+            {% endif %}
+        {% endfor %}
+    </div>
+{%- endblock form_rows -%}
+
+{%- block form_end -%}
+    {%- if not render_rest is defined or render_rest -%}
+        {{ form_rest(form) }}
+    {%- endif -%}
+        <div class="clearfix"></div>
+    </form>
+{%- endblock form_end -%}

@@ -1,0 +1,30 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="container">
+        <h1>Error interno del sistema</h1>
+        <p>Ha ocurrido un error al intentar resolver la acción solicitada.</p>
+        <ul><li>Si el problema persiste, pongase en contacto con el administrador del sistema.</li></ul>
+        <p>
+            Sera redirigido automaticamente a la página inicial en <b id="seconds">15</b> segundos.
+            Presione el siguiente link si desea ir ahora:
+        </p>
+        <p><a href="{{ path('default_homepage') }}" class="btn btn-link">Ir a Inicio</a></p>
+        <div class="text-right text-muted">({{ status_code }} {{ status_text }})</div>
+    </div>
+{% endblock %}
+{% block customjavascripts %}
+    <script>
+        $(document).ready(function() {
+            var counter = window.setInterval(function() {
+                var actual = parseInt($('#seconds').text());
+                if (actual > 0) {
+                    $('#seconds').text(actual-1);
+                } else {
+                    window.clearInterval(counter);
+                    window.location = '';
+                }
+            }, 1000);
+        });
+    </script>
+{% endblock %}

@@ -1,0 +1,34 @@
+ayuda_index:
+    path: /ayuda
+    defaults: { _controller: "SiafcaIntranetBundle:Ayuda:index" }
+    methods:  [GET, POST]
+
+ayuda_new:
+    path: /new
+    defaults: { _controller: "SiafcaIntranetBundle:Ayuda:new" }
+    methods:  [GET, POST]
+
+ayuda_show:
+    path: /{id}/show
+    defaults: { _controller: "SiafcaIntranetBundle:Ayuda:show" }
+    methods:  [GET]
+
+ayuda_delete:
+    path:     /{id}/delete
+    defaults: { _controller: "SiafcaIntranetBundle:Ayuda:delete" }
+    methods:  DELETE
+
+ayuda_edit:
+    path:     /{id}/edit
+    defaults: { _controller: "SiafcaIntranetBundle:Ayuda:edit" }
+    methods:  [GET, POST]
+    
+ayudas:
+    path: /ayudas
+    defaults: { _controller: "SiafcaIntranetBundle:Admin:ayudas" }
+    methods:  [GET, POST]
+    
+ayuda_new:
+    path: /ayudaNew
+    defaults: { _controller: "SiafcaIntranetBundle:Admin:ayudas" }
+    methods:  [GET, POST]

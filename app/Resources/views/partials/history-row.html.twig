@@ -1,0 +1,6 @@
+<tr class="row-index">
+    <td class="grey-background">{{ entities.getPaginationData.firstItemNumber + loop.index - 1 }}</td>
+    {% for property in entity.historicColumns %}
+        <td>{% if attribute(entity, property.backEndName).timezone is defined %}{{ attribute(entity, property.backEndName)|date }}{% else %}{{ attribute(entity, property.backEndName) }}{% endif %}</td>
+    {% endfor %}
+</tr>

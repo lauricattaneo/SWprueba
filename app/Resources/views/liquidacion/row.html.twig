@@ -1,0 +1,71 @@
+<tr class="row-index">
+    <td class="grey-background">{{ liquidaciones.getPaginationData.firstItemNumber+loop.index0 }}</td>
+    <td class="text-left">{{ liquidacion.organismo }} ({{liquidacion.organismo.codigo}}) </td>
+    <td class="text-left">{{ liquidacion.NombreMes }} {{ liquidacion.anio }}</td>
+    <td>
+        <span class="label 
+        {#
+            REFERENCIA:
+                08 -> PRESENTADO
+                09 -> ACEPTADO
+                12 -> CANCELADO
+        #}
+        {% if liquidacion.estado.estado == '08' %}
+            label-primary
+        {% elseif liquidacion.estado.estado == '09' %}
+            label-success
+        {% elseif liquidacion.estado.estado == '12' %}
+            label-danger
+        {% else %}
+            label-info
+        {% endif %}
+        ">
+            {{ liquidacion.estado }}
+        </span>
+    </td>
+
+{#    <td>{{ liquidacion.claseLiq }}</td> #}
+    <td class="text-left">{{ liquidacion.tipoLiq }}</td>
+    <td class="text-left">{{ liquidacion.fuenteLiq }}</td>
+    <td>
+        <div class="actions" role="toolbar" aria-label="acciones-item">
+            <div>
+                <a class="btn btn-default btn-xs" href="{{ path('liquidacion_show',{'id': liquidacion.id}) }}">
+                    <i class="material-icons md-18 md-inherit">visibility</i>
+                    <span>Ver</span>
+                </a>
+            </div>
+            <!--
+            {% if liquidacion.estado.estado == '08' %} 
+                <div>
+                    <a class="btn btn-success btn-xs" href="{{path('liquidacion_trans', {'id':liquidacion.id,'trans':'T10'})}}">
+                        <i class="material-icons md-18 md-inherit">check</i>
+                        <span>Aceptar</span>
+                    </a>
+                </div>
+                  <div>
+                    <a class="btn btn-success btn-xs" href="{{path('liquidacion_trans', {'id':liquidacion.id,'trans':'T20'})}}">
+                        <i class="material-icons md-18 md-inherit">highlight_off</i>
+                        <span>Rechazar</span>
+                    </a>
+                </div>
+            {% elseif liquidacion.estado.estado == '09' %} 
+                <div>
+                    <a class="btn btn-success btn-xs" href="{{path('liquidacion_trans', {'id':liquidacion.id,'trans':'T11'})}}">
+                        <i class="material-icons md-18 md-inherit">forward</i>
+                        <span>Exportar</span>
+                    </a>
+                </div>
+                        {% elseif liquidacion.estado.estado == '10' %}
+                     <div>
+                    <a class="btn btn-success btn-xs" href="{{path('liquidacion_trans', {'id':liquidacion.id,'trans':'T12'})}}">
+                        <i class="material-icons md-18 md-inherit">get_app</i>
+                        <span>Aplicar</span>
+                    </a>
+                </div>
+                        {%endif %}
+            -->
+                        
+        </div>
+    </td>
+</tr>

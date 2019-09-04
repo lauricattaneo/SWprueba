@@ -1,0 +1,227 @@
+imports:
+    - { resource: parameters.yml }
+    - { resource: security.yml }
+    - { resource: services.yml }
+    - { resource: '@CajaSiafcaIntranetWsBundle/Resources/config/parameters.yml' }
+
+# Put parameters here that don't need to change on each machine where the app is deployed
+# http://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
+parameters:
+    locale: es
+
+framework:
+    #esi:             ~
+    translator:      { fallbacks: ["%locale%"] }
+    secret:          "%secret%"
+    router:
+        resource: "%kernel.root_dir%/config/routing.yml"
+        strict_requirements: ~
+    form:            ~
+    csrf_protection: ~
+    validation:      { enable_annotations: true }
+    #serializer:      { enable_annotations: true }
+    templating:
+        engines: ['twig']
+        #assets_version: SomeVersionScheme
+    default_locale:  "%locale%"
+    trusted_hosts:   ~
+    trusted_proxies: ~
+    session:
+        # handler_id set to null will use default session handler from php.ini
+        handler_id:  ~
+    fragments:       ~
+    http_method_override: true
+    trusted_proxies: ['10.20.8.0/24', '10.20.22.0/24', '10.30.1.0/24', '10.1.4.0/24', '10.30.8.0/24']
+    serializer:
+        enabled: true
+        enable_annotations: true
+
+# Twig Configuration
+twig:
+    debug:            "%kernel.debug%"
+    strict_variables: "%kernel.debug%"
+    globals:
+        database_type: "%database_type%"
+        nav_menu: '@menuhandler'
+    form_themes:
+        - '%twig_form_theme%'
+    date:
+        format: d/m/Y
+
+# Doctrine Configuration
+doctrine:
+    dbal:
+        driver:   "%database_driver%"
+        host:     "%database_host%"
+        port:     "%database_port%"
+        dbname:   "%database_name%"
+        user:     "%database_user%"
+        password: "%database_password%"
+        charset:  UTF8
+        service:  "%database_service%"
+        types:
+                oracledatetime: Caja\SiafcaIntranetBundle\Type\OracleDateTimeType
+                clob: Caja\SiafcaIntranetBundle\Type\ClobType
+        # if using pdo_sqlite as your database driver:
+        #   1. add the path in parameters.yml
+        #     e.g. database_path: "%kernel.root_dir%/data/data.db3"
+        #   2. Uncomment database_path in parameters.yml.dist
+        #   3. Uncomment next line:
+        #     path:     "%database_path%"
+
+    orm:
+        auto_generate_proxy_classes: "%kernel.debug%"
+        naming_strategy: doctrine.orm.naming_strategy.underscore
+        auto_mapping: true
+
+# Swiftmailer Configuration
+swiftmailer:
+    transport: "%mailer_transport%"
+    host:      "%mailer_host%"
+    username:  "%mailer_user%"
+    password:  "%mailer_password%"
+    spool:     { type: memory }
+    
+cas:
+    # desarrollo/testing
+    url: "%cas_url%"
+    server: "%cas_server%"
+    cert: "%cas_cert%"
+    username_attribute: "%cas_username_attribute%"
+    proxy: "%cas_proxy%"
+    
+be_simple_soap:
+    services:
+        SiafcaApi:
+            namespace:     '%besimple_services_namespace%'
+            binding:       '%besimple_services_binding%'
+            resource:      '@%besimple_services_resource%'
+            resource_type: '%besimple_services_resource_type%'
+#            arguments:      [ '@doctrine.orm.entity_manager' ]
+    cache:
+        type:     '%besimple_cache_type%'
+        lifetime: '%besimple_cache_lifetime%'
+        limit:    '%besimple_cache_limit%'
+    
+    clients:
+        SiafcaApi:
+            # required
+            wsdl: '%besimple_clients_wsdl%'
+
+            # classmap (optional)
+            classmap:
+                usuario_type: 'Caja\SiafcaIntranetBundle\Api\UsuarioApi'
+
+            # proxy (optional)
+#            proxy:
+#                host:     proxy.domain.name # required to enable proxy configuration
+#                port:     3128
+#                login:    ~
+#                password: ~
+#                auth:     ~ # can be 'basic' or 'ntlm'
+
+knp_paginator:
+    page_range: "%knp_paginator_page_range%"
+    default_options:
+        page_name: "%knp_paginator_page_name%"
+        sort_field_name: "%knp_paginator_sort_field_name%"
+        sort_direction_name: "%knp_paginator_sort_direction_name%"
+        distinct: "%knp_paginator_distinct%"
+    template:
+        pagination: "%knp_paginator_pagination%"
+        sortable: "%knp_paginator_sortable%"
+
+# Assetic Configuration
+assetic:
+    debug:          '%kernel.debug%'
+    use_controller: '%kernel.debug%'
+
+#    filters:
+#        scssphp:
+#            formatter: 'Leafo\ScssPhp\Formatter\Compressed'
+#        cssrewrite:
+#            apply_to: "\.css$"
+        
+    assets:
+        jquery:
+            inputs:
+                - '@SiafcaIntranetBundle/Resources/public/nueva_base/js/jquery-2.2.3.min.js'
+                - '@SiafcaIntranetBundle/Resources/public/nueva_base/js/jquery-ui.min.js'
+            output: 'js/compiled/jquery.js'
+        forms:
+            inputs:
+                - '@SiafcaIntranetBundle/Resources/public/nueva_base/custom-js/forms.js'
+                - '@SiafcaIntranetBundle/Resources/public/nueva_base/custom-js/autocomplete.js'
+                - '@SiafcaIntranetBundle/Resources/public/nueva_base/custom-js/masks.js'
+                - '@SiafcaIntranetBundle/Resources/public/nueva_base/custom-js/selectLocalidad.js'
+            output: 'js/compiled/forms.js'
+        bootstrap_js:
+            inputs:
+                - '@SiafcaIntranetBundle/Resources/public/nueva_base/bootstrap-3.3.7-dist/js/bootstrap.min.js'
+            output: 'js/compiled/bootstrap.js'
+#            integrity: 'sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS'
+#            crossorigin: 'anonymous'
+        bootstrap_css:
+            inputs:
+                - 'bundles/siafcaintranet/nueva_base/bootstrap-3.3.7-dist/css/bootstrap.min.css'
+            output: 'css/compiled/bootstrap.css'
+        custom_css:
+            inputs:
+                - 'bundles/siafcaintranet/nueva_base/custom-css/*'
+#            filters: ['?scssphp']
+        js_flick_css:
+            inputs:
+                - 'bundles/siafcaintranet/nueva_base/js/themes/flick/jquery-ui.min.css'
+#            filters: ['?scssphp']
+        bootstrap_glyphicons_ttf:
+            inputs:
+                - '@SiafcaIntranetBundle/Resources/public/nueva_base/bootstrap-3.3.7-dist/fonts/glyphicons-halflings-regular.ttf'
+            output: "css/fonts/glyphicons-halflings-regular.ttf"
+        bootstrap_glyphicons_eot:
+            inputs:
+                - '@SiafcaIntranetBundle/Resources/public/nueva_base/bootstrap-3.3.7-dist/fonts/glyphicons-halflings-regular.eot'
+            output: "css/fonts/glyphicons-halflings-regular.eot"
+        bootstrap_glyphicons_svg:
+            inputs:
+                - '@SiafcaIntranetBundle/Resources/public/nueva_base/bootstrap-3.3.7-dist/fonts/glyphicons-halflings-regular.svg'
+            output: "css/fonts/glyphicons-halflings-regular.svg"
+        bootstrap_glyphicons_woff:
+            inputs:
+                - '@SiafcaIntranetBundle/Resources/public/nueva_base/bootstrap-3.3.7-dist/fonts/glyphicons-halflings-regular.woff'
+            output: "css/fonts/glyphicons-halflings-regular.woff"
+        bootstrap_glyphicons_woff2:
+            inputs:
+                - '@SiafcaIntranetBundle/Resources/public/nueva_base/bootstrap-3.3.7-dist/fonts/glyphicons-halflings-regular.woff2'
+            output: "css/fonts/glyphicons-halflings-regular.woff2"
+        MaterialIcons_Regular_eot:
+            inputs:
+                - '@SiafcaIntranetBundle/Resources/public/nueva_base/iconfont/MaterialIcons-Regular.eot'
+            output: "css/iconfont/MaterialIcons-Regular.eot"
+        MaterialIcons_Regular_ijmap:
+            inputs:
+                - '@SiafcaIntranetBundle/Resources/public/nueva_base/iconfont/MaterialIcons-Regular.ijmap'
+            output: "css/iconfont/MaterialIcons-Regular.ijmap"
+        MaterialIcons_Regular_svg:
+            inputs:
+                - '@SiafcaIntranetBundle/Resources/public/nueva_base/iconfont/MaterialIcons-Regular.svg'
+            output: "css/iconfont/MaterialIcons-Regular.svg"
+        MaterialIcons_Regular_ttf:
+            inputs:
+                - '@SiafcaIntranetBundle/Resources/public/nueva_base/iconfont/MaterialIcons-Regular.ttf'
+            output: "css/iconfont/MaterialIcons-Regular.ttf"
+        MaterialIcons_Regular_woff:
+            inputs:
+                - '@SiafcaIntranetBundle/Resources/public/nueva_base/iconfont/MaterialIcons-Regular.woff'
+            output: "css/iconfont/MaterialIcons-Regular.woff"
+        MaterialIcons_Regular_woff2:
+            inputs:
+                - '@SiafcaIntranetBundle/Resources/public/nueva_base/iconfont/MaterialIcons-Regular.woff2'
+            output: "css/iconfont/MaterialIcons-Regular.woff2"
+        title_pattern:
+            inputs:
+                - '@SiafcaIntranetBundle/Resources/public/nueva_base/images/pattern.png'
+            output: "css/images/pattern.png"
+        hedader_bar:
+            inputs:
+                - '@SiafcaIntranetBundle/Resources/public/nueva_base/images/barra-header.png'
+            output: "css/images/barra-header.png"

@@ -1,0 +1,86 @@
+{% extends 'index.html.twig' %}
+{% from 'partials/section-title.html.twig' import js as section_title_js %}
+
+{% block section_title %}
+    {% embed "partials/section-title.html.twig" %}{% block titulo %}<i class="material-icons md-inherit md-48">search</i> Búsqueda de liquidaciones
+            {% if ayuda is defined and ayuda != "" %}
+                <a href="#" data-toggle="modal"  data-target="#ayudaMessage"><i class="material-icons md-inherit md-48">help</i></a>
+            {% endif %}
+            <div class="list-group">
+                <a class="btn btn-primary pull-right" href="{{ path('liquidacion_index', { 'id': null} ) }}" title="Volver al listado">Volver</a>
+            </div> 
+        {%endblock %}
+    {% endembed %}
+{% endblock section_title %}
+
+{% block filterbuttons %}
+    {{ form_start(form) }}
+        <div class="row">
+{#            <div class="col-xs-12 col-sm-6 col-md-4">{{ form_row(form.titulo) }}</div>#}
+            <div class="col-xs-12 col-sm-6 col-md-4">{{ form_row(form.anio) }}</div>
+            <div class="col-xs-12 col-sm-6 col-md-4">{{ form_row(form.mes) }}</div>
+            <div class="col-xs-12 col-sm-6 col-md-4">{{ form_row(form.fuenteLiq) }}</div>
+            <div class="col-xs-12 col-sm-6 col-md-4">{{ form_row(form.tipoLiq) }}</div>
+            <div class="col-xs-12 col-sm-6 col-md-4">{{ form_row(form.estado) }}</div>
+            <div class="col-xs-12 col-sm-6 col-md-4">{{ form_row(form.orgName) }}</div>
+            <div class="col-xs-12 text-right">
+                <a href="{{ path('liquidacion_search') }}" class="btn btn-default btn-sm">Limpiar</a>
+                <input class="btn btn-primary btn-sm" type="submit" value="Filtrar" />
+            </div>
+        </div>
+        {{ form_widget(form._token) }}
+    {{ form_end(form, {'render_rest': false}) }}
+{% endblock filterbuttons %}
+
+{% block thead %}
+    {%if liquidaciones|length > 1 %}
+    <th class="grey-background">#</th>
+    <th class="text-left">Organismo</th>
+    <th class="text-left">Período</th>
+    <th>Estado</th>
+    <th class="text-left">Tipo</th>
+    <th class="text-left">Fuente</th>
+    <th></th>
+    {%endif%}
+    
+{% endblock thead %}
+
+{% block tbody %}
+    <tbody class="table-body" style="background-color:#ccffff">
+        {% if liquidaciones is null or liquidaciones|length <= 1 %}
+        <tr>
+            <td colspan="8">No hay liquidaciones presentadas.</td>
+        </tr>
+    {% else %}
+        {% for liquidacion in liquidaciones %}
+            {{ include(':liquidacion:row.html.twig', { 'liquidacion' : liquidacion }) }}
+        {% endfor %}
+    {% endif %}
+    
+    </tbody>
+</table>
+
+{% endblock tbody %}
+
+{% block pagination %}
+    <div class="navigation">
+        {{ knp_pagination_render(liquidaciones) }}
+    </div>
+{% endblock %}
+
+{% block customjavascripts %}
+    {{ parent() }}
+    <script>
+        $(document).ready(function() {
+            var topYear = new Date().getFullYear()+1;
+            {% image '@SiafcaIntranetBundle/Resources/public/nueva_base/images/ic_event_black_24dp_2x.png' %}
+                $(".date-format").datepicker({
+                    yearRange: (topYear-120)+":"+topYear,
+                    minDate: "-150Y",
+                    buttonImage: "{{ asset_url }}",
+                });
+            {% endimage %}
+        });
+        {{ section_title_js() }}
+    </script>
+{% endblock customjavascripts %}

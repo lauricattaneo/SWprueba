@@ -1,0 +1,52 @@
+{% extends 'index.html.twig' %}
+{% from 'partials/section-title.html.twig' import js as section_title_js %}
+
+{% block section_title %}
+    {% embed "partials/section-title.html.twig" %}
+        {% block titulo %}<i class="material-icons md-inherit md-48">group</i>
+            Firmantes creados y rechazados
+            {% if ayuda is defined and ayuda != "" %}
+                <a href="#" data-toggle="modal"  data-target="#ayudaMessage"><i class="material-icons md-inherit md-48">help</i></a>
+            {% endif %}
+        {% endblock %}
+    {% endembed %}
+{% endblock section_title %}
+
+{% block thead %} 
+    {% if organismos|length >= 1 %}
+        <th>#</th>
+        <th class="text-left">Nombre del organismo</th>
+        <th class="text-left">Codigo</th>
+        <th class="text-left">Apellido y Nombre del firmante</th>
+        <th class="text-left">C.U.I.L.</th>
+        <th class="text-left">Estado</th>
+        <th class="text-left"> </th>
+    {% endif %}
+{% endblock thead %}
+
+{% block tbody %}
+<tbody class="table-body" style="background-color:#ccffff">
+        {% if organismos|length < 1%}
+            <tr>
+                <td colspan="7">No firmantes pendientes de aprobar.</td>
+            </tr>
+        {% else %}
+            {% for registro in organismos %}
+                {{ include(':firmante:row.html.twig') }}
+            {% endfor %}
+        {% endif %}
+    </tbody>
+</table>
+{% endblock tbody %}
+
+{% block pagination %}
+    <div class="navigation">
+        {{ knp_pagination_render(organismos) }}
+    </div>
+{% endblock %}
+
+{% block customjavascripts %}
+    <script>
+        {{ section_title_js() }}
+    </script>
+{% endblock %}

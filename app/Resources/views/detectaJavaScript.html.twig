@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <style type="text/css">
+  
+       h1
+        {
+            font-family: 'Book Antiqua';
+            text-align: center;
+            background-color: silver;
+            color:  #0000F0;
+            width: 100%;
+        }
+        
+        div.deshabilitado
+        {
+            padding-left: 20px;
+            padding-top: 60px;
+            background-color: #000\9;
+            -moz-box-shadow: 5px 5px red;
+            -webkit-box-shadow: 5px 5px red;
+            box-shadow: 1px 1px 5px 5px red;
+            width: 480px;
+            height: 250px;
+            position: absolute;
+            top: 40%;
+            left: 50%;
+            margin-top: -125px;
+            margin-left: -240px;
+            font-family: cella;
+            font-size: 18px;
+            text-align: center;
+        }
+    
+    </style>
+    <title>Detectando si javascript está habilitado</title>
+</head>
+<body>
+    <script type="text/javascript">
+        location.href = "{{ path('_demo_login') }}";
+    </script>
+    <noscript>
+        <img id="barra" style="width: 100%; height: 5px" src="{{ asset( 'bundles/cajasiafcaintranet/nueva_base/images/barra-header.png' ) }}">
+        <h1>Comprobando si JavaScript está habilitado</h1>
+        <div class="deshabilitado">
+            <img id="imagenLogoCaja" style="max-width: 200px;" src="{{ asset( 'bundles/cajasiafcaintranet/nueva_base/images/logo-caja.png' ) }}" alt="Caja de Jubilaciones y Pensiones">
+            <br />
+            JavaScript está deshabilitado en su navegador web.<br />
+            Este sitio requiere la utilización de JavaScript,<br />
+            <b><i>por lo que deberá habilitarlo.</i></b>.<br />
+            <br />
+            Para ver las instrucciones para habilitar JavaScript<br />
+            en su navegador, haga click 
+            <a href="http://www.enable-javascript.com/es/" 
+            target="_blank">aquí</a>.
+        </div>
+    </noscript>
+</body>
+</html>

@@ -1,0 +1,44 @@
+usuario_organismo.new_usuario:
+    path:     /{id}/new
+    defaults: { _controller: "SiafcaIntranetBundle:UsuarioOrganismo:new"}
+    methods:  [GET, POST]
+
+usuario_organismo.show:
+    path:     /{id}/show
+    defaults: { _controller: "SiafcaIntranetBundle:UsuarioOrganismo:show"}
+    methods:  [GET, POST]
+
+usuario_organismo.edit:
+    path:     /edit
+    defaults: { _controller: "SiafcaIntranetBundle:UsuarioOrganismo:edit" }
+    methods:  [GET, POST]
+    
+usuario_organismo.queryAjax:
+    path:     /queryAjax
+    defaults: { _controller: "SiafcaIntranetBundle:UsuarioOrganismo:queryAjax" }
+    methods: [GET, POST]
+
+usuario_organismo.validar:
+    path:     /validar
+    defaults: { _controller: "SiafcaIntranetBundle:UsuarioOrganismo:validar" }
+    methods:  [GET, POST]
+    
+usuario_organismo.bloquear:
+    path:     /bloquear
+    defaults: { _controller: "SiafcaIntranetBundle:UsuarioOrganismo:bloquear" }
+    methods:  [GET, POST]
+    
+usuario_organismo.desbloquear:
+    path:     /desbloquear
+    defaults: { _controller: "SiafcaIntranetBundle:UsuarioOrganismo:desbloquear" }
+    methods:  [GET, POST]
+    
+usuario_organismo.inhabilitarB:
+    path:     /inhabilitarB
+    defaults: { _controller: "SiafcaIntranetBundle:UsuarioOrganismo:inhabilitarB" }
+    methods:  [GET, POST]
+    
+usuario_organismo.inhabilitarH:
+    path:     /inhabilitarH
+    defaults: { _controller: "SiafcaIntranetBundle:UsuarioOrganismo:inhabilitarH" }
+    methods:  [GET, POST]

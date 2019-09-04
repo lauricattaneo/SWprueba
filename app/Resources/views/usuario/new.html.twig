@@ -1,0 +1,64 @@
+{% extends 'base.html.twig' %}
+
+{% block content %}
+    <h1 class="page-header">
+        <i class="material-icons md-inherit md-48">add_circle</i>
+        Agregar Usuario a {{ oficina.nombre }}
+    </h1>
+
+    {{ form_start(form, {'attr': {'class': 'progress-form'}}) }}
+        <div class="row">
+            <div class="col-xs-12 col-md-6">{{ form_row(form.username) }}</div>
+            <div class="col-xs-12 col-md-6">{{ form_row(form.rol) }}</div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-md-6">{{ form_row(form.fechaDesde) }}</div>
+            <div class="col-xs-12 col-md-6">{{ form_row(form.fechaHasta) }}</div>
+        </div>
+        {{ form_rest(form) }}
+        <p id="todo" class="help-block">Si el usuario no existe será dado de alta.</p>
+        <div class="col-xs-12 text-center" style="margin-top: 12px;">
+            <a class="btn btn-default" href="{{ path('organismo_show', {'id': oficina.id}) }}" title="Volver al organismo">Cancelar</a>
+            <input class="btn btn-primary" type="submit" value="Agregar" />
+        </div>
+    {{ form_end(form) }}
+{% endblock %}
+{% block customjavascripts %}
+    {{ parent() }}
+    <script>
+        $(document).ready(function() {
+            var topYear = new Date().getFullYear()+1;
+            {% image '@SiafcaIntranetBundle/Resources/public/nueva_base/images/ic_event_black_24dp_2x.png' %}
+                $(".date-format").datepicker({
+                    yearRange: (topYear-120)+":"+topYear,
+                    minDate: "-150Y",
+                    buttonImage: "{{ asset_url }}",
+                });
+            {% endimage %}
+
+            {# Verifica si el usuario ingresado ya existe #}
+            $('#usuario_organismo_username').change(function() {
+                if ($(this).val().length > 0) {
+                    $.ajax({
+                        'url': encodeURI('{{ path('usuario_query_ajax') }}'),
+                        'dataType': 'json',
+                        'method': 'POST',
+                        'data': { 'username': $(this).val() },
+                        'success': function(response) {
+                            if (response.id) {
+                                $('#usuario_organismo_uid').val(response.id);
+                                $('#todo').text('El usuario ya existe, se asociará al organismo con los datos ingresados');
+                            } else {
+                                $('#usuario_organismo_uid').val('');
+                                $('#todo').text('El usuario no existe, será dado de alta');
+                            }
+                        },
+                        'error': function() {
+                            alert('Error en el servidor, intente más tarde');
+                        },
+                    });
+                }
+            }).trigger('change');
+        });
+    </script>
+{% endblock %}

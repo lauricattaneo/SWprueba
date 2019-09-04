@@ -1,0 +1,37 @@
+<div class="panel panel-blue">
+    <div class="panel-heading">
+        <strong>
+            <i class="material-icons">person</i>
+            Firmante de {{ firmante.organismo }}
+        </strong>
+        <div class="pull-right" data-toggle="collapse" data-target="#firmante" aria-expanded="true" role="button" aria-controls="firmante">
+            <a href="javascript:void(0)">
+                <i class="material-icons md-light">expand_more</i>
+            </a>
+        </div>
+    </div>
+    <div id="firmante" class="panel-collapse collapse">
+        <div class="panel-body">
+            <strong>{{ firmante.persona }}</strong>
+            {% if firmante.fechaDesde is not null %}
+                <br>Desde: {{ firmante.fechaDesde | date('d/m/Y') }}
+            {% endif %}
+            {% if firmante.fechaHasta is not null %}
+                <br>Hasta: {{ firmante.fechaHasta | date('d/m/Y') }}
+            {% endif %}
+            {% if firmante.comentario is not null %}
+                <br>Notas Adicionales: {{ firmante.comentario }}
+            {% endif %}
+        </div>
+        <div class="panel-footer">
+            <a href="javascript:void(0)" class="btn btn-danger-inverted btn-lg" role="button">
+                <i class="material-icons" >block</i>
+                Dar de Baja Firmante
+            </a>
+            <a href="javascript:void(0)" class="btn btn-primary-inverted btn-lg" role="button">
+                <i class="material-icons" >edit</i>
+                Editar Firmante
+            </a>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,20 @@
+<tr class="row-index">
+    <td class="grey-background">{{ personas.getPaginationData.firstItemNumber + loop.index - 1 }}</td>
+    <td class="text-left">{{ persona.getNombreCompleto()}}</td>
+    <td class="text-left">{{ persona.documento }}</td>
+    <td class="text-left">{{ persona.sexo }}</td>
+    <td class="text-left">{{ persona.CuilToShow() }}</td>
+    <td class="text-left">{{ (persona.fechaNac is empty ? '' : persona.fechaNac|date) }}</td>
+        
+    <td>
+        <div class="actions" role="toolbar" aria-label="acciones-item">
+            <div>
+            <a class="btn btn-default btn-xs" href="{{ path('persona_show',{'id': persona.id}) }}">
+                    <i class="material-icons md-18 md-inherit">visibility</i>
+                    <span>Ver</span>
+                </a> 
+         </div>  
+         </div>     
+   </td>
+                    
+</tr>

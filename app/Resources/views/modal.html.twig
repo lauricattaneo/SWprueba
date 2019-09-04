@@ -1,0 +1,30 @@
+{% if form.calleNumero.calle is defined %}
+    {% form_theme form.calleNumero.calle 'form/form_child.html.twig' %}
+    {% form_theme form.calleNumero.numero 'form/form_child.html.twig' %}
+    {% form_theme form.pisoDepto.piso 'form/form_child.html.twig' %}
+    {% form_theme form.pisoDepto.depto 'form/form_child.html.twig' %}
+    {% form_theme form.manzanaLoteMono.manzana 'form/form_child.html.twig' %}
+    {% form_theme form.manzanaLoteMono.lote 'form/form_child.html.twig' %}
+    {% form_theme form.manzanaLoteMono.monoblock 'form/form_child.html.twig' %}
+{% endif %}
+
+<div class="modal fade" id="{{ modalId }}" tabindex="-1" role="dialog" aria-labelledby="{{ modalId }}Label">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">{{ titulo }}</h4>
+            </div>
+            {{ form_start(form, {'attr': {'class': 'progress-form'}}) }}
+                <div class="modal-body">
+                    {{ form_widget(form) }}
+                </div>
+                {{ form_widget(form) }}
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                </div>
+            {{ form_end(form) }}
+        </div>
+    </div>
+</div>

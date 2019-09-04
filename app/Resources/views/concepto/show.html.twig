@@ -1,0 +1,48 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Concepto</h1>
+
+    <table>
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ concepto.id }}</td>
+            </tr>
+            <tr>
+                <th>Codigo</th>
+                <td>{{ concepto.codigo }}</td>
+            </tr>
+            <tr>
+                <th>Nombre</th>
+                <td>{{ concepto.nombre }}</td>
+            </tr>
+            <tr>
+                <th>Importe</th>
+                <td>{{ concepto.importe }}</td>
+            </tr>
+            <tr>
+                <th>Porcentaje</th>
+                <td>{{ concepto.porcentaje }}</td>
+            </tr>
+            <tr>
+                <th>Descripcion</th>
+                <td>{{ concepto.descripcion }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <ul>
+        <li>
+            <a href="{{ path('concepto_index') }}">Back to the list</a>
+        </li>
+        <li>
+            <a href="{{ path('concepto_edit', { 'id': concepto.id }) }}">Edit</a>
+        </li>
+        <li>
+            {{ form_start(delete_form) }}
+                <input type="submit" value="Delete">
+            {{ form_end(delete_form) }}
+        </li>
+    </ul>
+{% endblock %}

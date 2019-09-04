@@ -1,0 +1,33 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="container">
+        <h1>Página no encontrada</h1>
+        <p>No se pudo encontrar la sección solicitada.</p>
+        <ul>
+            <li>Verifique la url ingresada.</li>
+            <li>Utilize los items del menú para volver al sitio.</li>
+        </ul>
+        <p>
+            Sera redirigido automaticamente a la página inicial en <b id="seconds">15</b> segundos.
+            Presione el siguiente link si desea ir ahora:
+        </p>
+        <p><a href="{{ path('default_homepage') }}" class="btn btn-link">Ir a Inicio</a></p>
+        <div class="text-right text-muted">({{ status_code }} {{ status_text }})</div>
+    </div>
+{% endblock %}
+{% block customjavascripts %}
+    <script>
+        $(document).ready(function() {
+            var counter = window.setInterval(function() {
+                var actual = parseInt($('#seconds').text());
+                if (actual > 0) {
+                    $('#seconds').text(actual-1);
+                } else {
+                    window.clearInterval(counter);
+                    window.location = '';
+                }
+            }, 1000);
+        });
+    </script>
+{% endblock %}

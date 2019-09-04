@@ -1,0 +1,4 @@
+provincia_ajax:
+    path:     /ajax
+    defaults: { _controller: "SiafcaIntranetBundle:Provincia:ajax" }
+    methods:  [POST,GET]

@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+
+{% block content %}
+    <h1 class="page-header">
+        <i class="material-icons md-inherit md-48">add_circle</i>
+        Crear Expediente de Amparo
+        {% if ayuda is defined and ayuda != "" %}
+                <a href="#" data-toggle="modal"  data-target="#ayudaMessage"><i class="material-icons md-inherit md-48">help</i></a>
+            {% endif %}
+    </h1>
+
+    {{ form_start(form, {'attr': {'class': 'progress-form'}}) }}
+        {{ form_row(form.numero) }}
+        <div class="row">
+            <div class="col-xs-12 col-md-6">{{ form_row(form.fechaInicio) }}</div>
+            <div class="col-xs-12 col-md-6">{{ form_row(form.fechaResolucion) }}</div>
+        </div>
+        {{ form_rest(form) }}
+        <div class="col-xs-12 text-center" style="margin-top: 12px;">
+            <a class="btn btn-default" href="{{ path('amparo_index', { 'id': idOrganismo}) }}" title="Volver al listado">Cancelar</a>
+            <input class="btn btn-primary" type="submit" value="Crear" />
+        </div>
+    {{ form_end(form) }}
+{% endblock %}
+
+{% block customjavascripts %}
+    <script>
+        $(document).ready(function() {
+            var topYear = new Date().getFullYear()+1;
+            {% image '@SiafcaIntranetBundle/Resources/public/nueva_base/images/ic_event_black_24dp_2x.png' %}
+                $(".date-format").datepicker({
+                    yearRange: (topYear-120)+":"+topYear,
+                    minDate: "-150Y",
+                    buttonImage: "{{ asset_url }}",
+                });
+            {% endimage %}
+        });
+    </script>
+{% endblock %}

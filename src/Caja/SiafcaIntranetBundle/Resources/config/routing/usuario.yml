@@ -1,0 +1,65 @@
+usuario_checkJS:
+    path:     /ingresar
+    defaults: { _controller: "SiafcaIntranetBundle:Usuario:checkJavaScript" }
+    methods:  GET
+
+usuario_index:
+    path:     /
+    defaults: { _controller: "SiafcaIntranetBundle:Usuario:index" }
+    methods:  GET
+
+usuario_show:
+    path:     /{id}/show
+    defaults: { _controller: "SiafcaIntranetBundle:Usuario:show" }
+    methods:  GET
+
+usuario_new:
+    path:     /new/{id}
+    defaults: { _controller: "SiafcaIntranetBundle:Usuario:newManual" }
+    methods:  [GET, POST]
+    requirements: { id: \d+}
+
+usuario_new_manual:
+    path:     /newManual/{id}
+    defaults: { _controller: "SiafcaIntranetBundle:Usuario:new" }
+    methods:  [GET, POST]
+
+usuario_edit:
+    path:     /{id}/edit
+    defaults: { _controller: "SiafcaIntranetBundle:Usuario:edit" }
+    methods:  [GET, POST]
+
+usuario_delete:
+    path:     /{id}/delete
+    defaults: { _controller: "SiafcaIntranetBundle:Usuario:delete" }
+    methods:  DELETE
+
+usuario_organismos:
+    path: /{id}/organismos
+    defaults: { _controller: "SiafcaIntranetBundle:Usuario:showOrganismos" }
+    methods:  GET
+
+usuario_organismo:
+    path: organismo/{id}/
+    defaults: { _controller: "SiafcaIntranetBundle:Usuario:organismo" }
+    methods:  GET
+
+usuario_query_ajax:
+    path:     /ajax/query
+    defaults: { _controller: "SiafcaIntranetBundle:Usuario:queryAjax"}
+    methods:  [POST]
+
+usuario.ajax_autocomplete:
+    path:  /ajax/autocomplete/
+    defaults: { _controller: "SiafcaIntranetBundle:Usuario:autocomplete" }
+    
+changepass_usuario:
+    path: /changePassword/{id}/
+    defaults: { _controller: SiafcaIntranetBundle:Usuario:changePassword }
+    methods: [GET,POST]
+    
+resetpass_usuario:
+    pattern:  /resetPassword/
+    defaults: { _controller: "SiafcaIntranetBundle:Usuario:reset_password" }
+    methods: [GET,POST]
+    requirements: { id: \d+ }

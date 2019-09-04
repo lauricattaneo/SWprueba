@@ -1,0 +1,26 @@
+<div class="col-md-12">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <i class="material-icons">menu</i>
+            Resumen
+        </div>
+        <table class="table table-hover table-body table-bordered">
+            <thead class="text-primary">
+                <tr>
+                    <th>Concepto</th>
+                    <th>Total ($ARS)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if liquidacion.informe is not null %}
+                    {% for informeItem in liquidacion.informe.informeItems  %}
+                        <tr>
+                            <td class="concepto"><strong>{{ informeItem.concepto.codigo ~' - '~ informeItem.concepto }}</strong></td>
+                            <td class="importe"><span style="float: left;">$</span>{{ informeItem.importeTotal|number_format(2, ',', '.') }}</td>
+                        </tr>
+                    {% endfor %}
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>

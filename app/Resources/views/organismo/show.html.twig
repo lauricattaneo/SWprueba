@@ -1,0 +1,1767 @@
+{% extends "show.html.twig" %}
+{% from 'partials/section-title.html.twig' import js as section_title_js %}
+
+{% block section_title %}
+    {% if app.session is not null and app.session.started %}
+        {% for flash_message in app.session.flashBag.get('info') %}
+            <div class="flash-info">
+                {{ flash_message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    {% for flash_message in app.session.flashBag.get('error') %}
+        <div class="flash-error">
+            {{ flash_message }}
+        </div>
+    {% endfor %}
+    {% embed "partials/section-title.html.twig" %}
+
+        {% block titulo %} <i class="material-icons md-inherit md-48">home</i>{{ organismo }}
+            {% if ayuda is defined and ayuda != "" %}
+                <a href="#" data-toggle="modal"  data-target="#ayudaMessage"><i class="material-icons md-inherit md-48">help</i></a>
+            {% endif %}
+            <div class="list-group">
+    <a class="btn btn-primary pull-right" href="{{path('organismo_index')}}" title="Volver atras">Volver</a>
+</div> 
+        {% endblock %}
+        {% block subtitulo %}{{ organismo.tipoOrganismo ~ " | " ~ organismo.estado }}{% endblock subtitulo %}
+    {% endembed %}
+{% endblock section_title %}
+
+{% block first_row %}
+    {% if organismo.datosCompletos == false %}
+        {{ include(':organismo:datosFaltantes.html.twig', {
+                'organismo' : organismo
+            }) }}
+    {% endif %}
+{% endblock first_row %}
+
+{% block second_row %}
+    {% embed ':partials:dataPanel.html.twig' with {'entidad': organismo, 'organismoId': organismo.id}  %}
+        {% block propLine %}
+            {# Sobreescribe los items de firmantes porque tienen una condicion bajo la cual se habilita la edicion #}
+            {% if key == 'Firmantes' %}
+                <div class="list-group-item">
+                    <strong class="text-bold">{{ key }}:</strong>
+                    {%if 'ROLE_CONTRALOR_ADMIN' in app.user.roles %}
+                        {% if value.count is defined %}{{ value.count }} existentes{% endif %}
+                        <a title="Agregar" class="pull-right" href="#" data-toggle="modal" data-target="#new-{{ value.entityName|replace({' ': '_'}) }}"><i class="material-icons md-inherit">add_circle</i></a>
+                    {% endif %}
+                </div>
+                <ul class="list-unstyled list-group" data-type="{{ value.entityName }}" {% if value.delete.enabled|default(false) %}data-action="{{ path(value.delete.path, value.delete.params|default({})) }}"{% endif %}>
+                    {% if value.data is defined %}
+                        {% for item in value.data %}
+                            <li class="list-group-item" data-id="{{ item.id }}">
+                              {%if 'ROLE_CONTRALOR_ADMIN' in app.user.roles %}
+
+                                    {% if value.delete.enabled|default(false) %}
+
+                                        <a href="#" title="Eliminar" data-toggle="modal" data-target="#remove-confirm"><i class="material-icons md-red">delete</i></a>
+                                    {% endif %}
+                                    {% if value.edit.enabled|default(false) and (item.fechaHasta is null or item.fechaHasta>date() ) %}
+                                        <a href="#" title="Editar" data-toggle="modal" data-target="#edit-{{ value.entityName|replace({' ': '_'}) }}"><i class="material-icons md-green">create</i></a>
+                                    {% endif %}
+                                {% endif %}
+                                <span>
+                                    {% if item.isCreado %}
+{#                                        <a href="{{path('firmante_show', {'id': item.id}) }}"><i title="ACTIVAR" class="material-icons">playlist_add_check</i></a>#}
+                                        <a href="{{path('persona_show', {'id': item.persona.id }) }}">{{ item.persona ~ ' ( ' ~ item.fechaDesde|date('d/m/Y') ~ ' - '~ ' CREADO ' ~ ' )' }}</a>
+                                    {% elseif item.isActivo%}
+                                        <a href="{{path('persona_show', {'id': item.persona.id }) }}">{{ item.persona ~ ' ( ' ~ item.fechaDesde|date('d/m/Y') ~ ' - '~ ' ACTIVO ' ~ ' )' }}</a>
+                                    {% elseif item.isRechazado%}
+                                        <a href="{{path('persona_show', {'id': item.persona.id }) }}">{{ item.persona ~ ' ( ' ~ item.fechaDesde|date('d/m/Y') ~ ' - '~ item.fechaHasta|date('d/m/Y') ~ ' ) - RECHAZADO' }}</a>
+                                    {% else %}
+                                        <a href="{{path('persona_show', {'id': item.persona.id }) }}">{{ item.persona ~ ' ( ' ~ item.fechaDesde|date('d/m/Y') ~ ' - '~ item.fechaHasta|date('d/m/Y') ~ ' )' }}</a>
+                                    {% endif %}
+                                </span>
+                            </li>
+                        {% endfor %}
+                        <li class="list-group-item empty-data {% if value.data|length > 0 %}my-hide{% endif %}">-- No hay datos cargados --</li>
+                        {% endif %}
+                </ul>
+            {% elseif key == 'Usuario responsable' %}
+                <div class="list-group-item">
+                    <strong class="text-bold">{{ key }}:</strong>
+                    {%if 'ROLE_CONTRALOR_ADMIN' in app.user.roles %}
+                        <a title="Agregar" class="pull-right" href="#" data-toggle="modal" data-target="#new-UsuarioResponsable"><i class="material-icons md-inherit">add_circle</i></a>
+                    {% endif %}
+                </div>
+
+                <ul class="list-unstyled list-group" data-type="{{ value.entityName }}" {% if value.delete.path is defined %}data-action="{{ path(value.delete.path, value.delete.params|default({})) }}"{% endif %}>
+                    {% if value.data is defined %}
+                        {% if value.data is not null %}
+                            {% for item in value.data %}
+                                <li class="list-group-item" data-id="{{ item.id }}">
+                                    {%if 'ROLE_CONTRALOR_ADMIN' in app.user.roles %}
+                                        {% if item.estado.id == 30 %} {# estado inicial #}
+                                            <a href="#" title="Validar" data-toggle="modal" data-target="#validar-confirm"><i class="material-icons md-green">done</i></a>
+                                        {% endif %}
+                                        {% if item.estado.id == 31 %} {# estado habilitado #}
+                                            <a href="#" title="Inhabilitar" data-toggle="modal" data-target="#inhabilitarH-confirm"><i class="material-icons md-red">block</i></a>
+                                            <a href="#" title="Bloquear" data-toggle="modal" data-target="#bloquear-confirm"><i class="material-icons md-red">lock</i></a>
+                                        {% endif %}
+                                        {% if item.estado.id == 32 %} {# estado bloqueado #}
+                                            <a href="#" title="Inhabilitar" data-toggle="modal" data-target="#inhabilitarB-confirm"><i class="material-icons md-red">block</i></a>
+                                            <a href="#" title="Desbloquear" data-toggle="modal" data-target="#desbloquear-confirm"><i class="material-icons md-green">lock_open</i></a>
+                                        {% endif %}
+                                        {% if value.edit.enabled|default(false) and (item.estado.estado == '1' or item.estado.estado == '2') %}
+                                            <a href="#" title="Editar" data-toggle="modal" data-target="#edit-UsuarioResponsable"><i class="material-icons md-green">create</i></a>
+                                        {% endif %}
+                                    {% endif %}
+                                    <span>
+                                        <a href="{{path('usuario_organismo.show', {'id': item.id}) }}">{{ item }}</a>
+                                    </span>
+                                </li>
+                            {% endfor %}
+                        {% endif %}
+                        <li class="list-group-item empty-data {% if value.data|length > 0 %}my-hide{% endif %}">-- No hay datos cargados --</li>
+                        {% endif %}
+                </ul>
+            {% else %}
+                {{ parent() }}
+            {% endif %}
+        {% endblock propLine %}
+    {% endembed %}
+{% endblock second_row %}
+
+{% block third_row %}
+    {%if organismo.estado.estado == '01'%}
+
+        {% if liquidaciones|length > 0 %}
+            {{ include(':organismo:lastFive.html.twig', {
+        'liquidaciones' : liquidaciones
+    }) }}
+        {% endif %}
+    {% endif %}
+{% endblock third_row %}
+
+{% block actions_panel %}
+    <div class="modal fade" id="faltantes-form" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-me" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Consulta de liquidaciones faltantes</h4>
+                </div>
+                <div class="modal-body">
+                    <p>Ingrese el año que desea consultar</p>
+
+                    {{ form_start(faltantesForm) }}
+                    {{ form_row(faltantesForm.anio) }}
+                    {{ form_row(faltantesForm.save)  }}
+                    {{ form_end(faltantesForm)}}
+                    <div id="liqFaltantes"></div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+
+    <div class="modal fade" id="validar-confirm" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-sm" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Confirmaci&oacute;n</h4>
+                </div>
+                <div class="modal-body">
+                    <p>¿Desea validar el usuario <span class="usuario-placeholder"></span>?</p>
+                </div>
+                <div class="modal-footer">
+                    <form method="POST" id="validar">
+                        <input type="hidden" name="idUOrganismo" id="id-placeholder"  value="" />
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-info" id="remove-item">Validar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="inhabilitarH-confirm" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-sm" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Confirmaci&oacute;n</h4>
+                </div>
+                <div class="modal-body">
+                    <p>¿Desea inhabilitar el usuario <span class="usuario-placeholder"></span>? </br> Esta acción <b>no puede deshacerse</b>.</p>
+                </div>
+                <div class="modal-footer">
+                    <form method="POST" id="inhabilitarH">
+                        <input type="hidden" name="idUOrganismo" id="id-placeholder"  value="" />
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-danger" id="remove-item">Inhabilitar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="modal fade" id="bloquear-confirm" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-sm" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Confirmaci&oacute;n</h4>
+                </div>
+                <div class="modal-body">
+                    <p>¿Desea bloquear el usuario <span class="usuario-placeholder"></span>?</p>
+                </div>
+                <div class="modal-footer">
+                    <form method="POST" id="bloquear">
+                        <input type="hidden" name="idUOrganismo" id="id-placeholder"  value="" />
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-warning" id="remove-item">Bloquear</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+    <div class="modal fade" id="desbloquear-confirm" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-sm" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Confirmaci&oacute;n</h4>
+                </div>
+                <div class="modal-body">
+                    <p>¿Desea desbloquear el usuario <span class="usuario-placeholder"></span>?</p>
+                </div>
+                <div class="modal-footer">
+                    <form method="POST" id="desbloquear">
+                        <input type="hidden" id="id-placeholder" value="" />
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary" id="desbloquear-usuario">Desloquear</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="modal fade" id="inhabilitarB-confirm" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-sm" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Confirmaci&oacute;n</h4>
+                </div>
+                <div class="modal-body">
+                    <p>¿Desea inhabilitar el usuario <span class="usuario-placeholder"></span>? </br> Esta acción <b>no puede deshacerse</b>.</p>
+                </div>
+                <div class="modal-footer">
+                    <form method="POST" id="inhabilitarB">
+                        <input type="hidden" name="idUOrganismo" id="id-placeholder"  value="" />
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-danger" id="remove-item">Inhabilitar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <div class="panel-heading">
+        <i class="material-icons">menu</i>
+        Acciones
+    </div>
+    <div class="list-group">
+        {%if organismo.estado.estado == '00' or organismo.estado.estado == '01' or organismo.estado.estado == '04'%}
+        <a class="list-group-item" href="{{ path('organismo_edit', { 'id': organismo.id }) }}">
+            <i class="material-icons md-green">edit</i>
+            Editar Datos
+        </a>
+        {%endif%}    
+        {%if organismo.estado.estado == '01'%}
+   
+        <a class="list-group-item" href="{{ path('cargo_index', { 'id': organismo.id }) }}">
+            <i class="material-icons md-blue">assignment_ind</i>
+            Ver Cargos
+        </a>
+        <a class="list-group-item" href="{{ path('aportante.index', { 'organismoId': organismo.id }) }}">
+            <i class="material-icons text-primary">account_circle</i>
+            Ver Aportantes
+        </a>
+        <a class="list-group-item" href="{{ path('liquidacion_index', { 'organismo': organismo.id }) }}">
+            <i class="material-icons text-primary">assignment</i>
+            Ver Liquidaciones
+        </a>
+        <a class="list-group-item" href="#" id="liq-Faltantes" data-toggle="modal" data-target="#faltantes-form">
+            <i class="material-icons md-red">assignment</i>
+            Ver Liq. faltantes
+        </a>
+        <!--
+        <a class="list-group-item" href="{#{{ path('usuario_organismo', { 'id': organismo.id }) }}">#}
+            <i class="material-icons text-primary">account_circle</i>
+            Usuarios
+        </a>
+        -->
+  
+            {{ form_start(bloquear_form) }}
+            <button type="submit">
+                <i class="material-icons md-red">block</i>
+                Bloquear Organismo
+            </button>
+            {{ form_rest(bloquear_form) }}
+            {{ form_end(bloquear_form) }}
+        {%endif%}
+             {%if organismo.estado.estado == '02'  %}
+        <a class="list-group-item" id="habilitarOrg" href="javascript:void:(0)" onclick="location.reload()">
+            <i class="material-icons text-primary">check</i>
+                Habilitar Organismo
+        </a>
+      {%endif%}
+    </div>
+
+    {# Modal para la edicion de domicilio: #}
+    <div class="modal fade" id="edit-Domicilio" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Editar domicilio</h4>
+                </div>
+                <div class="modal-body">
+                    {{ form_start(editDomicilioForm, {'attr': {'class': 'col-xs-12 progress-form'}}) }}
+                    {{ form_widget(editDomicilioForm.id) }}
+                    {{ form_row(editDomicilioForm.tipoDomicilio) }}
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-6">{{ form_row(editDomicilioForm.calleNumero.calle) }}</div>
+                        <div class="col-xs-12 col-sm-6">{{ form_row(editDomicilioForm.calleNumero.numero) }}</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-6">{{ form_row(editDomicilioForm.pisoDepto.piso) }}</div>
+                        <div class="col-xs-12 col-sm-6">{{ form_row(editDomicilioForm.pisoDepto.depto) }}</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-4">{{ form_row(editDomicilioForm.manzanaLoteMono.manzana) }}</div>
+                        <div class="col-xs-12 col-sm-4">{{ form_row(editDomicilioForm.manzanaLoteMono.lote) }}</div>
+                        <div class="col-xs-12 col-sm-4">{{ form_row(editDomicilioForm.manzanaLoteMono.monoblock) }}</div>
+                    </div>
+                    {{ form_row(editDomicilioForm.Provincia) }}
+                    {{ form_row(editDomicilioForm.Departamento) }}
+                    {{ form_row(editDomicilioForm.Localidad) }}
+                    <input type="hidden" name="persona" value="0" />
+                    <div class="text-center" style="margin-top: 12px;">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                        <input type="submit" value="Guardar cambios" class="btn btn-success" />
+                    </div>
+                    {{ form_widget(editDomicilioForm._token) }}
+                    {{ form_end(editDomicilioForm, {'render_rest': false}) }}
+                </div>
+                <div class="modal-footer">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {# Modal para la creacion de nuevo domicilio: #}
+    <div class="modal fade" id="new-Domicilio" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Nuevo domicilio</h4>
+                </div>
+                <div class="modal-body">
+                    {{ form_start(domicilioForm, {'attr': {'class': 'col-xs-12 progress-form'}}) }}
+                    {{ form_row(domicilioForm.tipoDomicilio) }}
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-6">{{ form_row(domicilioForm.calleNumero.calle) }}</div>
+                        <div class="col-xs-12 col-sm-6">{{ form_row(domicilioForm.calleNumero.numero) }}</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-6">{{ form_row(domicilioForm.pisoDepto.piso) }}</div>
+                        <div class="col-xs-12 col-sm-6">{{ form_row(domicilioForm.pisoDepto.depto) }}</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-4">{{ form_row(domicilioForm.manzanaLoteMono.manzana) }}</div>
+                        <div class="col-xs-12 col-sm-4">{{ form_row(domicilioForm.manzanaLoteMono.lote) }}</div>
+                        <div class="col-xs-12 col-sm-4">{{ form_row(domicilioForm.manzanaLoteMono.monoblock) }}</div>
+                    </div>
+                    {{ form_row(domicilioForm.Provincia) }}
+                    {{ form_row(domicilioForm.Departamento) }}
+                    {{ form_row(domicilioForm.Localidad) }}
+                    <input type="hidden" name="persona" value="0" />
+                    <div class="text-center" style="margin-top: 12px;">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                        <input type="submit" value="Agregar" class="btn btn-success" />
+                    </div>
+                    {{ form_widget(domicilioForm._token) }}
+                    {{ form_end(domicilioForm, {'render_rest': false}) }}
+                </div>
+                <div class="modal-footer">
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+{% if organismo.estado.estado == 4 %}
+    {# Modal para la creacion de nuevo firmante: #}
+    <div class="modal fade" id="new-Firmantes" tabindex="-1" role="dialog">
+        <div class="modal-dialog  modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Nuevo Firmante</h4>
+                </div>
+                <div class="modal-body">
+                    {{ form_start(firmanteForm, {'attr': {'class': 'col-xs-12 progress-form'}}) }}
+                    <div class="row">
+                        <div class="col-xs-12">{{ form_row(firmanteForm.personaSearch) }}</div>
+                        {{ form_widget(firmanteForm.personaId) }}
+                    </div>
+                    <fieldset class="disable">
+                        <legend>Persona</legend>
+                        <div class="help-block">Realice una búsqueda por CUIL para habilitar la edición o cargar datos automáticamente.</div>
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-6">{{ form_row(firmanteForm.persona.apellidoPat, {disabled: true}) }}</div>
+                            <div class="col-xs-12 col-sm-6">{{ form_row(firmanteForm.persona.nombre, {disabled: true}) }}</div>
+                            <!--{#<div class="col-xs-12 col-sm-6">{{ form_row(firmanteForm.persona.apellidoMat, {disabled: true}) }}</div>#}-->
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-6">{{ form_row(firmanteForm.persona.sexo, {disabled: true}) }}</div>
+                            <div class="col-xs-12 col-sm-6">{{ form_row(firmanteForm.persona.estadoCivil, {disabled: true}) }}</div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-6">{{ form_row(firmanteForm.persona.cuil, {disabled: true}) }}</div>
+                            <div class="col-xs-12 col-sm-6">{{ form_row(firmanteForm.persona.documento, {disabled: true}) }}</div>
+                            <!--{# <div class="col-xs-12 col-sm-6">{{ form_row(firmanteForm.persona.tipoDocumento, {disabled: true}) }}</div>#}-->
+                        </div>
+
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-6">{{ form_row(firmanteForm.persona.nacionalidad, {disabled: true}) }}</div>
+                            <div class="col-xs-12 col-sm-6">{{ form_row(firmanteForm.persona.fechaNac, {disabled: true}) }}</div>
+                        </div>
+                    </fieldset>
+                    <fieldset>
+                        <legend>Datos de firmante</legend>
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-6">{{ form_row(firmanteForm.fechaDesde) }}</div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-12">{{ form_row(firmanteForm.comentario) }}</div>
+                        </div>
+                    </fieldset>
+                    <div class="text-center" style="margin-top: 12px;">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                        <input type="submit" value="Agregar" class="btn btn-success" />
+                    </div>
+                    {{ form_widget(firmanteForm._token) }}
+                    {{ form_end(firmanteForm, {'render_rest': false}) }}
+                </div>
+                <div class="modal-footer">
+                </div>
+            </div>
+        </div>
+    </div>
+                {%endif%}
+
+    {# Modal para la edicion de firmante existente: #}
+    <div class="modal fade" id="edit-Firmantes" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Editar Firmante</h4>
+                </div>
+                <div class="modal-body">
+                    {{ form_start(editFirmanteForm, {'attr': {'class': 'col-xs-12 progress-form'}}) }}
+                    <fieldset>
+                        <legend>Persona</legend>
+                        {{ form_widget(editFirmanteForm.personaId) }}
+                        {{ form_widget(editFirmanteForm.firmanteId) }}
+                        <div class="row">
+                            <p class="col-xs-12 col-sm-6"><b>Apellido paterno:</b> <span id="placeholder-apellidoPat"></span></p>
+                            <p class="col-xs-12 col-sm-6"><b>Apellido materno:</b> <span id="placeholder-apellidoMat"></span></p>
+                        </div>
+                        <div class="row">
+                            <p class="col-xs-12 col-sm-6"><b>Nombre:</b> <span id="placeholder-nombre"></span></p>
+                            <p class="col-xs-12 col-sm-6"><b>Estado civil:</b> <span id="placeholder-estadoCivil"></span></p>
+                        </div>
+                        <div class="row">
+                            <p class="col-xs-12 col-sm-6"><b>Cuil:</b> <span id="placeholder-cuil"></span></p>
+                            <p class="col-xs-12 col-sm-6"><b>Tipo documento:</b> <span id="placeholder-tipoDoc"></span></p>
+                        </div>
+                        <div class="row">
+                            <p class="col-xs-12 col-sm-6"><b>Documento:</b> <span id="placeholder-documento"></span></p>
+                            <p class="col-xs-12 col-sm-6"><b>Sexo:</b> <span id="placeholder-sexo"></span></p>
+                        </div>
+                        <div class="row">
+                            <p class="col-xs-12 col-sm-6"><b>Nacionalidad:</b> <span id="placeholder-nacionalidad"></span></p>
+                            <p class="col-xs-12 col-sm-6"><b>Fecha nacimiento:</b> <span id="placeholder-fechaNac"></span></p>
+                        </div>
+                    </fieldset>
+                    <fieldset>
+                        <legend>Datos de firmante</legend>
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-6">{{ form_row(editFirmanteForm.fechaDesde, {id: 'edit-firmante_fechaDesde'}) }}</div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-12">{{ form_row(editFirmanteForm.comentario) }}</div>
+                        </div>
+                    </fieldset>
+                    <div class="text-center" style="margin-top: 12px;">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                        <input type="submit" value="Guardar cambios" class="btn btn-success" />
+                    </div>
+                    {{ form_widget(editFirmanteForm._token) }}
+                    {{ form_end(editFirmanteForm, {'render_rest': false}) }}
+                </div>
+                <div class="modal-footer">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {# Modal para el alta de entidad responsable: #}
+    <div class="modal fade" id="new-Entidad_responsable" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Nueva entidad responsable</h4>
+                </div>
+                <div class="modal-body">
+                    {{ form_start(entidadResponsableForm, {'attr': {'class': 'col-xs-12 progress-form'}}) }}
+                    <div class="row">
+                        <div class="col-xs-12">{{ form_row(entidadResponsableForm.entidadRSearch) }}</div>
+                        {{ form_widget(entidadResponsableForm.id) }}
+                    </div>
+                    <fieldset class="disable">
+                        {{ form_row(entidadResponsableForm.nombre, {disabled: true}) }}
+                        {{ form_row(entidadResponsableForm.tipoJuridico, {disabled: true}) }}
+                        {{ form_row(entidadResponsableForm.cuit, {disabled: true}) }}
+                    </fieldset>
+                    <div class="text-center" style="margin-top: 12px;">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                        <input type="submit" value="Agregar" class="btn btn-success" />
+                    </div>
+                    {{ form_widget(entidadResponsableForm._token) }}
+                    {{ form_end(entidadResponsableForm, {'render_rest': true}) }}
+                </div>
+                <div class="modal-footer">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {# Modal para la edicion de entidad responsable: #}
+    <div class="modal fade" id="edit-Entidad_responsable" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Editar entidad</h4>
+                </div>
+                <div class="modal-body">
+                    {{ form_start(editEntidadResponsableForm, {'attr': {'class': 'col-xs-12 progress-form'}}) }}
+                    {{ form_widget(editEntidadResponsableForm.id) }}
+                    {{ form_row(editEntidadResponsableForm.nombre) }}
+                    {{ form_row(editEntidadResponsableForm.tipoJuridico) }}
+                    {{ form_row(editEntidadResponsableForm.cuit) }}
+                    <div class="text-center" style="margin-top: 12px;">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                        <input type="submit" value="Guardar cambios" class="btn btn-success" />
+                    </div>
+                    {{ form_widget(editEntidadResponsableForm._token) }}
+                    {{ form_end(editEntidadResponsableForm, {'render_rest': false}) }}
+                </div>
+                <div class="modal-footer">
+                </div>
+            </div>
+        </div>
+    </div>
+      
+    {# Modal para la edicion de entidad responsable: #}
+    <div class="modal fade" id="new-UsuarioResponsable" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Crear usuario responsable</h4>
+                </div>
+                <div class="modal-body">
+                    {{ form_start(usuarioResponsableForm, {'attr': {'class': 'col-xs-12 progress-form'}}) }}
+                    
+                    <div class="row">
+                        <div class="col-xs-12">{{ form_row(usuarioResponsableForm.idCiudadanaBuscar) }}</div>
+                    </div>
+                       <div id="existe" hidden="true">
+                            <fieldset class="disable">
+                                <div class="row" >
+                                    <div class="col-lg-12">
+                                        {{ form_row(usuarioResponsableForm.idNombre, {disabled: true}) }}<p></p>
+                                        {{ form_row(usuarioResponsableForm.idMail, {disabled: true}) }}<p></p>
+                                        {{ form_row(usuarioResponsableForm.idDn, {disabled: true}) }}<p></p>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>      
+                                
+                     <fieldset class="disable">
+                        <legend>Usuario</legend>
+                    {{ form_row(usuarioResponsableForm.username, {disabled: true}) }}
+                    {{ form_row(usuarioResponsableForm.rol, {disabled: true}) }}
+                    {{ form_row(usuarioResponsableForm.fechaDesde, {disabled: true}) }}
+                    {# {{ form_row(usuarioResponsableForm.fechaHasta) }} #}
+                    {{ form_row(usuarioResponsableForm.correo, {disabled: true}) }}
+                    {{ form_row(usuarioResponsableForm.uid, {disabled: true}) }}
+                    </fieldset>
+                    
+                    <input type="hidden" name="tipo" value="organismo" />
+             
+                    <div class="text-center" style="margin-top: 12px;">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                        <input type="submit" value="Guardar" class="btn btn-success" />
+                    </div>
+                    {{ form_widget(usuarioResponsableForm._token) }}
+                    {{ form_end(usuarioResponsableForm, {'render_rest': false}) }}
+                </div>
+                <div class="modal-footer">
+                </div>
+            </div>
+        </div>
+    </div>
+    {# Modal para la edicion de entidad responsable: #}
+    <div class="modal fade" id="edit-UsuarioResponsable" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Editar usuario responsable</h4>
+                </div>
+                <div class="modal-body">
+                    {{ form_start(editUsuarioResponsableForm, {'attr': {'class': 'col-xs-12 progress-form'}}) }}
+                    <div class="col-xs-12 col-md-6"></div>
+{#                        <label>Nombre de usuario :</label><span id="placeholder-username"></span></div>#}
+                        {{ form_row(editUsuarioResponsableForm.username, {disabled: true}) }}
+                        {{ form_row(editUsuarioResponsableForm.rol) }}
+                        {{ form_row(editUsuarioResponsableForm.fechaDesde) }}
+                        {# {{ form_row(editUsuarioResponsableForm.fechaHasta) }} #}
+                        {{ form_row(editUsuarioResponsableForm.correo) }}
+                        {{ form_row(editUsuarioResponsableForm.uid) }}
+                    <input type="hidden" name="tipo" value="organismo" />
+                    <div class="text-center" style="margin-top: 12px;">
+
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                        <input type="submit" value="Guardar cambios" class="btn btn-success" />
+                    </div>
+                    {{ form_widget(editUsuarioResponsableForm._token) }}
+                    {{ form_end(editUsuarioResponsableForm, {'render_rest': false}) }}
+                </div>
+                <div class="modal-footer">
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock actions_panel %}
+
+{% block customjavascripts %}
+    <script>
+        {{ section_title_js() }}
+
+                $(document).ready(function () {
+
+                $('#faltantes-form').submit(function (e) {
+                    e.preventDefault();
+                    $('#liqFaltantes').hide();
+                    var modal = $(this).closest('.modal');
+                    url = '{{ path('organismo_faltantes') }}';
+                    codigo_organismo = '{{organismo.codigo}}';
+                    anio = $(this).find('[id$=anio]').val();
+                    $.ajax(url, { {# Ajax preferiblemente al controlador de la propia entidad #}
+                        'data': {'organismo': codigo_organismo, 'anio': anio},
+                        'dataType': 'JSON',
+                        'method': 'POST',
+                        'success': function (response) {
+                            if (response.success) {
+                                console.log(response);
+                                var faltantes = response['faltantes'];
+                                var newText = "<b> Liquidaciones faltantes: </b><br>";
+                                for (i = 0; i < faltantes.length; i++) {
+                                    var newLine = faltantes[i]['mes'] + "/" + anio + " - " + faltantes[i]['tipo'] + "<br>";
+                                    newText += newLine;
+                                }
+                                 //si no se retorno ninguna liquidacion pendiente se informa
+                                    if(faltantes.length === 0)
+                                    {
+                                        newText = 'No se encontraron liquidaciones pendientes de presentar';
+                                    }
+                                $('#liqFaltantes').show();
+                                $('#liqFaltantes').empty();
+                                $('#liqFaltantes').append(newText);
+                            } else {
+                            }
+                        },
+                        'error': function () {
+                            $('#faltantes-form').modal('hide');
+                        }
+                    });
+
+                });
+
+
+
+                $('#habilitarOrg').click(function (e) {
+                    e.preventDefault();
+                    var url = '{{path('organismo_hab')}}';
+
+                    $.ajax(url, {
+                        'data': {'id':{{organismo.id}}},
+                        'dataType': 'JSON',
+                        'method': 'POST',
+                        'success': function (response) {
+                            if (response.success) {
+                                var $message = $('<div class="flash flash-success alert alert-success alert-dismissible" role="alert">' +
+                                        '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
+                                        response.mensaje + '</div>');
+                            } else {
+                                var $message = $('<div class="flash flash-error alert alert-error alert-dismissible" role="alert">' +
+                                        '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
+                                        response.mensaje + '</div>');
+                            }
+                            $('body').append($message);
+        {# La animacion del mesaje flash dura 5seg #}
+                            setTimeout(function () {
+                                $message.remove();
+                            }, 6000);
+                        }});
+                });
+
+                $('#validar-confirm').on('show.bs.modal', function (event) {
+                    var $relatedTarget = $(event.relatedTarget);
+                    $(this).find('#id-placeholder').val($relatedTarget.parent('li').data('id'));
+                });
+
+                $('#validar').submit(function (e) {
+                    e.preventDefault();
+                    var $modal = $(this).closest('.modal'),
+                            url = '{{ path('usuario_organismo.validar') }}';
+
+                    $.ajax(url, { {# Ajax preferiblemente al controlador de la propia entidad #}
+                        'data': {'id': $(this).find('#id-placeholder').val()}, // To discriminate course of action in backend
+                        'dataType': 'JSON',
+                        'method': 'POST',
+                        'success': function (response) {
+                            if (response.success) {
+                                $('#validar-confirm').modal('hide');
+                                var $message = $('<div class="flash flash-success alert alert-success alert-dismissible" role="alert">' +
+                                        '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
+                                        'Usuario validado correctamente' + '</div>');
+                                var $newRow = $('<li class="list-group-item" data-id="' + response.usuario.id + '">' +
+                                        '<a href="#" title="Inhabilitar" data-toggle="modal" data-target="#inhabilitarH-confirm">' +
+                                        '<i class="material-icons md-red">block</i></a> ' +
+                                        '<a href="#" title="Bloquear" data-toggle="modal" data-target="#bloquear-confirm">' +
+                                        '<i class="material-icons md-red">lock</i></a> ' +
+                                        '<span><a href="\{\{path(\'usuario_organismo.show\', {\'id\':' + response.usuario.id + '}) }}">' + response.usuario.usuario + '</a></span></li>');
+
+                                $('ul[data-type=UsuarioOrganismo] li[data-id=' + response.usuario.id + ']').replaceWith($newRow);
+                                //$('ul[data-type=UsuarioOrganismo]').append($newRow);
+                            } else {
+                                var $message = $('<div class="flash flash-error alert alert-error alert-dismissible" role="alert">' +
+                                        '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
+                                        'No se pudo validar el usuario. Intente más tarde.' +
+                                        '</div>');
+
+                            }
+                            $('body').append($message);
+        {# La animacion del mesaje flash dura 5seg #}
+                            setTimeout(function () {
+                                $message.remove();
+                            }, 6000);
+                        },
+                        'error': function () {
+                            $('#validar-confirm').modal('hide');
+                            alert('Error al validar, intente más tarde');
+                        }
+                    });
+                });
+                $('#bloquear-confirm').on('show.bs.modal', function (event) {
+                    var $relatedTarget = $(event.relatedTarget);
+                    $(this).find('#id-placeholder').val($relatedTarget.parent('li').data('id'));
+                });
+
+                $('#bloquear').submit(function (e) {
+                    e.preventDefault();
+                    var $modal = $(this).closest('.modal'),
+                            url = '{{ path('usuario_organismo.bloquear') }}';
+
+                    $.ajax(url, { {# Ajax preferiblemente al controlador de la propia entidad #}
+                        'data': {'id': $(this).find('#id-placeholder').val()}, // To discriminate course of action in backend
+                        'dataType': 'JSON',
+                        'method': 'POST',
+                        'success': function (response) {
+                            if (response.success) {
+                                $('#bloquear-confirm').modal('hide');
+                                var $message = $('<div class="flash flash-success alert alert-success alert-dismissible" role="alert">' +
+                                        '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
+                                        'Usuario bloqueado correctamente' + '</div>');
+                                var $newRow = $('<li class="list-group-item" data-id="' + response.usuario.id + '">' +
+                                        '<a href="#" title="Inhabilitar" data-toggle="modal" data-target="#inhabilitarB-confirm">' +
+                                        '<i class="material-icons md-red">block</i></a> ' +
+                                        '<a href="#" title="Desbloquear" data-toggle="modal" data-target="#desbloquear-confirm">' +
+                                        '<i class="material-icons md-green">lock_open</i></a> ' +
+                                        '<span><a href="\{\{path(\'usuario_organismo.show\', {\'id\':' + response.usuario.id + '}) }}">' + response.usuario.usuario + '</a></span></li>');
+
+                                $('ul[data-type=UsuarioOrganismo] li[data-id=' + response.usuario.id + ']').replaceWith($newRow);
+                                //$('ul[data-type=UsuarioOrganismo]').append($newRow);
+                            } else {
+                                var $message = $('<div class="flash flash-error alert alert-error alert-dismissible" role="alert">' +
+                                        '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
+                                        'No se pudo bloquear el usuario. Intente más tarde.' +
+                                        '</div>');
+                            }
+                            $('body').append($message);
+        {# La animacion del mesaje flash dura 5seg #}
+                            setTimeout(function () {
+                                $message.remove();
+                            }, 6000);
+                        },
+                        'error': function () {
+                            $('#bloquear-confirm').modal('hide');
+                            alert('Error al bloquear, intente más tarde');
+                        }
+                    });
+                });
+
+                $('#desbloquear-confirm').on('show.bs.modal', function (event) {
+                    var $relatedTarget = $(event.relatedTarget);
+                    $(this).find('#id-placeholder').val($relatedTarget.parent('li').data('id'));
+                });
+
+                $('#desbloquear').submit(function (e) {
+                    e.preventDefault();
+                    var $modal = $(this).closest('.modal'),
+                            url = '{{ path('usuario_organismo.desbloquear') }}';
+
+                    $.ajax(url, { {# Ajax preferiblemente al controlador de la propia entidad #}
+                        'data': {'id': $(this).find('#id-placeholder').val()}, // To discriminate course of action in backend
+                        'dataType': 'JSON',
+                        'method': 'POST',
+                        'success': function (response) {
+                            if (response.success) {
+                                $('#desbloquear-confirm').modal('hide');
+                                var $message = $('<div class="flash flash-success alert alert-success alert-dismissible" role="alert">' +
+                                        '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
+                                        'Usuario desbloqueado correctamente' + '</div>');
+                                var $newRow = $('<li class="list-group-item" data-id="' + response.usuario.id + '">' +
+                                        '<a href="#" title="Inhabilitar" data-toggle="modal" data-target="#inhabilitarH-confirm">' +
+                                        '<i class="material-icons md-red">block</i></a> ' +
+                                        '<a href="#" title="Bloquear" data-toggle="modal" data-target="#bloquear-confirm">' +
+                                        '<i class="material-icons md-red">lock</i></a> ' +
+                                        '<span><a href="\{\{path(\'usuario_organismo.show\', {\'id\':' + response.usuario.id + '}) }}">' + response.usuario.usuario + '</a></span></li>');
+
+                                $('ul[data-type=UsuarioOrganismo] li[data-id=' + response.usuario.id + ']').replaceWith($newRow);
+                                //$('ul[data-type=UsuarioOrganismo]').append($newRow);
+                            } else {
+                                var $message = $('<div class="flash flash-error alert alert-error alert-dismissible" role="alert">' +
+                                        '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
+                                        'No se pudo desbloquear el usuario. Intente más tarde.' +
+                                        '</div>');
+                            }
+                            $('body').append($message);
+        {# La animacion del mesaje flash dura 5seg #}
+                            setTimeout(function () {
+                                $message.remove();
+                            }, 6000);
+                        },
+                        'error': function () {
+                            $('#desbloquear-confirm').modal('hide');
+                            alert('Error al desbloquear, intente más tarde');
+                        }
+                    });
+                });
+
+                $('#inhabilitarB-confirm').on('show.bs.modal', function (event) {
+                    var $relatedTarget = $(event.relatedTarget);
+                    $(this).find('#id-placeholder').val($relatedTarget.parent('li').data('id'));
+                });
+
+                $('#inhabilitarB').submit(function (e) {
+                    e.preventDefault();
+                    var $modal = $(this).closest('.modal'),
+                            url = '{{ path('usuario_organismo.inhabilitarB') }}';
+
+                    $.ajax(url, { {# Ajax preferiblemente al controlador de la propia entidad #}
+                        'data': {'id': $(this).find('#id-placeholder').val()}, // To discriminate course of action in backend
+                        'dataType': 'JSON',
+                        'method': 'POST',
+                        'success': function (response) {
+                            if (response.success) {
+                                $('#inhabilitarB-confirm').modal('hide');
+                                var $message = $('<div class="flash flash-success alert alert-success alert-dismissible" role="alert">' +
+                                        '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
+                                        'Usuario inhabilitado correctamente' + '</div>');
+                                var $newRow = $('<li class="list-group-item" data-id="' + response.usuario.id + '">' +
+                                        '<span><a href="\{\{path(\'usuario_organismo.show\', {\'id\':' + response.usuario.id + '}) }}">' + response.usuario.usuario + '</a></span></li>');
+
+                                $('ul[data-type=UsuarioOrganismo] li[data-id=' + response.usuario.id + ']').replaceWith($newRow);
+                                //$('ul[data-type=UsuarioOrganismo]').append($newRow);
+                            } else {
+                                var $message = $('<div class="flash flash-error alert alert-error alert-dismissible" role="alert">' +
+                                        '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
+                                        'No se pudo inhabilitar el usuario. Intente más tarde.' +
+                                        '</div>');
+                            }
+                            $('body').append($message);
+        {# La animacion del mesaje flash dura 5seg #}
+                            setTimeout(function () {
+                                $message.remove();
+                            }, 6000);
+                        },
+                        'error': function () {
+                            $('#inhabilitarB-confirm').modal('hide');
+                            alert('Error al inhabilitar, intente más tarde');
+                        }
+                    });
+                });
+
+                $('#inhabilitarH-confirm').on('show.bs.modal', function (event) {
+                    var $relatedTarget = $(event.relatedTarget);
+                    $(this).find('#id-placeholder').val($relatedTarget.parent('li').data('id'));
+                });
+
+                $('#inhabilitarH').submit(function (e) {
+                    e.preventDefault();
+                    var $modal = $(this).closest('.modal'),
+                            url = '{{ path('usuario_organismo.inhabilitarH') }}';
+
+                    $.ajax(url, { {# Ajax preferiblemente al controlador de la propia entidad #}
+                        'data': {'id': $(this).find('#id-placeholder').val()}, // To discriminate course of action in backend
+                        'dataType': 'JSON',
+                        'method': 'POST',
+                        'success': function (response) {
+                            if (response.success) {
+                                $('#inhabilitarH-confirm').modal('hide');
+                                var $message = $('<div class="flash flash-success alert alert-success alert-dismissible" role="alert">' +
+                                        '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
+                                        'Usuario inhabilitado correctamente' + '</div>');
+                                var $newRow = $('<li class="list-group-item" data-id="' + response.usuario.id + '">' +
+                                        '<span><a href="\{\{path(\'usuario_organismo.show\', {\'id\':' + response.usuario.id + '}) }}">' + response.usuario.usuario + '</a></span></li>');
+
+                                $('ul[data-type=UsuarioOrganismo] li[data-id=' + response.usuario.id + ']').replaceWith($newRow);
+                                //$('ul[data-type=UsuarioOrganismo]').append($newRow);
+
+
+
+                            } else {
+                                var $message = $('<div class="flash flash-error alert alert-error alert-dismissible" role="alert">' +
+                                        '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
+                                        'No se pudo inhabilitar el usuario. Intente más tarde.' +
+                                        '</div>');
+                            }
+
+                            $('body').append($message);
+        {# La animacion del mesaje flash dura 5seg #}
+                            setTimeout(function () {
+                                $message.remove();
+                            }, 6000);
+
+                        },
+                        'error': function () {
+                            $('#inhabilitarH-confirm').modal('hide');
+                            alert('Error al inhabilitar, intente más tarde');
+
+
+
+
+                        }
+                    });
+                });
+
+                //SETEA CAMPOS PROVINCIA,DEPARTAMENTO Y LOCALIDAD EN FORM DE EDICION DE DOMICILIO
+                function domChange(Loc, Dep, Pro) {
+                    $('#edit-Domicilio [id$=Provincia]').val(Pro);
+                    removeElementsButFirst(new Array('#edit-Domicilio [id$=Localidad]', '#edit-Domicilio [id$=Departamento]'));
+                    searchElements2('{{ path('departamento_ajax') }}', '#edit-Domicilio [id$=Departamento]', Pro, 'provincia', Dep);
+
+                    removeElementsButFirst(new Array('#edit-Domicilio [id$=Localidad]'));
+                    searchElements2('{{ path('localidad_ajax') }}', '#edit-Domicilio [id$=Localidad]', Dep, 'departamento', Loc);
+                }
+                //ACTUALIZA LOCALIDAD AL SELECCIONAR DEPARTAMENTO EN EDICION
+                $('#edit-Domicilio [id$=Departamento]').change(function () {
+                    removeElementsButFirst(new Array('#edit-Domicilio [id$=Localidad]'));
+                    searchElements('{{ path('localidad_ajax') }}', '#edit-Domicilio [id$=Localidad]', '#edit-Domicilio [id$=Departamento]', 'departamento');
+                    $('#edit-Domicilio [id$=Localidad] option.select-placeholder').prop('selected', 'selected');
+                    $('#edit-Domicilio [id$=Localidad]').change();
+                });
+                //ACTUALIZA DEPARTAMENTOS AL SELECCIONAR PROVINCIA EN EDICION
+                $('#edit-Domicilio [id$=Provincia]').change(function () {
+                    removeElementsButFirst(new Array('#edit-Domicilio [id$=Localidad]', '#edit-Domicilio [id$=Departamento]'));
+                    searchElements('{{ path('departamento_ajax') }}', '#edit-Domicilio [id$=Departamento]', '#edit-Domicilio [id$=Provincia]', 'provincia');
+                    $('#edit-Domicilio [id$=Localidad] option.select-placeholder, #edit-Domicilio [id$=Departamento] option.select-placeholder').prop('selected', 'selected');
+                    $('#edit-Domicilio [id$=Localidad], #edit-Domicilio [id$=Departamento]').change();
+                });
+                //ACTUALIZA LOCALIDAD AL SELECCIONAR DEPARTAMENTO EN NUEVO
+                $('#new-Domicilio [id$=Departamento]').change(function () {
+                    removeElementsButFirst(new Array('#new-Domicilio [id$=Localidad]'));
+                    searchElements('{{ path('localidad_ajax') }}', '#new-Domicilio [id$=Localidad]', '#new-Domicilio [id$=Departamento]', 'departamento');
+                    $('#new-Domicilio [id$=Localidad] option.select-placeholder').prop('selected', 'selected');
+                    $('#new-Domicilio [id$=Localidad]').change();
+                });
+                //ACTUALIZA DEPARTAMENTOS AL SELECCIONAR PROVINCIA EN NUEVO
+                $('#new-Domicilio [id$=Provincia]').change(function () {
+                    removeElementsButFirst(new Array('#new-Domicilio [id$=Localidad]', '#new-Domicilio [id$=Departamento]'));
+                    searchElements('{{ path('departamento_ajax') }}', '#new-Domicilio [id$=Departamento]', '#new-Domicilio [id$=Provincia]', 'provincia');
+                    $('#new-Domicilio [id$=Localidad] option.select-placeholder, #new-Domicilio [id$=Departamento] option.select-placeholder').prop('selected', 'selected');
+                    $('#new-Domicilio [id$=Localidad], #new-Domicilio [id$=Departamento]').change();
+                });
+
+
+
+
+
+
+
+        {# Al enviar datos de direccion al backend: #}
+                $('#new-Domicilio form').on('submit', function (e) {
+                    e.preventDefault();
+                    $.ajax($(this).attr('action'), {
+                        'data': $(this).serialize() + '&ajax=1',
+                        'dataType': 'JSON',
+                        'method': 'POST',
+                        'success': function (response) {
+                            $('#new-Domicilio form .form-group.has-error').find('span.help-block').remove();
+                            $('#new-Domicilio form .form-group.has-error').removeClass('has-error');
+                            if (response.success) {
+                                $('#new-Domicilio').modal('hide');
+
+                                var $newRow = $('<li class="list-group-item" data-id="' + response.address.id + '" style="display=none;">' +
+                                        ((typeof $('ul[data-type=Domicilio]').data('action') !== 'undefined') ? '<a href="#" title="Eliminar" data-toggle="modal" data-target="#remove-confirm"><i class="material-icons md-red">delete</i></span></a>' : '') +
+                                        '<span>' + response.address.calle + ' ' + response.address.numero + ' (' + response.address.localidad + ' - ' + response.address.codPostal + ')' +
+                                        '</span>' +
+                                        '</li>');
+
+        {# Oficina y organismos solo pueden tener una direccion de cada tipo #}
+        {# Por lo que la nueva direccion reemplaza las existentes #}
+                                $('ul[data-type=Domicilio] li').hide(300);
+                                window.setTimeout(function () {
+                                    $('ul[data-type=Domicilio] li:not(.empty-data)').remove();
+                                    $('ul[data-type=Domicilio] li:last').before($newRow);
+                                    $newRow.show(300);
+                                }, 300);
+                                var $message = $('<div class="flash flash-success alert alert-success alert-dismissible" role="alert">' +
+                                        '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
+                                        'Domicilio dado de alta correctamente' +
+                                        '</div>');
+                            } else {
+                                if (response.errors) {
+                                    forms.displayFormErrors(response.errors, $('#new-Domicilio form'));
+                                }
+                                var $message = $('<div class="flash flash-error alert alert-danger alert-dismissible" role="alert">' +
+                                        '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
+                                        response.msg +
+                                        '</div>');
+                            }
+                            $('body').append($message);
+        {# La animacion del mesaje flash dura 5seg #}
+                            setTimeout(function () {
+                                $message.remove();
+                            }, 6000);
+                        },
+                        'error': function () {
+                            $('#new-Domicilio').modal('hide');
+                            alert('Error al dar de alta la domicilio.');
+                        }
+                    });
+                });
+
+
+
+
+
+                $('#edit-Domicilio form').on('submit', function (e) {
+                    e.preventDefault();
+                    var $form = $(this);
+                    $.ajax($form.attr('action'), {
+                        'data': $form.serialize(),
+                        'dataType': 'JSON',
+                        'method': 'POST',
+                        'success': function (response) {
+                            $('#edit-Domicilio form .form-group.has-error').find('span.help-block').remove();
+                            $('#edit-Domicilio form .form-group.has-error').removeClass('has-error');
+                            if (response.success) {
+                                $('#edit-Domicilio').modal('hide');
+
+                                var $message = $('<div class="flash flash-success alert alert-success alert-dismissible" role="alert">' +
+                                        '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
+                                        'Datos modificados' +
+                                        '</div>');
+
+                                $('ul[data-type=Domicilio] li[data-id=' + $form.find('#domicilio_id').val() + '] span').text(response.domicilio.text);
+                            } else {
+                                if (response.errors) {
+                                    forms.displayFormErrors(response.errors, $('#edit-Domicilio form'));
+                                }
+                                var $message = $('<div class="flash flash-error alert alert-danger alert-dismissible" role="alert">' +
+                                        '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
+                                        response.msg +
+                                        '</div>');
+                            }
+                            $('body').append($message);
+        {# La animacion del mesaje flash dura 5seg #}
+                            setTimeout(function () {
+                                $message.remove();
+                            }, 6000);
+                        },
+                        'error': function () {
+                            $('#edit-Domicilio').modal('hide');
+                            alert('Error al editar el domicilio.');
+                        }
+                    });
+                });
+                
+{#     Busco el ID Ciudadana por ajax, llama al controller de organismo y valida el id por el cas#}
+$('#usuario_organismo_idCiudadanaBuscar').on('input change', function (e) {
+                    var valueChanged = false;
+                    if (e.type === 'propertychange') {
+                        valueChanged = e.originalEvent.propertyName === 'value';
+                    } else {
+                        valueChanged = true;
+                    }
+
+                    if (valueChanged) {
+                        var $this = $(this),
+                                cuil = $this.val();
+              {# Verificar existencia de persona si el cuil esta completo #}
+                        if (cuil.length === 11) {
+                            $.ajax('{{ path('idCiudadana_organismo_ajax') }}', {
+                                'data': '&cuil=' + cuil,
+                                'dataType': 'JSON',
+                                'method': 'GET',
+                                'success': function (response) {
+                                   
+                            var $usuarioResp = $this.closest('form').find("fieldset [id^='usuario']");
+                                if (response.resp['valido'] === 'S') {
+                                    $usuarioResp.removeAttr('disabled');
+                                    $usuarioResp.val('').trigger('change');
+                   
+                                    $('#existe').show(600);
+                                    $('#usuario_organismo_idNombre').val(response.resp['nombre'][0]);
+                                    $('#usuario_organismo_idMail').val(response.resp['mail'][0]); 
+                                    $('#usuario_organismo_idDn').val(response.resp['dn']);
+                                   
+                                    $('#usuario_organismo_username').val(response.resp['cuil'][0]);
+                                    
+                                    $('#usuario_organismo_idNombre').attr('disabled','disabled');
+                                    $('#usuario_organismo_idMail').attr('disabled','disabled');
+                                    $('#usuario_organismo_idDn').attr('disabled','disabled');
+                                    $('#usuario_organismo_username').attr('disabled','disabled');
+                                        var $message = $('<div class="flash flash-info alert alert-info alert-dismissible" role="alert">' +
+                                                '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
+                                                'La persona existe, complete los demas datos del usuario manualmente' +
+                                                '</div>');
+    
+                                    }
+                                     else{
+					 $('#new-UsuarioResponsable').modal('hide');
+                                      	var $message = $('<div class="flash flash-success alert alert-success alert-dismissible" role="alert">' +
+                                                '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
+                                                'Persona no encontrada' +
+                                                '</div>');
+                                    }
+                                    $('body').append($message);
+        {# La animacion del mesaje flash dura 5seg #}
+                                    setTimeout(function () {
+                                        $message.remove();
+                                    }, 6000);
+                                },
+                                'error': function () {
+                                    alert('No se pudo realizar la búsqueda');
+                                }
+                            });
+                        }
+                    }
+                });
+
+              
+        {# Al enviar datos de direccion al backend: #}
+                $('#new-UsuarioResponsable form').on('submit', function (e) {
+                    e.preventDefault();
+                    var $disabled = $(this).find('input:disabled, select:disabled'),
+                            $form = $(this);
+                    $disabled.removeAttr('disabled');
+                                      
+                    $.ajax($form.attr('action'), {
+                        'data': $form.serialize(),
+                        'dataType': 'JSON',
+                        'method': 'POST',
+                        'success': function (response) {
+                            $('#new-UsuarioResponsable form .form-group.has-error').find('span.help-block').remove();
+                            $('#new-UsuarioResponsable form .form-group.has-error').removeClass('has-error');
+                            if (response.success) {
+                                $disabled.removeAttr('disabled');
+                                $('#new-UsuarioResponsable').modal('hide');
+                                var $newRow = $('<li class="list-group-item" data-id="' + response.usuario.id + '">' +
+                                        '<a href="#" title="Validar" data-toggle="modal" data-target="#validar-confirm">' +
+                                        '<i class="material-icons md-green">done</i></a><span>' +
+                                        '<a href="#" title="Editar" data-toggle="modal" data-target="#edit-UsuarioResponsable">' +
+                                        '<i class="material-icons md-green">create</i></a>' +
+                                        '<a href="\{\{path(\'usuario_organismo.show\', {\'id\':' + response.usuario.id + '}) }}"> '
+                                        + response.usuario.username + '</a></span></li>');
+
+                                $('ul[data-type=UsuarioOrganismo] li.empty-data').hide(300);
+                                window.setTimeout(function () {
+                                    $('ul[data-type=UsuarioOrganismo] li:last').before($newRow);
+                                    $newRow.show(300);
+                                }, 300);
+                                var $message = $('<div class="flash flash-success alert alert-success alert-dismissible" role="alert">' +
+                                        '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
+                                        'Usuario responsable dado de alta correctamente' +
+                                        '</div>');
+                            } else {
+                                if (response.errors) {
+                                    forms.displayFormErrors(response.errors, $('#new-UsuarioResponsable form'));
+                                }
+                                var $message = $('<div class="flash flash-error alert alert-danger alert-dismissible" role="alert">' +
+                                        '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
+                                        response.msg +
+                                        '</div>');
+                            }
+                            $('body').append($message);
+        {# La animacion del mesaje flash dura 5seg #}
+                            setTimeout(function () {
+                                $message.remove();
+                            }, 6000);
+                        },
+                        'error': function () {
+                            $('#new-UsuarioResponsable').modal('hide');
+                            alert('Error al dar de alta el usuario responsable.');
+                        }
+                    });
+                   {# $disabled.attr('disabled', 'disabled');#}
+                });
+
+
+                $('#edit-UsuarioResponsable form').on('submit', function (e) {
+                    e.preventDefault();
+                    var $form = $(this);
+                    $.ajax($form.attr('action'), {
+                        'data': $form.serialize(),
+                        'dataType': 'JSON',
+                        'method': 'POST',
+                        'success': function (response) {
+                            $('#edit-UsuarioResponsable form .form-group.has-error').find('span.help-block').remove();
+                            $('#edot-UsuarioResponsable form .form-group.has-error').removeClass('has-error');
+                            if (response.success) {
+                                $('#edit-UsuarioResponsable').modal('hide');
+                                var $message = $('<div class="flash flash-success alert alert-success alert-dismissible" role="alert">' +
+                                        '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
+                                        'Usuario editado correctamente' + '</div>');
+                                var $newRow = $('<li class="list-group-item" data-id="' + response.usuario.id + '">' +
+                                        '<span><a href="\{\{path(\'usuario_organismo.show\', {\'id\':' + response.usuario.id + '}) }}">' + response.usuario.usuario + '</a></span></li>');
+
+                                $('ul[data-type=UsuarioOrganismo] li[data-id=' + response.usuario.id + ']').replaceWith($newRow);
+                                //$('ul[data-type=UsuarioOrganismo]').append($newRow);
+                            } else {
+                                var $message = $('<div class="flash flash-error alert alert-error alert-dismissible" role="alert">' +
+                                        '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
+                                        'No se pudo inhabilitar el usuario. Intente más tarde.' +
+                                        '</div>');
+                            }
+                            if (response.success) {
+                                $('#edit-UsuarioResponsable').modal('hide');
+                            }
+                        },
+                        'error': function () {
+                        }
+
+                    });
+                });
+
+
+                $('#edit-UsuarioResponsable').on('show.bs.modal', function (event) {
+                    var modal = $(this),
+                            usuarioRespId = $(event.relatedTarget).parent('li').data('id'),
+                            url = '{{ path('usuario_organismo.queryAjax') }}';
+
+                    $.ajax(url, {
+                        'data': {'uid': usuarioRespId},
+                        'dataType': 'JSON',
+                        'method': 'POST',
+                        'success': function (response) {
+                            if (response.success) {
+
+                                $('#edit-UsuarioResponsable [id$=username]').val(response['username']);
+                                $('#edit-UsuarioResponsable [id$=rol]').val(response['rol']);
+                                $('#edit-UsuarioResponsable [id$=fechaDesde]').val(response['fechaDesde']);
+                                //$('#edit-UsuarioResponsable [id$=fechaHasta]').val(response['fechaHasta']);
+                                $('#edit-UsuarioResponsable [id$=correo]').val(response['correo']);
+                                $('#edit-UsuarioResponsable [id$=uid]').val(response['uid']);
+
+
+                            } else {
+                                console.log(response.success);
+                            }
+                        },
+                        'error': function () {
+                            $('#edit-UsuarioResponsable').modal('hide');
+                            alert('No se pudo consultar información del usuario responsable.');
+                        }});
+                });
+        {# Al mostrar popup de edicion de Domicilio: se consultan sus datos #}
+                $('#edit-Domicilio').on('show.bs.modal', function (event) {
+                    var modal = $(this),
+                            domicilioId = $(event.relatedTarget).parent('li').data('id'),
+                            url = '{{ path('domicilio_query_ajax', {id: '-domicilioId-'}) }}'.replace('-domicilioId-', domicilioId);
+
+                    $.ajax(url, {
+                        'dataType': 'JSON',
+                        'method': 'POST',
+                        'success': function (response) {
+        {# Mostrar valores y llenar campos #}
+                            var Loc = response['Localidad'];
+                            var Dep = response['Departamento'];
+                            var Pro = response['Provincia'];
+
+
+
+                            Object.keys(response).map(function (key) {
+                                $('#edit-Domicilio [id$=' + key + ']')
+                                        .val(response[key]);
+                            });
+
+                            domChange(Loc, Dep, Pro);
+
+                            Object.keys(response.calleNumero).map(function (key) {
+                                $('#edit-Domicilio [id$=' + key + ']')
+                                        .val(response.calleNumero[key]);
+                            });
+                            Object.keys(response.pisoDepto).map(function (key) {
+                                $('#edit-Domicilio [id$=' + key + ']')
+                                        .val(response.pisoDepto[key]);
+                            });
+                            Object.keys(response.manzanaLoteMono).map(function (key) {
+                                $('#edit-Domicilio [id$=' + key + ']')
+                                        .val(response.manzanaLoteMono[key]);
+                            });
+
+                        },
+                        'error': function () {
+                            $('#edit-Domicilio').modal('hide');
+                            alert('No se pudo consultar información del domicilio.');
+                        }
+                    });
+
+                });
+
+
+//plgprlgprlpglerg
+
+        {# Al mostrar popup de edicion de firmante: se consultan sus datos #}
+                $('#edit-Firmantes').on('show.bs.modal', function (event) {
+                    var modal = $(this),
+                            firmanteId = $(event.relatedTarget).parent('li').data('id'),
+                            url = '{{ path('firmante_query_ajax', {id: '-firmanteId-'}) }}'.replace('-firmanteId-', firmanteId);
+
+                    $.ajax(url, {
+                        'dataType': 'JSON',
+                        'method': 'POST',
+                        'success': function (response) {
+        {# Mostrar valores y llenar campos #}
+                            Object.keys(response.persona).map(function (key) {
+                                $('#edit-Firmantes [id$=' + key + ']').text(response.persona[key]);
+                            });
+                            Object.keys(response.firmante).map(function (key) {
+                                $('#edit-Firmantes [id$=' + key + ']')
+                                        .val(response.firmante[key])
+                                        .trigger('change');
+                            });
+        {# Completar Ids ocultas #}
+                            $('#edit-Firmantes [id$=firmante_personaId]').val(response.persona.id);
+                            $('#edit-Firmantes [id$=firmante_firmanteId]').val(response.firmante.id);
+                        },
+                        'error': function () {
+                            $('#new-Firmantes').modal('hide');
+                            alert('No se pudo consultar información del firmante.');
+                        }
+                    });
+
+                });
+
+        {# Al enviar datos de firmante al backend: #}
+                $('#new-Firmantes form').on('submit', function (e) {
+                    e.preventDefault();
+                    var $disabled = $(this).find('input:disabled, select:disabled'),
+                            $form = $(this);
+                    $disabled.removeAttr('disabled');
+                    $.ajax($form.attr('action'), {
+                        'data': $form.serialize(),
+                        'dataType': 'JSON',
+                        'method': 'POST',
+                        'success': function (response) {
+                            $('#new-Firmantes form .form-group.has-error').find('span.help-block').remove();
+                            $('#new-Firmantes form .form-group.has-error').removeClass('has-error');
+                            if (response.success) {
+                                $('#new-Firmantes').modal('hide');
+
+                                var $newRow = $('<li class="list-group-item" data-id="' + response.firmante.id + '" style="display=none;">' +
+                                        ((typeof $('ul[data-type=Firmantes]').data('action') !== 'undefined') ? '<a href="#" title="Eliminar" data-toggle="modal" data-target="#remove-confirm"><i class="material-icons md-red">delete</i></span></a>' : '') +
+                                        ((response.edit) ? ' <a href="#" title="Editar" data-toggle="modal" data-target="#edit-Firmantes"><i class="material-icons md-green">create</i></a>' : '') +
+                                        ' <span>' + response.firmante.text + '</span>' +
+                                        '</li>');
+
+                                $('ul[data-type=Firmantes] li.empty-data').hide(300);
+                                window.setTimeout(function () {
+                                    $('ul[data-type=Firmantes] li:last').before($newRow);
+                                    $newRow.show(300);
+                                }, 300);
+
+                                var $message = $('<div class="flash flash-success alert alert-success alert-dismissible" role="alert">' +
+                                        '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
+                                        'Firmante dado de alta correctamente' +
+                                        '</div>');
+
+                                if (!response.edit) {
+                                    $('ul[data-type=Firmantes] li[data-id=' + $form.find('#firmante_firmanteId').val() + '] [title=Editar]').remove();
+                                }
+                            } else {
+                                if (response.errors) {
+                                    forms.displayFormErrors(response.errors, $('#new-Firmantes form'));
+                                }
+                                var $message = $('<div class="flash flash-error alert alert-danger alert-dismissible" role="alert">' +
+                                        '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
+                                        response.msg +
+                                        '</div>');
+                            }
+                            $('body').append($message);
+        {# La animacion del mesaje flash dura 5seg #}
+                            setTimeout(function () {
+                                $message.remove();
+                            }, 6000);
+                        },
+                        'error': function () {
+                            $('#new-Firmantes').modal('hide');
+                            alert('Error al dar de alta al Firmante.');
+                        }
+                    });
+                    $disabled.attr('disabled', 'disabled');
+                });
+
+        {# Al enviar datos de edicion de firmante al backend: #}
+                $('#edit-Firmantes form').on('submit', function (e) {
+                    e.preventDefault();
+                    var $form = $(this);
+                    $.ajax($form.attr('action'), {
+                        'data': $form.serialize(),
+                        'dataType': 'JSON',
+                        'method': 'POST',
+                        'success': function (response) {
+                            $('#edit-Firmantes form .form-group.has-error').find('span.help-block').remove();
+                            $('#edit-Firmantes form .form-group.has-error').removeClass('has-error');
+                            if (response.success) {
+                                $('#edit-Firmantes').modal('hide');
+
+                                var $message = $('<div class="flash flash-success alert alert-success alert-dismissible" role="alert">' +
+                                        '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
+                                        'Datos modificados' +
+                                        '</div>');
+
+                                if (!response.edit) {
+                                    $('ul[data-type=Firmantes] li[data-id=' + $form.find('#firmante_firmanteId').val() + '] [title=Editar]').remove();
+                                }
+                                $('ul[data-type=Firmantes] li[data-id=' + $form.find('#firmante_firmanteId').val() + '] span').text(response.firmante.persona + ' ( ' + response.firmante.fechaDesde + ((response.firmante.fechaHasta) ? ' - ' + response.firmante.fechaHasta : '') + ' )');
+                            } else {
+                                if (response.errors) {
+                                    forms.displayFormErrors(response.errors, $('#edit-Firmantes form'));
+                                }
+                                var $message = $('<div class="flash flash-error alert alert-danger alert-dismissible" role="alert">' +
+                                        '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
+                                        response.msg +
+                                        '</div>');
+                            }
+                            $('body').append($message);
+        {# La animacion del mesaje flash dura 5seg #}
+                            setTimeout(function () {
+                                $message.remove();
+                            }, 6000);
+                        },
+                        'error': function () {
+                            $('#edit-Firmantes').modal('hide');
+                            alert('Error al editar Firmante.');
+                        }
+                    });
+                });
+
+                var topYear = new Date().getFullYear() + 1;
+        {% image '@SiafcaIntranetBundle/Resources/public/nueva_base/images/ic_event_black_24dp_2x.png' %}
+    //https://stackoverflow.com/questions/29887850/jquery-ui-datepicker-month-year-dropdown-is-not-working-in-popup-in-latest-firef
+    //ultima solucion
+    $(".date-format").datepicker({
+                    yearRange: (topYear - 120) + ":" + topYear,
+                    minDate: "-150Y",
+                    maxDate: "+0Y +0m +0d",
+                    buttonImage: "{{ asset_url }}",
+                    beforeShow: function(el, dp) {
+          $(el).parent().append($('#ui-datepicker-div'));
+          $('#ui-datepicker-div').hide();
+        }
+        });
+        {% endimage %}
+
+                $('#firmante_personaSearch').on('input change', function (e) {
+                    var valueChanged = false;
+                    if (e.type === 'propertychange') {
+                        valueChanged = e.originalEvent.propertyName === 'value';
+                    } else {
+                        valueChanged = true;
+                    }
+
+                    if (valueChanged) {
+                        var $this = $(this),
+                                cuil = $this.val();
+        {# Verificar existencia de persona si el cuil esta completo #}
+                        if (cuil.length === 11) {
+                            $.ajax('{{ path('persona_ajax_cuil') }}', {
+                                'data': '&cuil=' + cuil,
+                                'dataType': 'JSON',
+                                'method': 'GET',
+                                'success': function (response) {
+                                    
+                                    var $personFields = $this.closest('form').find("fieldset [id^='firmante_persona']");
+                                    if (response.length === 1) {
+                                        $('#firmante_personaId').val(response[0]['id']);
+        {# CUIL existe: Cargar datos encontrados y deshabilitar campos #}
+                                        $personFields.attr('disabled', 'disabled');
+                                        for (var i = 0; i < response.length; i++) {
+                                            Object.keys(response[i]).map(function (key) {
+                                                $('#new-Firmantes form [id$=' + key + ']')
+                                                        .val(response[i][key])
+                                                        .trigger('change');
+                                            });
+                                        }
+                                        var $message = $('<div class="flash flash-success alert alert-success alert-dismissible" role="alert">' +
+                                                '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
+                                                'Persona encontrada, complete los datos de firmante' +
+                                                '</div>');
+                                    } else if (response.length === 0) {
+                                        $('#firmante_personaId').val('');
+        {# CUIL no existe: Permitir cargar manualmente #}
+                                        $personFields.removeAttr('disabled');
+                                        $personFields.val('').trigger('change');
+                                        $('#firmante_persona_cuil').val(cuil);
+                                        var $message = $('<div class="flash flash-info alert alert-info alert-dismissible" role="alert">' +
+                                                '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
+                                                'La persona no existe, complete los datos manualmente' +
+                                                '</div>');
+                                    }
+                                    $('body').append($message);
+        {# La animacion del mesaje flash dura 5seg #}
+                                    setTimeout(function () {
+                                        $message.remove();
+                                    }, 6000);
+                                },
+                                'error': function () {
+                                    alert('No se pudo realizar la búsqueda');
+                                }
+                            });
+                        }
+                    }
+                });
+
+        {# Al enviar datos de entidad responsable al backend: #}
+                $('#new-Entidad_responsable form').on('submit', function (e) {
+                    e.preventDefault();
+                    var $form = $(this),
+                            $disabled = $form.find('input:disabled, select:disabled');
+                    $disabled.removeAttr('disabled');
+                    $.ajax($form.attr('action'), {
+                        'data': $form.serialize(),
+                        'dataType': 'JSON',
+                        'method': 'POST',
+                        'success': function (response) {
+                            $('#new-Entidad_responsable form .form-group.has-error').find('span.help-block').remove();
+                            $('#new-Entidad_responsable form .form-group.has-error').removeClass('has-error');
+                            if (response.success) {
+                                $('#new-Entidad_responsable').modal('hide');
+
+                                var $newRow = $('<li class="list-group-item" data-id="' + response.entidadResponsable.id + '" style="display=none;">' +
+                                        ((typeof $('ul[data-type=Entidad_responsable]').data('action') !== 'undefined') ? '<a href="#" title="Eliminar" data-toggle="modal" data-target="#remove-confirm"><i class="material-icons md-red">delete</i></span></a>' : '') +
+                                        ((response.edit) ? ' <a href="#" title="Editar" data-toggle="modal" data-target="#edit-Entidad_responsable"><i class="material-icons md-green">create</i></a>' : '') +
+                                        ' <span>' + response.entidadResponsable.text + '</span>' +
+                                        '</li>');
+
+                                $('ul[data-type=Entidad_responsable] li').hide(300);
+                                window.setTimeout(function () {
+                                    $('ul[data-type=Entidad_responsable] li:not(:last)').remove();
+                                    $('ul[data-type=Entidad_responsable] li:last').before($newRow);
+                                    $newRow.show(300);
+                                }, 300);
+
+                                var $message = $('<div class="flash flash-success alert alert-success alert-dismissible" role="alert">' +
+                                        '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
+                                        'Entidad responsable editada con exito' +
+                                        '</div>');
+                            } else {
+                                if (response.errors) {
+                                    forms.displayFormErrors(response.errors, $('#new-Entidad_responsable form'));
+                                }
+                                var $message = $('<div class="flash flash-error alert alert-danger alert-dismissible" role="alert">' +
+                                        '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
+                                        response.msg +
+                                        '</div>');
+                            }
+                            $('body').append($message);
+        {# La animacion del mesaje flash dura 5seg #}
+                            setTimeout(function () {
+                                $message.remove();
+                            }, 6000);
+                        },
+                        'error': function () {
+                            $('#new-Entidad_responsable').modal('hide');
+                            alert('Error al editar organismo.');
+                        }
+                    });
+                    $disabled.attr('disabled', 'disabled');
+                });
+
+                $('#entidad_responsable_entidadRSearch').on('input change', function (e) {
+                    var valueChanged = false;
+                    if (e.type === 'propertychange') {
+                        valueChanged = e.originalEvent.propertyName === 'value';
+                    } else {
+                        valueChanged = true;
+                    }
+
+                    if (valueChanged) {
+                        var $this = $(this),
+                                cuil = $this.val();
+        {# Verificar existencia de persona si el cuil esta completo #}
+                        if (cuil.length === 11) {
+                            $.ajax('{{ path('entidadresponsable_ajax_cuil') }}', {
+                                'data': '&cuil=' + cuil,
+                                'dataType': 'JSON',
+                                'method': 'GET',
+                                'success': function (response) {
+                                    var $pentidadRFields = $this.closest('form').find("fieldset [id^='entidad_responsable']");
+                                    if (response.length >= 1) {
+                                        $('#entidad_responsable_id').val(response[0]['id']);
+                                        for (var i = 0; i < response.length; i++) {
+                                            Object.keys(response[i]).map(function (key) {
+                                                $('#new-Entidad_responsable form [id$=' + key + ']')
+                                                        .val(response[i][key])
+                                                        .trigger('change');
+                                            });
+                                        }
+                                        var $message = $('<div class="flash flash-success alert alert-success alert-dismissible" role="alert">' +
+                                                '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
+                                                'Entidad ya existente, presione guardar para asociarlo al organismo' +
+                                                '</div>');
+                                    } else {
+                                        $('#entidad_responsable_id').val('');
+                                        $pentidadRFields.val('').trigger('change');
+                                        $('#entidad_responsable_cuit').val(cuil);
+                                        var $message = $('<div class="flash flash-info alert alert-info alert-dismissible" role="alert">' +
+                                                '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
+                                                'La entidad no existe, complete los datos manualmente' +
+                                                '</div>');
+                                    }
+                                    $pentidadRFields.removeAttr('disabled');
+                                    $('body').append($message);
+        {# La animacion del mesaje flash dura 5seg #}
+                                    setTimeout(function () {
+                                        $message.remove();
+                                    }, 6000);
+                                },
+                                'error': function () {
+                                    alert('No se pudo realizar la búsqueda');
+                                }
+                            });
+                        }
+                    }
+                });
+
+        {# Al mostrar popup de edicion de Entidad Responsable: se consultan sus datos #}
+                $('#edit-Entidad_responsable').on('show.bs.modal', function (event) {
+                    var modal = $(this),
+                            entidadId = $(event.relatedTarget).parent('li').data('id'),
+                            url = '{{ path('entidadresponsable_query_ajax', {id: '-entidadId-'}) }}'.replace('-entidadId-', entidadId);
+
+                    $.ajax(url, {
+                        'dataType': 'JSON',
+                        'method': 'POST',
+                        'success': function (response) {
+        {# Mostrar valores y llenar campos #}
+                            Object.keys(response).map(function (key) {
+                                $('#edit-Entidad_responsable [id$=' + key + ']')
+                                        .val(response[key])
+                                        .trigger('change');
+                            });
+                        },
+                        'error': function () {
+                            $('#new-Firmantes').modal('hide');
+                            alert('No se pudo consultar información del firmante.');
+                        }
+                    });
+
+                });
+
+                $('#edit-Entidad_responsable form').on('submit', function (e) {
+                    e.preventDefault();
+                    var $form = $(this);
+                    $.ajax($form.attr('action'), {
+                        'data': $form.serialize(),
+                        'dataType': 'JSON',
+                        'method': 'POST',
+                        'success': function (response) {
+                            $('#edit-Entidad_responsable form .form-group.has-error').find('span.help-block').remove();
+                            $('#edit-Entidad_responsable form .form-group.has-error').removeClass('has-error');
+                            if (response.success) {
+                                $('#edit-Entidad_responsable').modal('hide');
+
+                                var $message = $('<div class="flash flash-success alert alert-success alert-dismissible" role="alert">' +
+                                        '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
+                                        'Datos modificados' +
+                                        '</div>');
+
+                                if (!response.edit) {
+                                    $('ul[data-type=Entidad_responsable] li[data-id=' + $form.find('#entidad_responsable_id').val() + '] [title=Editar]').remove();
+                                }
+                                $('ul[data-type=Entidad_responsable] li[data-id=' + $form.find('#entidad_responsable_id').val() + '] span').text(response.entidadResponsable.text);
+                            } else {
+                                if (response.errors) {
+                                    forms.displayFormErrors(response.errors, $('#edit-Entidad_responsable form'));
+                                }
+                                var $message = $('<div class="flash flash-error alert alert-danger alert-dismissible" role="alert">' +
+                                        '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
+                                        response.msg +
+                                        '</div>');
+                            }
+                            $('body').append($message);
+        {# La animacion del mesaje flash dura 5seg #}
+                            setTimeout(function () {
+                                $message.remove();
+                            }, 6000);
+                        },
+                        'error': function () {
+                            $('#edit-Entidad_responsable').modal('hide');
+                            alert('Error al editar la entidad.');
+                        }
+                    });
+                });
+
+        {# Al esconder modales: se limpian todos los campos y se deshabilitan los dependientes de buscadores #}
+                $('#new-Domicilio, #edit-Domicilio, #new-Firmantes, #edit-Firmantes, #new-Entidad_responsable, #edit-Entidad_responsable, #new-UsuarioResponsable, #edit-UsuarioResponsable, #new-UsuarioOrganismo').on('hidden.bs.modal', function () {
+                    $(this).find('form')[0].reset();
+                    $(this).find('form select').change();
+                    $(this).find('[id^=placeholder]').text('');
+                    $(this).find('form .form-group.has-error').find('span.help-block').remove();
+                    $(this).find('form .form-group.has-error').removeClass('has-error');
+                    $(this).find('form fieldset.disable select, form fieldset.disable input, form fieldset.disable textarea').attr('disabled', 'disabled');
+                });
+            });
+    </script>
+{% endblock %}

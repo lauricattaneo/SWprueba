@@ -1,0 +1,52 @@
+<tr class="row-index">
+    <td class="grey-background">{{ excepciones.getPaginationData.firstItemNumber + loop.index - 1 }}</td>
+    <td>{{ excepcion.id }}</td>
+    <td style="white-space: nowrap;">
+        <div>{{ excepcion.fecha|date('Y/m/d') }}</div>
+        <div>{{ excepcion.fecha|date('H:i:s') }}</div>
+    </td>
+    <td>{{ excepcion.codigo }}</td>
+    <td><span rel="tooltip" title="{{ excepcion.archivo }}">{{ excepcion.archivo|trim('/')|split('/')|last }} </span></td>
+    <td>{{ excepcion.linea }}</td>
+    <td>
+        {% if excepcion.mensaje|length > 10 %}
+            <span rel="tooltip" title="{{ excepcion.mensaje }}">{{ excepcion.mensaje|slice(0, 10) ~ '...' }} </span>
+        {% else %}
+            {{ excepcion.mensaje }}
+        {% endif %}
+    </td>
+    <td>
+        {% set usr = excepcion.usuario|trim('{}')|split(',')|join(' ') %}
+        {#usr #}
+        {% if usr|length > 10 %}
+            <span rel="tooltip" title="{{ usr }}">{{ usr|slice(0, 10) ~ '...' }} </span>
+        {% else %}
+            {{ usr }}
+        {% endif %}
+        {# excepcion.usuario|trim('{}')|split(',')|join(' ') #}
+    </td>
+    <td>{{ excepcion.ruta  }}</td>
+    <td><span rel="tooltip" title="{{ excepcion.controlador }}">{{ excepcion.controlador|trim('\\')|split('\\')|last }} </span></td>
+    <td>{{ excepcion.parametros  }}</td>
+</tr>
+
+
+
+{#<tr class="row-index">
+    <td class="grey-background">{{ excepciones.getPaginationData.firstItemNumber + loop.index - 1 }}</td>
+    <td>{{ excepcion.id }}</td>
+    <td style="white-space: nowrap;">{{ excepcion.fecha }}</td>
+    <td>{{ excepcion.codigo }}</td>
+    <td style="word-break: break-all;">
+        {% for segment in excepcion.archivo|trim|split('/') -%}
+            <b>/</b><span {% if loop.index != excepcion.archivo|trim|split('/')|length %}style="color: #777; font-weight: lighter;"{% endif %}>{{ segment }}</span>
+        {%- endfor %}
+        {{ excepcion.archivo }}
+    </td>
+    <td>{{ excepcion.linea }}</td>
+    <td>{{ excepcion.mensaje }}</td>
+    <td>{{ excepcion.usuario  }}</td>
+    <td>{{ excepcion.ruta  }}</td>
+    <td style="word-break: break-all;">{{ excepcion.controlador|split('/')|join('/ ')  }}</td>
+    <td>{{ excepcion.parametros  }}</td>
+</tr>#}

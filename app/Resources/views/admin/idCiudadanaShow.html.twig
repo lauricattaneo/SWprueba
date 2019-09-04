@@ -1,0 +1,74 @@
+{% extends 'index.html.twig' %}
+{% from 'partials/section-title.html.twig' import js as section_title_js %}
+
+    
+{% block section_title %}
+
+    {% embed "partials/section-title.html.twig" %}
+        {% block titulo %}
+            <i class="material-icons md-inherit md-48">assignment</i>
+            VALIDACIÓN DE IdCiudadana  
+            {% if ayuda is defined and ayuda != "" %}
+                <a href="#" data-toggle="modal"  data-target="#ayudaMessage"><i class="material-icons md-inherit md-48">help</i></a>
+            {%endif%}
+            <div class="list-group">
+                <a id="volver" href="{{path('organismo_index')}}" class="btn btn-primary pull-right" value="Volver">
+                    Volver</a>
+            </div>
+        {%endblock%}
+
+        {% block subtitulo %}
+            {{resp.cuil[0]}}
+        {% endblock %}
+    {% endembed %}
+{% endblock section_title %}      
+
+
+{% block thead %}
+    {% if resp is not null %}  
+        
+        <thead>
+            <tr>
+                <th>#</th>
+                <th class="text-center">Válido</th>
+                <th class="text-left">Nombre</th>
+                <th class="text-center">Mail</th>
+                <th class="text-center">CUIL</th>
+                <th class="text-center">DN</th>
+            </tr>
+        </thead>
+    {% endif %}     
+{%endblock%}
+
+{% block tbody %}
+    {% if resp is null %}
+        <tr>
+            <td colspan="7">No se pudo verificar la IdCiudadana provista.</td>
+        </tr>
+    {% else %}
+        {% if resp["valido"] == 'S' %}
+            <tbody class="body" style="background-color:#ccffff">
+                <tr class="row-index">
+                    <td>-</td>
+                    <td class="text-center">{{resp['valido']}}</td>
+                    <td class="text-left">  {{resp.nombre[0]}}</td>
+                    <td class="text-left">  {{resp.mail[0] }}</td>
+                    <td class="text-center">  {{resp.cuil[0]}}</td>
+                    <td class="text-center">  {{resp['dn']}}</td>
+                </tr>
+        
+        {% else %}
+            <tr>
+                <td colspan="7">IdCiudadana inválida.</td>
+            </tr>   
+        {% endif %}
+    {% endif %}
+    </tbody>
+</table> 
+{% endblock %}
+
+{% block customjavascripts %}
+    <script>          
+        {{ section_title_js() }}
+    </script>
+{% endblock %}

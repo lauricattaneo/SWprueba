@@ -1,0 +1,60 @@
+<table  class="table table-hover table-body">
+    <thead>
+        <tr>
+            <th class="grey-background">#</th>
+            <th>Aportante</th>
+            <th>C.U.I.L.</th>
+            <th>Cargo</th>
+            <th>Conceptos</th>
+        </tr>
+    </thead>
+    <tbody class="table-body">
+        {% for item in liquidacion.items %}
+            <tr>
+                <td class="grey-background" scope="row">{{ loop.index }}</td>
+                <td>{{ item.aportante }}</td>
+                <td>{{ item.aportante.CuilShow() }}</td>
+                <td>{{ item.aportante.cargo }}</td>
+                <td>
+                    <a href="javascript:void(0)" data-toggle="collapse" data-target=
+                        {% if liqnumber is defined %}
+                            {{ "#conceptos#{ liqnumber ~ loop.index }" }}
+                        {% else %}
+                           {{ "#conceptos#{ loop.index }" }}
+                        {% endif %}
+                       aria-expanded="true" role="button" aria-controls="conceptos{{ loop.index }}">
+                        <i class="material-icons md-green" style="vertical-align: middle;">expand_more</i>
+                    </a>
+                </td>
+            </tr>
+            <tr class="collapse" id=
+                {% if liqnumber is defined %}
+                    {{ "conceptos#{ liqnumber ~ loop.index }" }}
+                {% else %}
+                    {{ "conceptos#{ loop.index }" }}
+                {% endif %}
+                 >
+                <td colspan="5">
+                    <table class="table table-hover table-bordered">
+                        <thead class="white-thead">
+                            <tr>
+                                <th class="grey-background">#</th>
+                                <th>Concepto</th>
+                                <th>Importe</th>
+                            </tr>
+                        </thead>
+                        <tbody class="tbody-border">
+                            {% for conceptoItem in item.conceptosItem %}
+                                <tr>
+                                    <td class="grey-background"  >{{ loop.index }}</td>
+                                    <td class="concepto">{{ conceptoItem.concepto }}</td>
+                                    <td class="importe">{{ conceptoItem.importe }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>

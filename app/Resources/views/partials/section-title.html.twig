@@ -1,0 +1,39 @@
+<div class="row section-title">
+    {% if block('titulo') is defined or block('subtitulo') is defined %}
+        <div class="title-main">
+            <h1 data-subtitle="{{ block('subtitulo') }}">
+                {{ block('titulo') }}
+            </h1>
+        </div>
+    {% endif %}
+    {%- if block('extracontenttitle') is defined %}
+        <div class="title-extra">
+            {{ block('extracontenttitle') }}
+        </div>
+    {% endif %}
+    <span id="goUp" class="glyphicon glyphicon-triangle-top" title="Subir"></span>
+</div>
+{% macro js() %}
+    {# Simulates fixed position on x-axis while y-axis remains scrollable as body #}
+    {# Include this macro when content is wider than the viewport (append to customjavascript block) #}
+    $( document ).ready(function() {
+        var $sectionTitle = $('.section-title'),
+            $navBar = $('#navbar-collapse-2'),
+            viewportHeight = Math.max(document.documentElement.clientHeight, window.innerHeight),
+            scrollHeight = document.getElementsByTagName("main")[0].scrollHeight;
+        $(window).scroll(function() {
+            var verticalScroll = $(document).scrollTop(),
+                horizontalScroll = $(this).scrollLeft();
+            if (!$navBar.is('.collapse.in')) {
+                if (verticalScroll < 55 && $sectionTitle.is('.shrink')) { $sectionTitle.removeClass("shrink"); }
+                if (verticalScroll > 5 && !$sectionTitle.is('.shrink') && scrollHeight-viewportHeight > 50) { $sectionTitle.addClass("shrink"); }
+                $('.section-title').filter(':not(.shrink)').css({'left': horizontalScroll});
+                $('.section-title').filter('.shrink').css({'left': 'initial'});
+            } else {
+                $sectionTitle.removeClass("shrink");
+                $('.section-title').filter(':not(.shrink)').css({'left': horizontalScroll});
+            }
+        });
+        $('.section-title #goUp').click(function() { $("html, body").animate({ scrollTop: 0 }, "slow"); });
+    });
+{% endmacro %}

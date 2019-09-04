@@ -1,0 +1,31 @@
+{% extends 'index.html.twig' %}
+{# form_theme searchForm 'form/form_input-group.html.twig' #}
+{% block titulo %}
+    {{ 'tiulo acá'|title }}
+{% endblock %}
+{% block subtitulo %}
+    {{ 'subtitulo acá'|title }}
+{% endblock %}
+{% block thead %}
+    {% block nuevo %}
+    <a href="{# path('amparo_item_new', { 'orgId': idOrganismo}) #}">Link</a>
+{% endblock %}
+    <th>#</th>
+    <th>Concepto</th>
+    <th>Desde</th>
+    <th>Hasta</th>
+    <th>Porcentaje</th>
+    <th></th>
+{% endblock thead %}
+
+{% block tbody %}
+    {% if expteAmparoItemConceptos is null %}
+        <tr>
+            <td colspan="6">Este Aportante amparado no tiene ningún concepto registrado.</td>
+        </tr>
+    {% else %}
+        {% for expteAmparoItemConcepto in expteAmparoItemConceptos %}
+            {{ include(':amparoItemConcepto:row.html.twig', { 'expteAmparoItem' : expteAmparoItemConcepto }) }}
+        {% endfor %}
+    {% endif %}
+{% endblock tbody %}

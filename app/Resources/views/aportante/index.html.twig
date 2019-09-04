@@ -1,0 +1,232 @@
+{% extends 'index.html.twig' %}
+{#{% form_theme searchForm 'form/form_input-group.html.twig' %}#}
+{% from 'partials/section-title.html.twig' import js as section_title_js %}
+
+{% block section_title %}
+    {% embed "partials/section-title.html.twig" %}
+        {% block titulo %}
+           
+             <i class="material-icons md-inherit md-48">assignment</i>
+            {% if titulo is defined and titulo != "" %}
+                {{ titulo }}
+            {% endif %}
+            {% if ayuda is defined and ayuda != "" %}
+                <a href="#" data-toggle="modal"  data-target="#ayudaMessage"><i class="material-icons md-inherit md-48">help</i></a>
+            {%endif%}
+           
+        {% endblock %}
+        {% block subtitulo %}
+            {% if subtitulo is defined and subtitulo != "" %}
+              {{ subtitulo }}
+            {% endif %}
+        {% endblock %}
+        {% block extracontenttitle %}
+            <div class="list-group">
+                {% if bandera == true %}
+                    <a id="buscar" href="javascript:void(0);" 
+                       class="btn btn-primary pull-right" 
+                       type="submit" 
+                       value="Buscar">
+                        Buscar
+                    </a>
+                {% else %}
+                    <a id="buscar" 
+                       href="{{ path('aportante.index', {'organismoId': orgId} ) }}" 
+                       class="btn btn-primary pull-right" 
+                       type="submit" 
+                       value="Volver">
+                        Volver
+                    </a>
+                {% endif %}
+            </div>
+        {% endblock %}
+    {% endembed %}
+{% endblock section_title %}
+
+{% block extrabuttons %}
+    <div class="pull-right checkbox" style="margin: 0;">
+        <label><input id="filter-actual" type="checkbox"{% if actualOnly %} checked="checked"{% endif %} /> Ver sólo actuales</label>
+    </div>
+{% endblock extrabuttons %}
+
+{% block thead %}
+     <thead>
+        <tr>
+    <th>#</th>
+    <th class="text-left">{{ knp_pagination_sortable(aportantes, 'Apellido y Nombre',  'p.apellidoPat', { Title: 'Ordenar por apellido' }) }}</th>
+    <th class="text-left">{{ knp_pagination_sortable(aportantes, 'CUIL',  'p.cuil', { Title: 'Ordenar por CUIL' }) }}</th>
+    <th class="text-left">{{ knp_pagination_sortable(aportantes, 'Alta', 'ap.fechaAlta', { Title: 'Ordenar por fecha de alta' }) }}</th>
+    <th class="text-left">{{ knp_pagination_sortable(aportantes, 'Baja', 'ap.fechaBaja', { Title: 'Ordenar por fecha de baja' }) }}</th>
+    <th class="text-left">{{ knp_pagination_sortable(aportantes, 'Cargo', 'c.nombre', { Title: 'Ordenar por cargo' }) }}</th>
+    <th class="text-left">{{ knp_pagination_sortable(aportantes, 'Nro. Liq.', 's.nombre', { Title: 'Ordenar por sector' }) }}</th>
+    <th class="text-left">{{ knp_pagination_sortable(aportantes, 'Revista', 'r.nombre', { Title: 'Ordenar por revista' }) }}</th>
+         </tr>
+    </thead>
+
+{% endblock %}
+{%block busqueda %}
+{% if bandera == true %}
+<div class="row">
+   <div class="panel-body my-hide">
+        <div class="col-md-16 col-md-16">
+            <div class="panel panel-info" style = "background-color: #bdbdbd">
+                <div class="panel-heading">Seleccione una opción de busqueda</div>
+                {{ form_start(form, 
+                   {'custom_options': {'avoid_required_message': true}})
+                }}
+                <p></p>
+                <div class="col-lg-6">
+                    {{ form_row(form.busqueda) }}<p></p>
+                    <div id="condicion">
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <div id="ape">
+                                    {{ form_row(form.campoApellido) }}<p></p>
+                                    {{ form_row(form.campoNombre) }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <div id="doc">
+                                    {{ form_row(form.campoDni) }}<p></p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <div id="cuil">
+                                    {{ form_row(form.campoCuil) }}<p></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="enviar">    
+                        <input type="submit" class="btn btn-primary" value="Enviar" /><p></p>
+                    </div> 
+                    {{ form_rest(form)}}
+                    {{ form_end(form) }}
+                </div>  
+            </div>
+        </div>
+    </div> 
+</div>
+{% endif %}
+{%endblock %}
+
+{% block tbody %}
+{#    {{dump(organismo)}}#}
+    <tbody class="body" style="background-color:#ccffff">
+        {% if aportantes is null %}
+            <tr>
+                <td colspan="7">Este Organismo no tiene aportantes.</td></tr>
+            {% else %}
+                {% for aportante in aportantes %}
+                    {{ include(':aportante:row.html.twig', { 'aportante' : aportante }) }}
+                {% endfor %}
+        {% endif %}
+    </tbody>
+</table>
+<div class="list-group">
+    <a class="btn btn-primary pull-right" href="{{ path('organismo_show', { 'id': orgId } ) }}" title="Volver al listado">Volver</a>
+</div> 
+{% endblock %}
+{#{% if subtitulo != "Todos los aportantes del organismo"%}
+    <div class="list-group">
+    <a class="btn btn-primary pull-right" href="{{ path('aportante.index', { 'organismoId': orgId} ) }}" title="Volver al listado">Volver</a>
+</div> 
+{% else %}
+    <div class="list-group">
+    <a class="btn btn-primary pull-right" href="{{ path('organismo_show', { 'id': orgId } ) }}" title="Volver al listado">Cancelar</a>
+</div> 
+{%endif %}#}
+
+{% block pagination %}
+    <div class="navigation">
+        {{ knp_pagination_render(aportantes) }}
+    </div>
+{% endblock %}
+
+{% block customjavascripts %}
+    <script type="text/javascript" src="{{ asset('js/compiled/validar_ingreso_cuil.js') }}"></script>
+    <script>
+        {{ section_title_js() }}
+        $(document).ready(function() {
+            $("#filter-actual").change(function() {
+                if ($(this).is(':checked')) {
+                    window.location = '{{ path('aportante.index', {'organismoId': orgId, 'actualOnly': 'yes'}) }}';
+                } else {
+                    window.location = '{{ path('aportante.index', {'organismoId': orgId}) }}';
+                }
+            });
+            
+            //evento click
+            $('#buscar').click(function(){
+                $('.panel-body').slideToggle(400);
+            });
+            
+             //elimino los - (si los hay)
+            $('#form_campoCuil').on('change',function(){
+                var cuilIngresado = $("#form_campoCuil").val();
+                var patron = /-/g;
+                $("#form_campoCuil").val(cuilIngresado.replace(patron,''));
+            });
+            //elimino los . (si los hay)
+            $('#form_campoDni').on('change',function(){
+                var dniIngresado = $("#form_campoDni").val();
+                var patron = /\./g;
+                $("#form_campoDni").val(dniIngresado.replace(patron,''));
+            });
+            
+            //si hay errores muestro el panel con los errores
+            //el theme del form, se encuentra en 
+            //* app/resources/views/form/form_theme.html.twig
+            if (document.getElementById('error') !== null)
+            {
+                $('.panel-body').slideToggle(400);
+            }
+            
+            $('.list-group-item').click(function(){
+                $(this).toggleClass('active');
+            });
+            
+             $('#form_campoApellido').change(function(){
+                $('#form_campoApellido').val(($('#form_campoApellido').val()).toUpperCase());
+            });
+            $('#form_campoNombre').change(function(){
+                $('#form_campoNombre').val(($('#form_campoNombre').val()).toUpperCase());
+            });
+            
+            //remuevo el atributo required 
+            //para que en la busqueda por apellido
+            //no sea necesario ingresar el nombre
+            $('#form_campoNombre').removeAttr('required');
+           
+            var elementToShow;
+            $('#ape, #doc, #cuil').hide();
+            $('#condicion input, #condicion select, #condicion textarea').removeAttr('required');
+            $('#form_busqueda').change(function(){
+            $('#condicion input, #condicion select, #condicion textarea').removeAttr('required');    
+            $('#ape, #doc, #cuil').hide(400);
+               switch ($('#form_busqueda').val()) {
+                    case 'apellido': elementToShow = '#ape'; break;
+                    case 'documento': elementToShow = '#doc'; break;
+                    case 'cuil': elementToShow = '#cuil'; break;
+               }
+                $(elementToShow).show(600);
+                $('#condicion select').trigger("change");
+                
+            });
+            
+            switch ($('#form_busqueda').val()) {
+                case 'apellido': elementToShow = '#ape'; break;
+                case 'documento': elementToShow = '#doc'; break;
+                case 'cuil': elementToShow = '#cuil'; break;
+            }
+            $(elementToShow).show(600);
+            $(elementToShow).find('input, select, textarea').prop('required', true);
+            $('#condicion select').trigger("change");
+            
+        });
+    </script>
+{% endblock %}

@@ -1,0 +1,83 @@
+{% extends "show.html.twig" %}
+{% from 'partials/section-title.html.twig' import js as section_title_js %}
+
+{% block section_title %}
+    {% embed "partials/section-title.html.twig" %}
+      {% block titulo %} <i class="material-icons md-inherit md-48">business_center</i> 
+          <h1>{{ usuarioOrganismo.organismo.nombre }}
+              {% if ayuda is defined and ayuda != "" %}
+                <a href="#" data-toggle="modal"  data-target="#ayudaMessage"><i class="material-icons md-inherit md-48">help</i></a>
+                {% endif %}
+          </h1>
+      {% endblock %}
+        {% block subtitulo %}Usuario {{ usuarioOrganismo.usuario.username }}{% endblock subtitulo %}
+    {% endembed %}
+     
+{% endblock section_title %}
+        
+{% block first_row '' %}
+
+{% block second_row %}
+    {{ include(':partials:dataPanel.html.twig', {
+        'entidad' : usuarioOrganismo
+    }) }}
+{% endblock second_row %}
+
+{% block third_row '' %}
+
+{% block actions_panel %}
+    <div class="panel-heading">
+        <i class="material-icons">menu</i>
+        Acciones
+    </div>
+    <div class="list-group">
+        <a class="list-group-item" href="#" id="resetPassword">
+            <i class="material-icons md-green">edit</i>
+            Resetear Contraseña
+        </a>
+    </div>
+    <div class="list-group">
+        <a class="list-group-item" href="{{ path('usuario_organismo.show', {'id': usuarioOrganismo.id}) }}">
+            <i class="material-icons md-green">replay</i>
+            Volver
+        </a>
+    </div> 
+{% endblock actions_panel %}
+ 
+{% block customjavascripts %}
+    <script>
+        {{ section_title_js() }}
+        
+        $('#resetPassword').on('click', function (e) {
+                        e.preventDefault();
+                        
+                        var url = '{{ path('resetpass_usuario') }}';
+                        
+                        $.ajax(url, {
+                            'data': {'id': {{usuarioOrganismo.id}} },
+                            'dataType': 'JSON',
+                            'method': 'POST',
+                            'success': function (response) {
+                                if(response.success){
+                                var $message = $('<div class="flash flash-success alert alert-success alert-dismissible" role="alert">' +
+                                            '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
+                                            response.msg +
+                                            '</div>');
+                                } else {
+                                    var $message = $('<div class="flash flash-error alert alert-danger alert-dismissible" role="alert">' +
+                                            '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
+                                            response.msg +
+                                            '</div>');
+                                }
+                                $('body').append($message);
+        {# La animacion del mesaje flash dura 10seg #}
+                                            setTimeout(function () {
+                                                $message.remove();
+                                            }, 10000);
+                                        
+                                }
+                                });
+                                });
+</script>
+
+{% endblock %}

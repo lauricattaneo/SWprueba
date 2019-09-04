@@ -1,0 +1,41 @@
+<div class="panel panel-blue">
+    {% if usuario is not null %}
+    <div class="panel-heading">
+        <strong>
+        <i class="material-icons" style="vertical-align: middle;">account_circle</i>
+        {% if responsable == true %}
+            Usuario Responsable de {{ organismo }}
+        {% else %}
+            Usuario de {{ organismo }}
+        {% endif %}
+        </strong>
+        <div class="pull-right" data-toggle="collapse" data-target="#usuario" aria-expanded="true" role="button" aria-controls="usuario">
+            <a href="javascript:void(0)">
+                <i class="material-icons md-light">expand_more</i>
+            </a>
+        </div>
+    </div>
+    <div id="usuario" class="panel-collapse collapse">
+        <div class="panel-body">
+            <p class="huge"><strong>Nombre de usuario: </strong>{{ usuario.username }}</p>
+            <a class="btn btn-primary-inverted btn-lg" href="javascript:void(0)">
+                <i class="material-icons">edit</i>
+                Editar Usuario
+            </a>
+        </div>
+    </div>
+    {% else %}
+        <div class="panel-heading">
+            <strong>
+                <i class="material-icons" style="vertical-align: middle;">account_circle</i>
+                Usuario de {{ organismo }}
+            </strong>
+        </div>
+        <div class="panel-body">
+            <a class="btn btn-primary-inverted btn-lg" href="{{ path('usuario_new', { 'id': organismo.id }) }}">
+                <i class="material-icons">add_circle</i>
+                Agregar Usuario
+            </a>
+        </div>
+    {% endif %}
+</div>

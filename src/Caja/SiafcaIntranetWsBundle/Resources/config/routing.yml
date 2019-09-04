@@ -1,0 +1,17 @@
+ws_hello:
+    path: /hello/{name}
+    defaults: {_controller: CajaSiafcaIntranetWsBundle:WebService:hello  }
+
+ws_goodbye:
+    path: /goodbye/{name}
+    defaults: {_controller: CajaSiafcaIntranetWsBundle:WebService:goodbye  }
+    
+ws_usuario:
+    path: /usuario/{name}
+    defaults: {_controller: CajaSiafcaIntranetWsBundle:WebService:usuario  }    
+    
+ws_organismos:
+    path: /uos/{usrId}
+    defaults: {_controller: CajaSiafcaIntranetWsBundle:WebService:organismos  }
+    requirements:
+        usrId: \d+

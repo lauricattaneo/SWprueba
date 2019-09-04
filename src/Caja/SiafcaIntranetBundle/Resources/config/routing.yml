@@ -1,0 +1,101 @@
+siafca_debug:
+    path:     /siafca_debug/{id}
+    defaults: { _controller: "SiafcaIntranetBundle:Otros:otros" }
+    methods:  [GET, POST]
+    
+siafca_intranet_usuario:
+    resource: "@SiafcaIntranetBundle/Resources/config/routing/usuario.yml"
+    prefix:   /usuario
+
+default_homepage:
+    path:     /
+    defaults: { _controller: SiafcaIntranetBundle:Default:index }
+
+siafca_intranet_organismo:
+        resource: "@SiafcaIntranetBundle/Resources/config/routing/organismo.yml"
+        prefix:   /organismo
+
+siafca_intranet_oficina:
+        resource: "@SiafcaIntranetBundle/Resources/config/routing/oficina.yml"
+        prefix:   /oficina
+        
+siafca_intranet_persona:
+        resource: "@SiafcaIntranetBundle/Resources/config/routing/persona.yml"
+        prefix:   /persona
+
+siafca_intranet_aporte:
+        resource: "@SiafcaIntranetBundle/Resources/config/routing/aportes.yml"
+        prefix:   /aportes
+        
+siafca_intranet_familiar:
+        resource: "@SiafcaIntranetBundle/Resources/config/routing/familiar.yml"
+        prefix:   /familiar
+
+siafca_intranet_domicilio:
+        resource: "@SiafcaIntranetBundle/Resources/config/routing/domicilio.yml"
+        prefix:   /domicilio
+        
+siafca_intranet_provincia:
+        resource: "@SiafcaIntranetBundle/Resources/config/routing/provincia.yml"
+        prefix:   /provincia
+        
+siafca_intranet_departamento:
+        resource: "@SiafcaIntranetBundle/Resources/config/routing/departamento.yml"
+        prefix:   /departamento
+        
+siafca_intranet_localidad:
+        resource: "@SiafcaIntranetBundle/Resources/config/routing/localidad.yml"
+        prefix:   /localidad
+        
+siafca_intranet_cargo:
+        resource: "@SiafcaIntranetBundle/Resources/config/routing/cargo.yml"
+        prefix:   /cargo
+        
+siafca_intranet_firmante:
+        resource: "@SiafcaIntranetBundle/Resources/config/routing/firmante.yml"
+        prefix:   /firmante
+
+siafca_intranet_entidadresponsable:
+        resource: "@SiafcaIntranetBundle/Resources/config/routing/entidadResponsable.yml"
+        prefix:   /entidad-responsable
+        
+siafca_intranet_liquidacion:
+        resource: "@SiafcaIntranetBundle/Resources/config/routing/liquidacion.yml"
+        prefix:   /liquidacion
+
+siafca_intranet_amparo:
+        resource: "@SiafcaIntranetBundle/Resources/config/routing/amparo.yml"
+        prefix:   /amparo
+
+siafca_intranet_amparo_item:
+        resource: "@SiafcaIntranetBundle/Resources/config/routing/amparoItem.yml"
+        prefix:   /amparoItem
+
+siafca_intranet_amparo_item_concepto:
+        resource: "@SiafcaIntranetBundle/Resources/config/routing/amparoItemConcepto.yml"
+        prefix:   /amparoItemConcepto
+
+siafca_intranet_contacto:
+        resource: "@SiafcaIntranetBundle/Resources/config/routing/contacto.yml"
+        prefix:   /contacto
+        
+liquidaciones:
+    path:     /liquidaciones/{orgId}
+    defaults: { _controller: "CajaSiafcaIntranetWsBundle:WebService:liquidaciones" }
+    methods:  GET
+   
+siafca_intranet_admin:
+    resource: "@SiafcaIntranetBundle/Resources/config/routing/admin.yml"
+    prefix:   /admin
+
+siafca_intranet_usuarioorganismo:
+    resource: "@SiafcaIntranetBundle/Resources/config/routing/usuarioOrganismo.yml"
+    prefix:   /uorganismo
+
+siafca_intranet_aportante:
+    resource: "@SiafcaIntranetBundle/Resources/config/routing/aportante.yml"
+    prefix:   /aportante
+
+siafca_intranet_ayuda:
+    resource: "@SiafcaIntranetBundle/Resources/config/routing/ayuda.yml"
+    prefix:   /ayuda

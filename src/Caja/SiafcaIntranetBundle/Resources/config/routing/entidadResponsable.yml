@@ -1,0 +1,19 @@
+entidadresponsable_query_ajax:
+    path:     /ajax/{id}/query
+    defaults: { _controller: "SiafcaIntranetBundle:EntidadResponsable:queryAjax"}
+    methods:  [POST]
+
+entidadresponsable_new_ajax:
+    path:     /ajax/{id}/new
+    defaults: { _controller: "SiafcaIntranetBundle:EntidadResponsable:newAjax"}
+    methods:  [POST]
+
+entidadresponsable_delete_ajax:
+    path:     /ajax/{id}/delete/{organismo}
+    defaults: {_controller: "SiafcaIntranetBundle:EntidadResponsable:deleteAjax", organismo: null}
+    methods:  [POST]
+
+entidadresponsable_ajax_cuil:
+    path:     /ajax
+    defaults: { _controller: "SiafcaIntranetBundle:EntidadResponsable:ajaxCuil" }
+    methods:  [POST, GET]

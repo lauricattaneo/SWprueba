@@ -1,0 +1,35 @@
+<div class="col-md-12">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <i class="material-icons">menu</i>
+            Últimas 5 Liquidaciones Presentadas (con informe)
+        </div>
+        <table class="table table-hover table-body">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th class="text-left">Período</th>
+                    <th class="text-left">Aportantes</th>
+                    <th class="text-left">Remunerativo</th>
+                    <th class="text-left">No Remunaritvo</th>
+                    <th>Ver más</th>
+                </tr>
+            </thead>
+            <tbody class="tbody-border">
+                {% for liquidacion in liquidaciones  %}
+                    {% if liquidacion.informe is not null %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td class="text-left">{{ liquidacion.NombreMes }} {{ liquidacion.anio }}</td>
+                        <td class="text-left">{{ liquidacion.informe.cantidadAportantes }}</td>
+                        <td class="text-left">{% if liquidacion.informe.Remunerativo is not null %}{{ liquidacion.informe.Remunerativo.importeTotal }}{% else %} No hay remunerativo {% endif %}</td>
+                        <td class="text-left">{% if liquidacion.informe.NoRemunerativo is not null %}{{ liquidacion.informe.NoRemunerativo.importeTotal }}{% else %} No hay no remunerativo {% endif %}</td>
+                        <td><a class="btn btn-info btn-xs" href="{{path('liquidacion_show', {'id': liquidacion.id }) }}"><i class="material-icons md-18 md-inherit">visibility</i>
+                Ver</a></td>
+                    </tr>
+                    {% endif %}
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>

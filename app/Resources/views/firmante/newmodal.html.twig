@@ -1,0 +1,41 @@
+<div class="modal fade" id="{{ modalId }}" tabindex="-1" role="dialog" aria-labelledby="{{ modalId }}Label">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">{{ titulo }}</h4>
+            </div>
+            {{ form_start(form, {'attr': {'class': 'progress-form'}}) }}
+                <div class="modal-body">
+                    {{ form_row(form.persona.nombre) }}
+                    {{ form_row(form.persona.apellidoPat) }}
+                    {{ form_row(form.persona.apellidoMat) }}
+                    {{ form_row(form.persona.estadoCivil) }}
+                    {{ form_row(form.persona.cuil) }}
+                    {{ form_row(form.persona.tipoDocumento) }}
+                    {{ form_row(form.persona.documento) }}
+                    {{ form_row(form.persona.sexo) }}
+                    {{ form_row(form.persona.nacionalidad) }}
+                    {{ form_label(form.persona.fechaNac) }}
+                    <div class="form-inline">
+                        {{ form_widget(form.persona.fechaNac) }}
+                    </div>
+                    {{ form_label(form.fechaDesde) }}
+                    <div class="form-inline">
+                        {{ form_widget(form.fechaDesde) }}
+                    </div>
+                    {{ form_label(form.fechaHasta) }}
+                    <div class="form-inline">
+                        {{ form_widget(form.fechaHasta) }}
+                    </div>
+                    {{ form_row(form.comentario) }}
+                </div>
+                {{ form_rest(form) }}
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                </div>
+            {{ form_end(form) }}
+        </div>
+    </div>
+</div>

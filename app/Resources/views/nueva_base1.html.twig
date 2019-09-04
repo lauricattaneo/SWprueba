@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>{% block title %}Siafca Intranet{% endblock %}</title>
+        {% block stylesheets %}
+            <!-- Latest compiled and minified CSS -->
+            <link rel="stylesheet" href="{{ asset('bundles/cajasiafcaintranet/nueva_base/bootstrap-3.3.6-dist/css/bootstrap.min.css') }}" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+            <!-- Optional theme -->
+            <link rel="stylesheet" href="{{ asset('bundles/cajasiafcaintranet/nueva_base/bootstrap-3.3.6-dist/css/bootstrap-theme.min.css') }}" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
+            {% block customstylesheets %}
+                <link rel="stylesheet" href="{{ asset('bundles/cajasiafcaintranet/nueva_base/custom-css/material-icons.css') }}" >
+        {% endblock customstylesheets %}
+        {% endblock %}
+        <link rel="icon" type="image/x-icon" href="{{ asset('bundles/cajasiafcaintranet/nueva_base/images/favicon.ico') }}" />
+    </head>
+
+  <body>
+    {% block top_navbar %}
+    <div class="navbar navbar-default navbar-fixed-top custom-navbar-top">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                {% if app.user.username is defined %}
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".header-collapse" aria-expanded="false">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                {% endif %}
+                <img id="imagenLogoProvincia" height="35" width="96" src="{{ asset( 'bundles/cajasiafcaintranet/nueva_base/images/gob-santafe.png' ) }}" alt="Gobierno de Santa Fe">
+            </div>
+            {% if app.user.username is defined %}
+                <div class="collapse navbar-collapse hidden-xs" id="navbar-collapse-1">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                                <i  class="material-icons md-24 md-inherit">account_circle</i>
+                                <span>{{ app.user }}</span>
+                                <span class="caret"></span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-user">
+                                <li><a href="{{ path('usuario_show',{'id': app.user.id}) }}">Ver Perfil</a></li>
+                                <li><a href="{{ path('_demo_logout') }}">Salir</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            {% endif %}
+        </div>
+    </div> <!-- END NAVBAR -->
+    {% endblock top_navbar %}
+    <div class="row content-wrapper">
+            {% block body %}
+                {% block side_navbar %}
+                <aside class="collapse navbar-collapse header-collapse col-xs-4" id="navbar-collapse-2">
+                    <ul class="nav nav-sidebar">
+                        <li>
+                            <img id="imagenLogoCaja" height="73" width="200" src="{{ asset( 'bundles/cajasiafcaintranet/nueva_base/images/logo-caja.png' ) }}" alt="Caja de Jubilaciones y Pensiones">
+                        </li>
+                        <li id="liqmenu">
+                            <a href="{{ path('liquidacion_index') }}">
+                                <i class="material-icons md-inherit">assignment</i>
+                                Liquidaciones
+                            </a>
+                            <ul id="liqsubmenu" class="nav subnav hidden">
+                                <li id="liqsubmenu1">
+                                    <a href="javascript:void(0)">
+                                        <i class="material-icons md-inherit">search</i>
+                                        Buscar Liquidación
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li id="orgmenu">
+                            <a href="{{ path('organismo_index') }}">
+                                <i class="material-icons md-inherit">home</i>
+                                Organismos
+                            </a>
+                            <ul id="orgsubmenu" class="nav subnav hidden">
+                                <li class="orgsubmenu1">
+                                    <a href="{{ path('organismo_new') }}">
+                                        <i class="material-icons md-inherit">add_circle</i>
+                                        Agregar Organismo
+                                    </a>
+                                </li>
+                                <li class="orgsubmenu1">
+                                    <a href="javascript:void(0)">
+                                        <i class="material-icons md-inherit">search</i>
+                                        Buscar Organismo
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li id="permenu">
+                            <a href="{{ path('persona_index') }}">
+                                <i class="material-icons md-inherit">people</i>
+                                Personas
+                            </a>
+                            <ul id="persubmenu" class="nav subnav hidden">
+                                <li id="persubmenu1">
+                                    <a href="{{ path('persona_new') }}">
+                                        <i class="material-icons md-inherit">person_add</i>
+                                        Agregar Persona
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#">
+                                        <i class="material-icons md-inherit">note</i>
+                                        Otro submenu
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#">
+                                        <i class="material-icons md-inherit">room</i>
+                                        Otro submenu
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>   
+{#                        <li id="adminmenu">
+                            <a href="{{ path('admin_indexExcepciones') }}">
+                                <i class="material-icons md-inherit">built</i>
+                                Administrador
+                            </a>
+                            <ul id="adminsubmenu" class="nav subnav hidden">
+                                <li id="adminsubmenu1">
+                                    <a href="{{ path('admin_indexExcepciones') }}">
+                                        <i class="material-icons md-inherit">warning</i>
+                                        Excepciones
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>  #}                   
+                    </ul>
+                    <ul class="nav nav-sidebar">
+                        <li id="notmenu">
+                            <a href="#">
+                                <i class="material-icons md-inherit">notifications</i>
+                                Notificaciones <span class="badge green-badge">15</span>
+                            </a>
+                        </li>
+                        {% if app.user.username is defined %}
+                            <li class="visible-xs">
+                                <ul class="nav navbar-nav nav-sidebar">
+                                    <li class="dropdown">
+                                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                                            <i class="material-icons md-24 md-inherit">account_circle</i>
+                                            <span>{{ app.user }}</span>
+                                            <span class="caret"></span>
+                                        </a>
+                                        <ul class="dropdown-menu subnav">
+                                            <li><a href="{{ path('usuario_show',{'id': app.user.id}) }}">Ver Perfil</a></li>
+                                            <li><a href="{{ path('_demo_logout') }}">Salir</a></li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </aside>
+                {% endblock side_navbar %}
+                <main class="col-xs-8">
+                    <div class="container-fluid">
+                        {% block content '' %}
+                    </div>
+                </main>
+            {% endblock body %}
+        </div>
+
+   {% block javascripts %}
+        <script src="{{ asset('bundles/cajasiafcaintranet/nueva_base/js/jquery-2.2.3.min.js') }}"></script>
+        <script src="{{ asset('bundles/cajasiafcaintranet/nueva_base/js/jquery-ui.min.js') }}"></script>
+        <link rel="stylesheet" href="{{ asset('bundles/cajasiafcaintranet/nueva_base/js/themes/flick/jquery-ui.min.css') }}">
+        <!-- Latest compiled and minified JavaScript -->
+        <script src="{{ asset('bundles/cajasiafcaintranet/nueva_base/bootstrap-3.3.6-dist/js/bootstrap.min.js') }}" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+        <script src="{{ asset('bundles/cajasiafcaintranet/nueva_base/custom-js/script.js') }}"></script>
+        {% block customjavascripts '' %}
+    {% endblock %}
+  </body>
+</html>

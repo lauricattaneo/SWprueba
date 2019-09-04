@@ -1,0 +1,20 @@
+siafca_intranet:
+    resource: "@SiafcaIntranetBundle/Resources/config/routing.yml"
+    prefix:   /
+    
+_besimple_soap:
+    resource: "@BeSimpleSoapBundle/Resources/config/routing/webservicecontroller.xml"
+    prefix:   /wsbe
+
+siafca_webservice:
+    resource: "@CajaSiafcaIntranetWsBundle/Resources/config/routing.yml"
+    prefix:   /ws
+    
+_demo_login:
+    path: /demo/secured/loginCAS
+    defaults: 
+
+_demo_logout:
+    path: /demo/secured/logoutCAS
+    defaults: 
+

@@ -1,0 +1,112 @@
+<tr class="row-index"> 
+    <td class="grey-background">{{ amparos.getPaginationData.firstItemNumber + loop.index - 1 }}</td>
+    <td>{{ amparo.numero }}</td>
+    <td>{{ amparo.fechaInicio|date("d/m/Y") }}</td>
+    <td>{{ amparo.fechaResolucion|date("d/m/Y") }}</td>
+    <td class="text-center">
+        <button class="btn btn-primary-bt btn-xs btn-amparos">
+            <i class="material-icons md-inherit md-18 " >visibility</i>
+            Amparos
+        </button>
+        <a class="btn btn-danger btn-xs" data-toggle="modal" data-target="#remove-confirm" data-type="expediente" data-id="{{ amparo.id }}">
+            <i class="material-icons md-inherit md-18" > remove </i>
+            Quitar
+        </a>
+    </td>
+</tr>
+
+<tr class="id-amparos my-hide">
+    <td></td>
+    <td colspan="4" class="text-left">
+        <div class="wrapper-table my-hide">
+            <div>
+                <a class="btn btn-success btn-xs" data-toggle="modal" data-target="#nuevo-amparo" data-id="{{ amparo.id }}">
+                    <i class="material-icons md-inherit md-18">add</i>
+                    <span>Nuevo Amparo</span>
+                </a>
+                <table class="table table-amparos" id="amparos-{{ amparo.id }}">
+                    <thead>
+                        <tr class="info">
+                            <th> # </th>
+                            <th> Nombre </th>
+                            <th> Cargo </th>
+                            <th> Situación de Revista </th>
+                            <th> Número de liquidación </th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in amparo.amparoItems %}
+                            <tr>
+                                <td class="grey-background">{{index}}.{{loop.index}}</td>
+                                <td> {{item.aportante}} </td>
+                                <td> {{item.aportante.cargo}} </td>
+                                <td> {{item.aportante.revista}} </td>
+                                <td> {{item.aportante.nroLiq}} </td>
+                                <td>
+                                    <button class="btn btn-primary-bt btn-xs btn-conceptos">
+                                        <i class="material-icons md-inherit md-18" >visibility</i>
+                                        Conceptos
+                                    </button>
+                                    <a class="btn btn-danger btn-xs" data-toggle="modal" data-target="#remove-confirm" data-type="amparado" data-id="{{item.id}}">
+                                        <i class="material-icons md-inherit md-18" > remove </i>
+                                        Quitar
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr class="id-conceptos my-hide">
+                                <td></td>
+                                <td colspan="5" class="text-left">
+                                    <div class="wrapper-table my-hide">
+                                        <div>
+                                            <a class="btn btn-success btn-xs btn-conceptos" data-toggle="modal" data-target="#new-concept" data-amparado="{{item.id}}">
+                                                <i class="material-icons md-inherit md-18">add</i>
+                                                <span>Nuevo Concepto</span>
+                                            </a>
+                                            <table class= "table table-conceptos" id="conceptos-{{item.id}}">
+                                                <thead>
+                                                    <tr class="active">
+                                                        <th> Concepto </th>
+                                                        <th> Fecha de Inicio </th>
+                                                        <th> Fecha de Fin </th>
+                                                        <th> Porcentaje </th>
+                                                        <th></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {% for concepto in item.itemConceptos  %}
+                                                        <tr>
+                                                            <td> {{concepto.concepto}} </td>
+                                                            <td> {{concepto.fechaInicio |date('d/m/Y')}} </td>
+                                                            <td> {{concepto.fechaFin |date('d/m/Y')}} </td>
+                                                            <td> {{concepto.porcentaje}} </td>
+                                                            <td>
+                                                                <a class="btn btn-danger btn-xs" data-toggle="modal" data-target="#remove-confirm" data-type="concepto" data-id="{{ concepto.id }}">
+                                                                    <i class="material-icons md-inherit md-18" >remove</i>
+                                                                    Quitar
+                                                                </a>
+                                                            </td>
+                                                        </tr>
+                                                    {% endfor %}
+                                                    <tr class="empty-data {% if item.itemConceptos|length > 0 %}my-hide{% endif %}">
+                                                        <td colspan="5">No existen conceptos cargados.</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        <tr class="empty-data {% if amparo.amparoItems|length > 0 %}my-hide{% endif %}">
+                            <td colspan="6">Ningun amparado vinculado al expediente.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+        </div>
+    </td> 
+</tr> 
+
+

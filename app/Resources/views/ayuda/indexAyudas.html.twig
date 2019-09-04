@@ -1,0 +1,72 @@
+{% extends 'index.html.twig' %}
+{% form_theme searchForm 'form/form_input-group.html.twig' %}
+{% from 'partials/section-title.html.twig' import js as section_title_js %}
+
+{% block section_title %}
+    {% embed "partials/section-title.html.twig" %}
+        {% block titulo %}<i class="material-icons md-inherit md-48">bug_report</i>
+            Ayudas
+            {% if ayuda is defined and ayuda != "" %}
+                <a href="#" data-toggle="modal"  data-target="#ayudaMessage"><i class="material-icons md-inherit md-48">help</i></a>
+            {% endif %}
+        {% endblock %}
+        {% block subtitulo %}
+            {{ subtitulo }}
+        {% endblock %}
+        {% block extracontenttitle %}
+            {{ form_start(searchForm) }}
+            {{ form_widget(searchForm) }}
+            {{ form_rest(searchForm) }}
+            {{ form_end(searchForm) }}
+            <div> 
+                <div class="list-group">
+                    <a href="{{ path('ayuda_new') }}" class="btn btn-primary pull-right" type="submit" value="Definir Nueva Ayuda">
+                        Definir Nueva Ayuda</a>
+                </div>
+            </div>
+        {% endblock %}
+
+    {% endembed %}
+    {#
+    <div class="list-group">
+        <a class="btn btn-primary pull-right" href="{{ path('ayuda_new') }}" 
+           title="Definir Nueva Ayuda">Definir nueva ayuda
+        </a>
+    </div>
+    #}
+{% endblock section_title %}
+
+
+
+{% block thead %}
+   
+    <th class="grey-background" class="text-left">#</th>
+    <th class="text-left">{{ knp_pagination_sortable(ayudas, 'Id', 'a.id', { Title: 'Ordenar por id' }) }}</th>
+    <th class="col-sm-1" class="text-left">{{ knp_pagination_sortable(ayudas, 'Código', 'a.codigo', { Title: 'Ordenar por código' }) }}</th>
+    <th class="text-left">Texto</th>
+    <th class="text-right">Acciones</th>
+
+{% endblock thead %}
+
+{% block tbody %}
+    {% if ayudas is null %}
+        <tr>
+            <td colspan="3">No hay información de ayuda.</td>
+        </tr>
+    {% else %}
+        {% for ayuda in ayudas %}
+            {{ include(':ayuda:rowAyuda.html.twig', { 'ayuda' : ayuda }) }}
+        {% endfor %}
+    {% endif %}
+{% endblock tbody %}
+{% block pagination %}
+    <div class="navigation">
+        {{ knp_pagination_render(ayudas) }}
+    </div>
+{% endblock %}
+
+{% block customjavascripts %}
+    <script>
+        {{ section_title_js() }}
+    </script>
+{% endblock %}

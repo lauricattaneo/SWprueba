@@ -1,0 +1,22 @@
+{% from 'partials/section-title.html.twig' import js as section_title_js %}
+
+{% embed "oficina/search.html.twig" with { 'section_title_js': section_title_js() } %}
+    {% block section_title %}
+        {% embed "partials/section-title.html.twig" %}
+            {% block titulo %} <i class="material-icons md-inherit md-48">home</i>
+                Oficinas
+                {% if ayuda is defined and ayuda != "" %}
+                <a href="#" data-toggle="modal"  data-target="#ayudaMessage"><i class="material-icons md-inherit md-48">help</i></a>
+            {% endif %}
+            {% endblock %}
+        {% endembed %}
+    {% endblock section_title %}
+
+    {% block filterbuttons '' %}
+
+    {% block customjavascripts %}
+        <script>
+            {{ section_title_js }}
+        </script>
+    {% endblock %}
+{% endembed %}

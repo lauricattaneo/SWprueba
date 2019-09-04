@@ -1,0 +1,64 @@
+{% extends 'index.html.twig' %}
+{% from 'partials/section-title.html.twig' import js as section_title_js %}
+
+{% block section_title %}
+    {% embed "partials/section-title.html.twig" %}
+        {% block titulo %}
+            {{ titulo|default('Entity name') }}
+            {% if ayuda is defined and ayuda != "" %}
+                <a href="#" data-toggle="modal"  data-target="#ayudaMessage"><i class="material-icons md-inherit md-48">help</i></a>
+            {% endif %}
+        {% endblock %}
+        {% block subtitulo %}
+            {{ subtitulo|default('Owner name') }}
+        {% endblock %}
+    {% endembed %}
+{% endblock section_title %}
+
+{% block filterbuttons %}
+    {{ form_start(form) }}
+        <div class="col-xs-4">{{ form_row(form.startDate) }}</div>
+        <div class="col-xs-4">{{ form_row(form.endDate) }}</div>
+        <div class="col-xs-4 text-right">
+            <a href="" class="btn btn-default btn-sm">Limpiar</a>
+            <input class="btn btn-primary btn-sm" type="submit" value="Filtrar">
+        </div>
+        {{ form_rest(form) }}
+    {{ form_start(form) }}
+{% endblock filterbuttons %}
+
+{% block thead %}
+    {% if entities[0] is defined %}
+        <th>#</th>
+        {% for item in entities[0].historicColumns %}
+            <th>{{ knp_pagination_sortable(entities, item.displayName|capitalize, item.queryPath, { Title: 'Ordenar por '~item.displayName|lower }) }}</th>
+        {% endfor %}
+    {% else %}
+        <th style="text-align: left;">#</th>
+    {% endif %}
+{% endblock thead %}
+
+{% block tbody %}
+    {% for entity in entities %}
+        {{ include(':partials:history-row.html.twig', { 'rowItem' : entity }) }}
+    {% else %}
+        <tr class="empty-data"><td>No se encontraron resultados.</td></tr>
+    {% endfor %}
+{% endblock tbody %}
+
+{% block pagination %}
+    <div class="navigation">{{ knp_pagination_render(entities) }}</div>
+{% endblock %}
+
+{% block customjavascripts %}
+    <script>
+        {{ section_title_js() }}
+        $( document ).ready(function() {
+            {% image '@SiafcaIntranetBundle/Resources/public/nueva_base/images/ic_event_black_24dp_2x.png' %}
+                $(".date-format").datepicker({
+                    buttonImage: "{{ asset_url }}",
+                });
+            {% endimage %}
+        });
+    </script>
+{% endblock %}

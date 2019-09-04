@@ -1,0 +1,4 @@
+aportes_show:
+    path:     /{persona}/show
+    defaults: { _controller: "SiafcaIntranetBundle:Aporte:show" }
+    methods:  [GET,POST]

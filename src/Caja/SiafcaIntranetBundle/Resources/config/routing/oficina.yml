@@ -1,0 +1,50 @@
+oficina_index:
+    path:     /
+    defaults: { _controller: "SiafcaIntranetBundle:Oficina:index" }
+    methods:  GET
+
+oficina_show:
+    path:     /{id}/show
+    defaults: { _controller: "SiafcaIntranetBundle:Oficina:show" }
+    methods:  [GET, POST]
+
+oficina_new:
+    path:     /new
+    defaults: { _controller: "SiafcaIntranetBundle:Oficina:new" }
+    methods:  [GET, POST]
+
+oficina_edit:
+    path:     /{id}/edit
+    defaults: { _controller: "SiafcaIntranetBundle:Oficina:edit" }
+    methods:  [GET, POST]
+    requirements:
+        id: '\d+'
+
+oficina_delete:
+    path:     /{id}/delete
+    defaults: { _controller: "SiafcaIntranetBundle:Oficina:delete" }
+    methods:  DELETE
+    
+oficina_bloquear:
+    path:     /{id}/bloquear
+    defaults: { _controller: "SiafcaIntranetBundle:Oficina:bloquear" }
+    methods:  POST
+
+oficina_search:
+    path:     /filter
+    defaults: { _controller: "SiafcaIntranetBundle:Oficina:filter" }
+    methods:  [GET, POST]
+    
+oficina_search_by_codigo:
+    path:     /search
+    defaults: { _controller: "SiafcaIntranetBundle:Oficina:search" }
+    methods:  [GET, POST]
+
+oficina_ajax_singleaportante:
+    path:     /singleaportante
+    defaults: { _controller: "SiafcaIntranetBundle:Oficina:getSingleAportante" }
+    methods:  [POST]
+
+oficina.ajax_autocomplete:
+    path:  /ajax/autocomplete/
+    defaults: { _controller: "SiafcaIntranetBundle:Oficina:autocomplete" }

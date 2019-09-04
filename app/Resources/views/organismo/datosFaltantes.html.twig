@@ -1,0 +1,28 @@
+<div class="jumbotron alert alert-danger alert-dismissible">
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    {% if not organismo.isHabilitado and not organismo.hasCodigo %}
+        <h1>Cuidado!</h1>
+        <p>
+            Hay datos NECESARIOS del organismo que
+            están incompletos. Complete los siguientes datos:
+        </p>
+        <ul>
+            {% for dato in organismo.getDatosNecesariosFaltantes %}
+                <li>{{ dato }}</li>
+            {% endfor %}
+        </ul>
+        <p>IMPORTANTE: HASTA QUE NO COMPLETE LOS DATOS EL ORGANISMO NO ESTARÁ HABILITADO PARA OPERAR.</p>
+{#        <p><a class="btn btn-primary btn-lg" href="#" role="button">Editar</a></p>#}
+    {% elseif not organismo.datosCompletos %}
+        <h1>Cuidado!</h1>
+        <p>
+            Hay datos del organismo que están incompletos.
+            Complete los siguientes datos:
+        </p>
+        <ul>
+            {% for dato in organismo.getDatosFaltantes %}
+                <li>{{ dato }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+</div>

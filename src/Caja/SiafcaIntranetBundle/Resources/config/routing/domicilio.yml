@@ -1,0 +1,39 @@
+domicilio_index:
+    path:     /
+    defaults: { _controller: "SiafcaIntranetBundle:Domicilio:index" }
+    methods:  GET
+
+domicilio_show:
+    path:     /{id}/show
+    defaults: { _controller: "SiafcaIntranetBundle:Domicilio:show" }
+    methods:  GET
+
+domicilio_new:
+    path:     /{id_entity}/new
+    defaults: { _controller: "SiafcaIntranetBundle:Domicilio:new" }
+    methods:  [GET, POST]
+
+#domicilio_edit:
+#    path:     /{id}/edit
+#    defaults: { _controller: "SiafcaIntranetBundle:Domicilio:edit" }
+#    methods:  [GET, POST]
+    
+domicilio_edit_ajax:
+    path:     /ajax/edit
+    defaults: { _controller: "SiafcaIntranetBundle:Domicilio:editAjax" }
+    methods:  [GET, POST]
+
+domicilio_query_ajax:
+    path:     /ajax/{id}/query
+    defaults: { _controller: "SiafcaIntranetBundle:Domicilio:queryAjax"}
+    methods:  [POST]
+
+domicilio_delete:
+    path:     /{id}/delete
+    defaults: { _controller: "SiafcaIntranetBundle:Domicilio:delete" }
+    methods:  [DELETE, POST]
+
+domicilio_render:
+    path:     /{id}/render
+    defaults: { _controller: "SiafcaIntranetBundle:Domicilio:render" }
+    methods:  GET

@@ -1,0 +1,27 @@
+<tr class="row-index" class="text-left">
+    <td class="grey-background">{{ ayudas.getPaginationData.firstItemNumber + loop.index - 1 }}</td>
+    <td class="text-center">{{ ayuda.id }}</td>
+    <td class="text-left">{{ ayuda.codigo }}</td>
+    <td class="text-left">
+        {% if ayuda.texto|length > 20 %}
+            <span rel="tooltip" title="{{ ayuda.texto }}">{{ ayuda.texto|slice(0, 93) ~ '...' }} </span>
+        {% else %}
+            {{ ayuda.texto }}
+        {% endif %}
+    </td>
+    <td>
+        <div class="actions" role="toolbar" aria-label="acciones-item">
+      
+                <td align="center">
+                    <a class="btn btn-default btn-xs" href="{{ path('ayuda_show', {'id': ayuda.id}) }}">
+                        <i class="material-icons md-18 md-inherit" Title = "Ver">visibility</i>
+                    </a>
+
+                    <a class="btn btn-default btn-xs" href="{{ path('ayuda_edit', {'id': ayuda.id}) }}">
+                        <i class="material-icons md-18 md-inherit" Title="Editar">edit</i>
+                    </a>
+                </td>
+    
+        </div>
+    </td>
+</tr>

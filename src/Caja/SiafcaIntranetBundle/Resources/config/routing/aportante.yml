@@ -1,0 +1,4 @@
+aportante.index:
+    path:     /{organismoId}
+    defaults: { _controller: "SiafcaIntranetBundle:Aportante:index" }
+    methods:  [GET,POST]

@@ -1,0 +1,69 @@
+{% extends 'index.html.twig' %}
+{% form_theme searchForm 'form/form_input-group.html.twig' %}
+{% from 'partials/section-title.html.twig' import js as section_title_js %}
+
+{% block section_title %}
+    {% embed "partials/section-title.html.twig" %}
+        {% block titulo %}
+            Personas
+            {% if ayuda is defined and ayuda != "" %}
+                <a href="#" data-toggle="modal"  data-target="#ayudaMessage"><i class="material-icons md-inherit md-48">help</i></a>
+            {% endif %}
+        {% endblock %}
+        {% block subtitulo %}
+            {{ subtitulo }}
+        {% endblock %}
+        {% block extracontenttitle %}
+            {{ form_start(searchForm) }}
+            {{ form_widget(searchForm) }}
+            {{ form_rest(searchForm) }}
+            {{ form_end(searchForm) }}
+        {% endblock %}
+    {% endembed %}
+{% endblock section_title %}
+
+{% block thead %}
+    <th>#</th>
+    <th class="text-left">{{ knp_pagination_sortable(cargos, 'Nombre', 'c.nombre', { Title: 'Ordenar por nombre' }) }}</th>
+    <th class="text-left">Código</th>
+    <th class="text-left">{{ knp_pagination_sortable(cargos, 'Área', 'c.area', { Title: 'Ordenar por área' }) }}</th>
+    <th class="text-left">{{ knp_pagination_sortable(cargos, 'Sector Pasivo', 's.nombre', { Title: 'Ordenar por sector' }) }}</th>
+    <th>Subsidio</th>
+{% endblock thead %}
+
+{% block tbody %}
+    <tbody class="table-body" style="background-color:#ccffff">
+    {% if cargos is null %}
+        <tr>
+            <td colspan="6">Este Organismo no tiene cargos definidos.</td>
+        </tr>
+    {% else %}
+        {% for cargo in cargos %}
+            {{ include(':cargo:row.html.twig', { 'cargo' : cargo }) }}
+        {% endfor %}
+    {% endif %}
+    </tbody>
+</table>
+{% if subtitulo != sub %}
+    <div class="list-group">
+    <a class="btn btn-primary pull-right" href="{{ path('cargo_index', { 'id': orgId} ) }}" title="Volver al listado">Volver</a>
+</div> 
+{% else %}
+    <div class="list-group">
+        <a class="btn btn-primary pull-right" href="{{ path('organismo_show', { 'id': orgId } ) }}" title="Volver al listado">Volver</a>
+    </div> 
+{%endif %}
+
+{% endblock tbody %}
+{% block pagination %}
+    <div class="navigation">
+        {{ knp_pagination_render(cargos) }}
+    </div>
+{% endblock %}
+
+
+{% block customjavascripts %}
+    <script>
+        {{ section_title_js() }}
+    </script>
+{% endblock %}

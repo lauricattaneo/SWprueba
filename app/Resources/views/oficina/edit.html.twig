@@ -1,0 +1,37 @@
+{% extends 'base.html.twig' %}
+
+{% block content %}
+    <div class="table-wrapper page-header">
+        <h1>{% if delete_form is defined %}<i class="material-icons md-inherit md-48">mode_edit</i> Editar{% else %}<i class="material-icons md-inherit md-48">add_circle</i> Agregar{% endif %} Oficina
+        {% if ayuda is defined and ayuda != "" %}
+                <a href="#" data-toggle="modal"  data-target="#ayudaMessage"><i class="material-icons md-inherit md-48">help</i></a>
+            {% endif %}
+        </h1>
+        {% if delete_form is defined %}
+            {{ form_start(delete_form, {'attr': {'class': 'text-right'}}) }}
+                <input class="btn btn-danger" type="submit" value="Eliminar" />
+            {{ form_end(delete_form) }}
+        {% endif %}
+    </div>
+    {{ form_start(form, {'attr': {'class': 'progress-form'}}) }}
+        <div class="row">
+            <div class="col-xs-12 col-md-6">{{ form_row(form.nombre) }}</div>
+            <div class="col-xs-12 col-md-6">{{ form_row(form.zona) }}</div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-md-6">{{ form_row(form.telefono) }}</div>
+            <div class="col-xs-12 col-md-6">{{ form_row(form.correos) }}</div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-md-6">{{ form_row(form.cuit) }}</div>
+        </div>
+        <div class="col-xs-12 text-center" style="margin-top: 12px;">
+            {% if delete_form is not defined %}
+            <a class="btn btn-default" href="{{ path('oficina_index') }}" title="Volver al listado">Cancelar</a>
+            {%else%}
+            <a class="btn btn-default" href="{{ path('oficina_show',{'id': oficina.id}) }}" title="Volver al listado">Cancelar</a>
+            {%endif%}   
+            <input class="btn btn-primary" type="submit" value="{% if delete_form is defined %}Guardar{% else %}Crear{% endif %}" />
+        </div>
+    {{ form_end(form) }}
+{% endblock %}

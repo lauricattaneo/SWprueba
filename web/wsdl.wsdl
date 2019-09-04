@@ -1,0 +1,873 @@
+<?xml version="1.0" encoding="utf-8"?>
+<definitions xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap-enc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" name="SiafcaApi" targetNamespace="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/">
+  <portType name="SiafcaApiPortType">
+    <operation name="isHabilitado">
+      <input message="tns:isHabilitadoRequest"/>
+      <output message="tns:isHabilitadoResponse"/>
+    </operation>
+    <operation name="getUsuario">
+      <input message="tns:getUsuarioRequest"/>
+      <output message="tns:getUsuarioResponse"/>
+    </operation>
+    <operation name="getUsuarios">
+      <input message="tns:getUsuariosRequest"/>
+      <output message="tns:getUsuariosResponse"/>
+    </operation>
+    <operation name="getOrganismos">
+      <input message="tns:getOrganismosRequest"/>
+      <output message="tns:getOrganismosResponse"/>
+    </operation>
+    <operation name="getOrganismo">
+      <input message="tns:getOrganismoRequest"/>
+      <output message="tns:getOrganismoResponse"/>
+    </operation>
+    <operation name="getCargos">
+      <input message="tns:getCargosRequest"/>
+      <output message="tns:getCargosResponse"/>
+    </operation>
+    <operation name="get">
+      <input message="tns:getRequest"/>
+      <output message="tns:getResponse"/>
+    </operation>
+    <operation name="saveCargo">
+      <input message="tns:saveCargoRequest"/>
+      <output message="tns:saveCargoResponse"/>
+    </operation>
+    <operation name="getAportantes">
+      <input message="tns:getAportantesRequest"/>
+      <output message="tns:getAportantesResponse"/>
+    </operation>
+    <operation name="getTodosAportantes">
+      <input message="tns:getTodosAportantesRequest"/>
+      <output message="tns:getTodosAportantesResponse"/>
+    </operation>
+    <operation name="getAportante">
+      <input message="tns:getAportanteRequest"/>
+      <output message="tns:getAportanteResponse"/>
+    </operation>
+    <operation name="getTotalAportantes">
+      <input message="tns:getTotalAportantesRequest"/>
+      <output message="tns:getTotalAportantesResponse"/>
+    </operation>
+    <operation name="saveAportantePersona">
+      <input message="tns:saveAportantePersonaRequest"/>
+      <output message="tns:saveAportantePersonaResponse"/>
+    </operation>
+    <operation name="saveAportante">
+      <input message="tns:saveAportanteRequest"/>
+      <output message="tns:saveAportanteResponse"/>
+    </operation>
+    <operation name="saveUsuario">
+      <input message="tns:saveUsuarioRequest"/>
+      <output message="tns:saveUsuarioResponse"/>
+    </operation>
+    <operation name="getReporte">
+      <input message="tns:getReporteRequest"/>
+      <output message="tns:getReporteResponse"/>
+    </operation>
+    <operation name="getParametrizacion">
+      <input message="tns:getParametrizacionRequest"/>
+      <output message="tns:getParametrizacionResponse"/>
+    </operation>
+    <operation name="validCuil">
+      <input message="tns:validCuilRequest"/>
+      <output message="tns:validCuilResponse"/>
+    </operation>
+    <operation name="cargarImportadat">
+      <input message="tns:cargarImportadatRequest"/>
+      <output message="tns:cargarImportadatResponse"/>
+    </operation>
+    <operation name="getLiquidaciones">
+      <input message="tns:getLiquidacionesRequest"/>
+      <output message="tns:getLiquidacionesResponse"/>
+    </operation>
+    <operation name="getLiquidacionesConDatos">
+      <input message="tns:getLiquidacionesConDatosRequest"/>
+      <output message="tns:getLiquidacionesConDatosResponse"/>
+    </operation>
+    <operation name="getLiquidacion">
+      <input message="tns:getLiquidacionRequest"/>
+      <output message="tns:getLiquidacionResponse"/>
+    </operation>
+    <operation name="getLiquidacion910">
+      <input message="tns:getLiquidacion910Request"/>
+      <output message="tns:getLiquidacion910Response"/>
+    </operation>
+    <operation name="getLiquidacionToShow">
+      <input message="tns:getLiquidacionToShowRequest"/>
+      <output message="tns:getLiquidacionToShowResponse"/>
+    </operation>
+    <operation name="getLiquidacionBy">
+      <input message="tns:getLiquidacionByRequest"/>
+      <output message="tns:getLiquidacionByResponse"/>
+    </operation>
+    <operation name="existeOtraLiqOriginal">
+      <input message="tns:existeOtraLiqOriginalRequest"/>
+      <output message="tns:existeOtraLiqOriginalResponse"/>
+    </operation>
+    <operation name="saveLiquidacion">
+      <input message="tns:saveLiquidacionRequest"/>
+      <output message="tns:saveLiquidacionResponse"/>
+    </operation>
+    <operation name="getConceptos">
+      <input message="tns:getConceptosRequest"/>
+      <output message="tns:getConceptosResponse"/>
+    </operation>
+    <operation name="getPersonaByCuil">
+      <input message="tns:getPersonaByCuilRequest"/>
+      <output message="tns:getPersonaByCuilResponse"/>
+    </operation>
+    <operation name="getAportantesFaltantesEnLiquidacion">
+      <input message="tns:getAportantesFaltantesEnLiquidacionRequest"/>
+      <output message="tns:getAportantesFaltantesEnLiquidacionResponse"/>
+    </operation>
+    <operation name="saveItems">
+      <input message="tns:saveItemsRequest"/>
+      <output message="tns:saveItemsResponse"/>
+    </operation>
+    <operation name="borrarDatosLiquidacion">
+      <input message="tns:borrarDatosLiquidacionRequest"/>
+      <output message="tns:borrarDatosLiquidacionResponse"/>
+    </operation>
+    <operation name="updateItems">
+      <input message="tns:updateItemsRequest"/>
+      <output message="tns:updateItemsResponse"/>
+    </operation>
+    <operation name="getInforme">
+      <input message="tns:getInformeRequest"/>
+      <output message="tns:getInformeResponse"/>
+    </operation>
+    <operation name="copyLiquidacion">
+      <input message="tns:copyLiquidacionRequest"/>
+      <output message="tns:copyLiquidacionResponse"/>
+    </operation>
+    <operation name="getConjuntoControl">
+      <input message="tns:getConjuntoControlRequest"/>
+      <output message="tns:getConjuntoControlResponse"/>
+    </operation>
+    <operation name="presentarLiquidacion">
+      <input message="tns:presentarLiquidacionRequest"/>
+      <output message="tns:presentarLiquidacionResponse"/>
+    </operation>
+    <operation name="getAmparo">
+      <input message="tns:getAmparoRequest"/>
+      <output message="tns:getAmparoResponse"/>
+    </operation>
+    <operation name="getAmparos">
+      <input message="tns:getAmparosRequest"/>
+      <output message="tns:getAmparosResponse"/>
+    </operation>
+    <operation name="getOrganismoMails">
+      <input message="tns:getOrganismoMailsRequest"/>
+      <output message="tns:getOrganismoMailsResponse"/>
+    </operation>
+    <operation name="aplicarTransicion">
+      <input message="tns:aplicarTransicionRequest"/>
+      <output message="tns:aplicarTransicionResponse"/>
+    </operation>
+    <operation name="getLiquidacionCargaManual">
+      <input message="tns:getLiquidacionCargaManualRequest"/>
+      <output message="tns:getLiquidacionCargaManualResponse"/>
+    </operation>
+    <operation name="borrarItemLiquidacion">
+      <input message="tns:borrarItemLiquidacionRequest"/>
+      <output message="tns:borrarItemLiquidacionResponse"/>
+    </operation>
+    <operation name="getResumenPeriodos">
+      <input message="tns:getResumenPeriodosRequest"/>
+      <output message="tns:getResumenPeriodosResponse"/>
+    </operation>
+  </portType>
+  <types>
+    <xsd:schema targetNamespace="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/"/>
+  </types>
+  <message name="isHabilitadoRequest">
+    <part name="idUsuario" type="xsd:string"/>
+    <part name="idOrganismo" type="xsd:string"/>
+  </message>
+  <message name="isHabilitadoResponse">
+    <part name="return" type="xsd:string"/>
+  </message>
+  <message name="getUsuarioRequest">
+    <part name="name" type="xsd:string"/>
+    <part name="orgId" type="xsd:string"/>
+  </message>
+  <message name="getUsuarioResponse">
+    <part name="return" type="xsd:string"/>
+  </message>
+  <message name="getUsuariosRequest">
+    <part name="orgId" type="xsd:string"/>
+  </message>
+  <message name="getUsuariosResponse">
+    <part name="return" type="xsd:string"/>
+  </message>
+  <message name="getOrganismosRequest">
+    <part name="usrId" type="xsd:string"/>
+  </message>
+  <message name="getOrganismosResponse">
+    <part name="return" type="xsd:string"/>
+  </message>
+  <message name="getOrganismoRequest">
+    <part name="id" type="xsd:string"/>
+  </message>
+  <message name="getOrganismoResponse">
+    <part name="return" type="xsd:string"/>
+  </message>
+  <message name="getCargosRequest">
+    <part name="orgId" type="xsd:string"/>
+  </message>
+  <message name="getCargosResponse">
+    <part name="return" type="xsd:string"/>
+  </message>
+  <message name="getRequest">
+    <part name="entidad" type="xsd:string"/>
+  </message>
+  <message name="getResponse">
+    <part name="return" type="xsd:string"/>
+  </message>
+  <message name="saveCargoRequest">
+    <part name="cargoJSON" type="xsd:string"/>
+  </message>
+  <message name="saveCargoResponse">
+    <part name="return" type="xsd:boolean"/>
+  </message>
+  <message name="getAportantesRequest">
+    <part name="idEntidad" type="xsd:string"/>
+    <part name="criterioBusqueda" type="xsd:string"/>
+    <part name="page" type="xsd:int"/>
+  </message>
+  <message name="getAportantesResponse">
+    <part name="return" type="xsd:string"/>
+  </message>
+  <message name="getTodosAportantesRequest">
+    <part name="idEntidad" type="xsd:string"/>
+    <part name="criterioBusqueda" type="xsd:string"/>
+  </message>
+  <message name="getTodosAportantesResponse">
+    <part name="return" type="xsd:string"/>
+  </message>
+  <message name="getAportanteRequest">
+    <part name="id" type="xsd:string"/>
+  </message>
+  <message name="getAportanteResponse">
+    <part name="return" type="xsd:string"/>
+  </message>
+  <message name="getTotalAportantesRequest">
+    <part name="idEntidad" type="xsd:string"/>
+    <part name="criterioBusqueda" type="xsd:string"/>
+  </message>
+  <message name="getTotalAportantesResponse">
+    <part name="return" type="xsd:int"/>
+  </message>
+  <message name="saveAportantePersonaRequest">
+    <part name="personaAportanteJSON" type="xsd:string"/>
+  </message>
+  <message name="saveAportantePersonaResponse">
+    <part name="return" type="xsd:boolean"/>
+  </message>
+  <message name="saveAportanteRequest">
+    <part name="aportanteJSON" type="xsd:string"/>
+  </message>
+  <message name="saveAportanteResponse">
+    <part name="return" type="xsd:int"/>
+  </message>
+  <message name="saveUsuarioRequest">
+    <part name="idOrganismo" type="xsd:string"/>
+    <part name="nombreUsuario" type="xsd:string"/>
+    <part name="correoUsuario" type="xsd:string"/>
+    <part name="encoded" type="xsd:string"/>
+  </message>
+  <message name="saveUsuarioResponse">
+    <part name="return" type="xsd:string"/>
+  </message>
+  <message name="getReporteRequest">
+    <part name="liqId" type="xsd:string"/>
+  </message>
+  <message name="getReporteResponse">
+    <part name="return" type="xsd:string"/>
+  </message>
+  <message name="getParametrizacionRequest">
+    <part name="clase" type="xsd:string"/>
+  </message>
+  <message name="getParametrizacionResponse">
+    <part name="return" type="xsd:string"/>
+  </message>
+  <message name="validCuilRequest">
+    <part name="cuil" type="xsd:string"/>
+  </message>
+  <message name="validCuilResponse">
+    <part name="return" type="xsd:boolean"/>
+  </message>
+  <message name="cargarImportadatRequest">
+    <part name="importadatSubido" type="xsd:boolean"/>
+    <part name="liqId" type="xsd:int"/>
+  </message>
+  <message name="cargarImportadatResponse">
+    <part name="return" type="xsd:boolean"/>
+  </message>
+  <message name="getLiquidacionesRequest">
+    <part name="orgId" type="xsd:int"/>
+  </message>
+  <message name="getLiquidacionesResponse">
+    <part name="return" type="xsd:string"/>
+  </message>
+  <message name="getLiquidacionesConDatosRequest">
+    <part name="orgId" type="xsd:int"/>
+  </message>
+  <message name="getLiquidacionesConDatosResponse">
+    <part name="return" type="xsd:string"/>
+  </message>
+  <message name="getLiquidacionRequest">
+    <part name="liqId" type="xsd:int"/>
+    <part name="orgId" type="xsd:int"/>
+  </message>
+  <message name="getLiquidacionResponse">
+    <part name="return" type="xsd:string"/>
+  </message>
+  <message name="getLiquidacion910Request">
+    <part name="liqId" type="xsd:int"/>
+  </message>
+  <message name="getLiquidacion910Response">
+    <part name="return" type="xsd:string"/>
+  </message>
+  <message name="getLiquidacionToShowRequest">
+    <part name="liqId" type="xsd:int"/>
+    <part name="orgId" type="xsd:int"/>
+  </message>
+  <message name="getLiquidacionToShowResponse">
+    <part name="return" type="xsd:string"/>
+  </message>
+  <message name="getLiquidacionByRequest">
+    <part name="criteria" type="xsd:string"/>
+  </message>
+  <message name="getLiquidacionByResponse">
+    <part name="return" type="xsd:string"/>
+  </message>
+  <message name="existeOtraLiqOriginalRequest">
+    <part name="orgId" type="xsd:int"/>
+    <part name="mes" type="xsd:string"/>
+    <part name="anio" type="xsd:string"/>
+  </message>
+  <message name="existeOtraLiqOriginalResponse">
+    <part name="return" type="xsd:boolean"/>
+  </message>
+  <message name="saveLiquidacionRequest">
+    <part name="liquidacionJSON" type="xsd:string"/>
+  </message>
+  <message name="saveLiquidacionResponse">
+    <part name="return" type="xsd:int"/>
+  </message>
+  <message name="getConceptosRequest">
+    <part name="obligatorio" type="xsd:boolean"/>
+  </message>
+  <message name="getConceptosResponse">
+    <part name="return" type="xsd:string"/>
+  </message>
+  <message name="getPersonaByCuilRequest">
+    <part name="cuil" type="xsd:string"/>
+  </message>
+  <message name="getPersonaByCuilResponse">
+    <part name="return" type="xsd:string"/>
+  </message>
+  <message name="getAportantesFaltantesEnLiquidacionRequest">
+    <part name="orgID" type="xsd:string"/>
+    <part name="aportantesIDsJSON" type="xsd:string"/>
+  </message>
+  <message name="getAportantesFaltantesEnLiquidacionResponse">
+    <part name="return" type="xsd:string"/>
+  </message>
+  <message name="saveItemsRequest">
+    <part name="itemsJSON" type="xsd:string"/>
+    <part name="liqID" type="xsd:string"/>
+  </message>
+  <message name="saveItemsResponse">
+    <part name="return" type="xsd:boolean"/>
+  </message>
+  <message name="borrarDatosLiquidacionRequest">
+    <part name="liqID" type="xsd:string"/>
+  </message>
+  <message name="borrarDatosLiquidacionResponse">
+    <part name="return" type="xsd:boolean"/>
+  </message>
+  <message name="updateItemsRequest">
+    <part name="itemsJSON" type="xsd:string"/>
+    <part name="liqID" type="xsd:string"/>
+  </message>
+  <message name="updateItemsResponse">
+    <part name="return" type="xsd:boolean"/>
+  </message>
+  <message name="getInformeRequest">
+    <part name="liqID" type="xsd:string"/>
+  </message>
+  <message name="getInformeResponse">
+    <part name="return" type="xsd:string"/>
+  </message>
+  <message name="copyLiquidacionRequest">
+    <part name="idLiqSinDatos" type="xsd:string"/>
+    <part name="idLiqConDatos" type="xsd:string"/>
+  </message>
+  <message name="copyLiquidacionResponse">
+    <part name="return" type="xsd:boolean"/>
+  </message>
+  <message name="getConjuntoControlRequest">
+    <part name="liqID" type="xsd:string"/>
+  </message>
+  <message name="getConjuntoControlResponse">
+    <part name="return" type="xsd:string"/>
+  </message>
+  <message name="presentarLiquidacionRequest">
+    <part name="idLiq" type="xsd:string"/>
+    <part name="idUsr" type="xsd:string"/>
+  </message>
+  <message name="presentarLiquidacionResponse">
+    <part name="return" type="xsd:boolean"/>
+  </message>
+  <message name="getAmparoRequest">
+    <part name="aportanteId" type="xsd:int"/>
+    <part name="conceptoId" type="xsd:int"/>
+  </message>
+  <message name="getAmparoResponse">
+    <part name="return" type="xsd:string"/>
+  </message>
+  <message name="getAmparosRequest">
+    <part name="orgId" type="xsd:int"/>
+  </message>
+  <message name="getAmparosResponse">
+    <part name="return" type="xsd:string"/>
+  </message>
+  <message name="getOrganismoMailsRequest">
+    <part name="organismoId" type="xsd:int"/>
+  </message>
+  <message name="getOrganismoMailsResponse">
+    <part name="return" type="xsd:string"/>
+  </message>
+  <message name="aplicarTransicionRequest">
+    <part name="idLiq" type="xsd:string"/>
+    <part name="transition" type="xsd:string"/>
+  </message>
+  <message name="aplicarTransicionResponse">
+    <part name="return" type="xsd:string"/>
+  </message>
+  <message name="getLiquidacionCargaManualRequest">
+    <part name="liqId" type="xsd:int"/>
+  </message>
+  <message name="getLiquidacionCargaManualResponse">
+    <part name="return" type="xsd:string"/>
+  </message>
+  <message name="borrarItemLiquidacionRequest">
+    <part name="idItem" type="xsd:int"/>
+  </message>
+  <message name="borrarItemLiquidacionResponse">
+    <part name="return" type="xsd:boolean"/>
+  </message>
+  <message name="getResumenPeriodosRequest">
+    <part name="cuilAportante" type="xsd:string"/>
+  </message>
+  <message name="getResumenPeriodosResponse">
+    <part name="return" type="xsd:string"/>
+  </message>
+  <service name="SiafcaApiService">
+    <port name="SiafcaApiPort" binding="tns:SiafcaApiBinding">
+      <soap:address location="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi"/>
+    </port>
+  </service>
+  <binding name="SiafcaApiBinding" type="tns:SiafcaApiPortType">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="rpc"/>
+    <operation name="isHabilitado">
+      <soap:operation soapAction="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/isHabilitado"/>
+      <input>
+        <soap:body use="literal" namespace="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </input>
+      <output>
+        <soap:body use="literal" namespace="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </output>
+    </operation>
+    <operation name="getUsuario">
+      <soap:operation soapAction="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/getUsuario"/>
+      <input>
+        <soap:body use="literal" namespace="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </input>
+      <output>
+        <soap:body use="literal" namespace="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </output>
+    </operation>
+    <operation name="getUsuarios">
+      <soap:operation soapAction="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/getUsuarios"/>
+      <input>
+        <soap:body use="literal" namespace="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </input>
+      <output>
+        <soap:body use="literal" namespace="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </output>
+    </operation>
+    <operation name="getOrganismos">
+      <soap:operation soapAction="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/getOrganismos"/>
+      <input>
+        <soap:body use="literal" namespace="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </input>
+      <output>
+        <soap:body use="literal" namespace="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </output>
+    </operation>
+    <operation name="getOrganismo">
+      <soap:operation soapAction="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/getOrganismo"/>
+      <input>
+        <soap:body use="literal" namespace="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </input>
+      <output>
+        <soap:body use="literal" namespace="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </output>
+    </operation>
+    <operation name="getCargos">
+      <soap:operation soapAction="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/getCargos"/>
+      <input>
+        <soap:body use="literal" namespace="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </input>
+      <output>
+        <soap:body use="literal" namespace="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </output>
+    </operation>
+    <operation name="get">
+      <soap:operation soapAction="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/get"/>
+      <input>
+        <soap:body use="literal" namespace="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </input>
+      <output>
+        <soap:body use="literal" namespace="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </output>
+    </operation>
+    <operation name="saveCargo">
+      <soap:operation soapAction="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/saveCargo"/>
+      <input>
+        <soap:body use="literal" namespace="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </input>
+      <output>
+        <soap:body use="literal" namespace="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </output>
+    </operation>
+    <operation name="getAportantes">
+      <soap:operation soapAction="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/getAportantes"/>
+      <input>
+        <soap:body use="literal" namespace="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </input>
+      <output>
+        <soap:body use="literal" namespace="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </output>
+    </operation>
+    <operation name="getTodosAportantes">
+      <soap:operation soapAction="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/getTodosAportantes"/>
+      <input>
+        <soap:body use="literal" namespace="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </input>
+      <output>
+        <soap:body use="literal" namespace="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </output>
+    </operation>
+    <operation name="getAportante">
+      <soap:operation soapAction="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/getAportante"/>
+      <input>
+        <soap:body use="literal" namespace="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </input>
+      <output>
+        <soap:body use="literal" namespace="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </output>
+    </operation>
+    <operation name="getTotalAportantes">
+      <soap:operation soapAction="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/getTotalAportantes"/>
+      <input>
+        <soap:body use="literal" namespace="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </input>
+      <output>
+        <soap:body use="literal" namespace="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </output>
+    </operation>
+    <operation name="saveAportantePersona">
+      <soap:operation soapAction="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/saveAportantePersona"/>
+      <input>
+        <soap:body use="literal" namespace="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </input>
+      <output>
+        <soap:body use="literal" namespace="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </output>
+    </operation>
+    <operation name="saveAportante">
+      <soap:operation soapAction="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/saveAportante"/>
+      <input>
+        <soap:body use="literal" namespace="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </input>
+      <output>
+        <soap:body use="literal" namespace="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </output>
+    </operation>
+    <operation name="saveUsuario">
+      <soap:operation soapAction="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/saveUsuario"/>
+      <input>
+        <soap:body use="literal" namespace="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </input>
+      <output>
+        <soap:body use="literal" namespace="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </output>
+    </operation>
+    <operation name="getReporte">
+      <soap:operation soapAction="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/getReporte"/>
+      <input>
+        <soap:body use="literal" namespace="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </input>
+      <output>
+        <soap:body use="literal" namespace="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </output>
+    </operation>
+    <operation name="getParametrizacion">
+      <soap:operation soapAction="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/getParametrizacion"/>
+      <input>
+        <soap:body use="literal" namespace="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </input>
+      <output>
+        <soap:body use="literal" namespace="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </output>
+    </operation>
+    <operation name="validCuil">
+      <soap:operation soapAction="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/validCuil"/>
+      <input>
+        <soap:body use="literal" namespace="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </input>
+      <output>
+        <soap:body use="literal" namespace="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </output>
+    </operation>
+    <operation name="cargarImportadat">
+      <soap:operation soapAction="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/cargarImportadat"/>
+      <input>
+        <soap:body use="literal" namespace="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </input>
+      <output>
+        <soap:body use="literal" namespace="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </output>
+    </operation>
+    <operation name="getLiquidaciones">
+      <soap:operation soapAction="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/getLiquidaciones"/>
+      <input>
+        <soap:body use="literal" namespace="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </input>
+      <output>
+        <soap:body use="literal" namespace="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </output>
+    </operation>
+    <operation name="getLiquidacionesConDatos">
+      <soap:operation soapAction="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/getLiquidacionesConDatos"/>
+      <input>
+        <soap:body use="literal" namespace="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </input>
+      <output>
+        <soap:body use="literal" namespace="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </output>
+    </operation>
+    <operation name="getLiquidacion">
+      <soap:operation soapAction="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/getLiquidacion"/>
+      <input>
+        <soap:body use="literal" namespace="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </input>
+      <output>
+        <soap:body use="literal" namespace="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </output>
+    </operation>
+    <operation name="getLiquidacion910">
+      <soap:operation soapAction="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/getLiquidacion910"/>
+      <input>
+        <soap:body use="literal" namespace="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </input>
+      <output>
+        <soap:body use="literal" namespace="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </output>
+    </operation>
+    <operation name="getLiquidacionToShow">
+      <soap:operation soapAction="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/getLiquidacionToShow"/>
+      <input>
+        <soap:body use="literal" namespace="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </input>
+      <output>
+        <soap:body use="literal" namespace="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </output>
+    </operation>
+    <operation name="getLiquidacionBy">
+      <soap:operation soapAction="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/getLiquidacionBy"/>
+      <input>
+        <soap:body use="literal" namespace="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </input>
+      <output>
+        <soap:body use="literal" namespace="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </output>
+    </operation>
+    <operation name="existeOtraLiqOriginal">
+      <soap:operation soapAction="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/existeOtraLiqOriginal"/>
+      <input>
+        <soap:body use="literal" namespace="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </input>
+      <output>
+        <soap:body use="literal" namespace="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </output>
+    </operation>
+    <operation name="saveLiquidacion">
+      <soap:operation soapAction="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/saveLiquidacion"/>
+      <input>
+        <soap:body use="literal" namespace="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </input>
+      <output>
+        <soap:body use="literal" namespace="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </output>
+    </operation>
+    <operation name="getConceptos">
+      <soap:operation soapAction="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/getConceptos"/>
+      <input>
+        <soap:body use="literal" namespace="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </input>
+      <output>
+        <soap:body use="literal" namespace="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </output>
+    </operation>
+    <operation name="getPersonaByCuil">
+      <soap:operation soapAction="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/getPersonaByCuil"/>
+      <input>
+        <soap:body use="literal" namespace="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </input>
+      <output>
+        <soap:body use="literal" namespace="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </output>
+    </operation>
+    <operation name="getAportantesFaltantesEnLiquidacion">
+      <soap:operation soapAction="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/getAportantesFaltantesEnLiquidacion"/>
+      <input>
+        <soap:body use="literal" namespace="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </input>
+      <output>
+        <soap:body use="literal" namespace="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </output>
+    </operation>
+    <operation name="saveItems">
+      <soap:operation soapAction="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/saveItems"/>
+      <input>
+        <soap:body use="literal" namespace="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </input>
+      <output>
+        <soap:body use="literal" namespace="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </output>
+    </operation>
+    <operation name="borrarDatosLiquidacion">
+      <soap:operation soapAction="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/borrarDatosLiquidacion"/>
+      <input>
+        <soap:body use="literal" namespace="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </input>
+      <output>
+        <soap:body use="literal" namespace="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </output>
+    </operation>
+    <operation name="updateItems">
+      <soap:operation soapAction="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/updateItems"/>
+      <input>
+        <soap:body use="literal" namespace="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </input>
+      <output>
+        <soap:body use="literal" namespace="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </output>
+    </operation>
+    <operation name="getInforme">
+      <soap:operation soapAction="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/getInforme"/>
+      <input>
+        <soap:body use="literal" namespace="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </input>
+      <output>
+        <soap:body use="literal" namespace="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </output>
+    </operation>
+    <operation name="copyLiquidacion">
+      <soap:operation soapAction="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/copyLiquidacion"/>
+      <input>
+        <soap:body use="literal" namespace="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </input>
+      <output>
+        <soap:body use="literal" namespace="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </output>
+    </operation>
+    <operation name="getConjuntoControl">
+      <soap:operation soapAction="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/getConjuntoControl"/>
+      <input>
+        <soap:body use="literal" namespace="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </input>
+      <output>
+        <soap:body use="literal" namespace="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </output>
+    </operation>
+    <operation name="presentarLiquidacion">
+      <soap:operation soapAction="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/presentarLiquidacion"/>
+      <input>
+        <soap:body use="literal" namespace="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </input>
+      <output>
+        <soap:body use="literal" namespace="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </output>
+    </operation>
+    <operation name="getAmparo">
+      <soap:operation soapAction="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/getAmparo"/>
+      <input>
+        <soap:body use="literal" namespace="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </input>
+      <output>
+        <soap:body use="literal" namespace="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </output>
+    </operation>
+    <operation name="getAmparos">
+      <soap:operation soapAction="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/getAmparos"/>
+      <input>
+        <soap:body use="literal" namespace="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </input>
+      <output>
+        <soap:body use="literal" namespace="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </output>
+    </operation>
+    <operation name="getOrganismoMails">
+      <soap:operation soapAction="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/getOrganismoMails"/>
+      <input>
+        <soap:body use="literal" namespace="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </input>
+      <output>
+        <soap:body use="literal" namespace="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </output>
+    </operation>
+    <operation name="aplicarTransicion">
+      <soap:operation soapAction="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/aplicarTransicion"/>
+      <input>
+        <soap:body use="literal" namespace="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </input>
+      <output>
+        <soap:body use="literal" namespace="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </output>
+    </operation>
+    <operation name="getLiquidacionCargaManual">
+      <soap:operation soapAction="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/getLiquidacionCargaManual"/>
+      <input>
+        <soap:body use="literal" namespace="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </input>
+      <output>
+        <soap:body use="literal" namespace="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </output>
+    </operation>
+    <operation name="borrarItemLiquidacion">
+      <soap:operation soapAction="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/borrarItemLiquidacion"/>
+      <input>
+        <soap:body use="literal" namespace="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </input>
+      <output>
+        <soap:body use="literal" namespace="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </output>
+    </operation>
+    <operation name="getResumenPeriodos">
+      <soap:operation soapAction="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/getResumenPeriodos"/>
+      <input>
+        <soap:body use="literal" namespace="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </input>
+      <output>
+        <soap:body use="literal" namespace="http://10.0.2.15/~desarrollo/siafca-web/web/app_dev.php/wsbe/SiafcaApi/1.0/" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+      </output>
+    </operation>
+  </binding>
+</definitions>

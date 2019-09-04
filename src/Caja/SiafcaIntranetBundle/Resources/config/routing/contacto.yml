@@ -1,0 +1,7 @@
+contacto.index:
+    path: /{id}
+    defaults:
+        _controller: SiafcaIntranetBundle:Contacto:index
+        id: null
+    requirements:
+        id: '\d+'

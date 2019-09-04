@@ -1,0 +1,148 @@
+{% extends 'base.html.twig' %}
+
+{% block content %}
+    <div class="table-wrapper page-header">
+        <h1>{% if delete_form is defined %}<i class="material-icons md-inherit md-48">mode_edit</i> Editar{% else %}<i class="material-icons md-inherit md-48">add_circle</i> Agregar{% endif %} Organismo
+        {% if ayuda is defined and ayuda != "" %}
+                <a href="#" data-toggle="modal"  data-target="#ayudaMessage"><i class="material-icons md-inherit md-48">help</i></a>
+            {% endif %}
+        </h1>
+        {% if delete_form is defined %}
+            {{ form_start(delete_form, {'attr': {'class': 'text-right'}}) }}
+                <input class="btn btn-danger" type="submit" value="Eliminar" />
+            {{ form_end(delete_form) }}
+        {% endif %}
+    </div>
+    {{ form_start(form, {'attr': {'class': 'progress-form'}}) }}
+        <fieldset>
+            <legend>Organismo</legend>
+            <div class="row">
+                <div class="col-xs-12 col-md-6">{{ form_row(form.nombre) }}</div>
+                <div class="col-xs-12 col-md-6">{{ form_row(form.cuit) }}</div>
+            </div>
+            <div class="row">
+                <div class="col-xs-12 col-md-6">{{ form_row(form.expediente) }}</div>
+                <div class="col-xs-12 col-md-6">{{ form_row(form.resolucion) }}</div>
+            </div>
+            <div class="row">
+                <div class="col-xs-12 col-md-6">{{ form_row(form.telefono) }}</div>
+                <div class="col-xs-12 col-md-6">{{ form_row(form.correos) }}</div>
+            </div>
+            <div class="row">
+                <div class="col-xs-12 col-md-6">{{ form_row(form.zona) }}</div>
+                <div class="col-xs-12 col-md-6">{{ form_row(form.fechaAprobacion) }}</div>
+            </div>
+            <div class="row">
+                <div class="col-xs-12 col-md-6">{{ form_row(form.tipoOrganismo) }}</div>
+                 <div class="col-xs-12 col-md-6">{{ form_row(form.juri) }}</div>
+            </div>
+            <div id="conditionalform">
+                <div id="t0">
+                    <div class="row">
+                        <div class="col-xs-12 col-md-6">{{ form_row(form.numero) }}</div>
+                        <div class="col-xs-12 col-md-6">{{ form_row(form.ta00) }}</div>
+                    </div>
+                </div>
+                
+                <div id="t2">
+                    {{ form_row(form.ta02) }}
+                </div>
+                <div id="t5">
+                    {{ form_row(form.ta05) }}
+                </div>
+                <div id="circuns">
+                    {{ form_row(form.circuns) }}
+                </div>
+            </div>
+        </fieldset>
+        {% if delete_form is not defined %}
+            <fieldset>
+                <legend>Domicilio</legend>
+                {{ form_row(form.domicilios[0].tipoDomicilio) }}
+                <div class="row">
+                    <div class="col-xs-12 col-sm-4">{{ form_row(form.domicilios[0].Provincia) }}</div>
+                    <div class="col-xs-12 col-sm-4">{{ form_row(form.domicilios[0].Departamento) }}</div>
+                    <div class="col-xs-12 col-sm-4">{{ form_row(form.domicilios[0].Localidad) }}</div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-6">{{ form_row(form.domicilios[0].calleNumero.calle) }}</div>
+                    <div class="col-xs-12 col-sm-6">{{ form_row(form.domicilios[0].calleNumero.numero) }}</div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-6">{{ form_row(form.domicilios[0].pisoDepto.piso) }}</div>
+                    <div class="col-xs-12 col-sm-6">{{ form_row(form.domicilios[0].pisoDepto.depto) }}</div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-4">{{ form_row(form.domicilios[0].manzanaLoteMono.manzana) }}</div>
+                    <div class="col-xs-12 col-sm-4">{{ form_row(form.domicilios[0].manzanaLoteMono.lote) }}</div>
+                    <div class="col-xs-12 col-sm-4">{{ form_row(form.domicilios[0].manzanaLoteMono.monoblock) }}</div>
+                </div>
+                <input type="hidden" name="organismo[domicilios][0][tipoDomicilio]" value="2" />
+            </fieldset>
+        {% endif %}
+        <div class="col-xs-12 text-center" style="margin-top: 12px;">
+            <a class="btn btn-default" href="{{ path('organismo_index') }}" title="Volver al listado">Cancelar</a>
+            <input class="btn btn-primary" type="submit" value="{% if delete_form is defined %}Guardar{% else %}Crear{% endif %}" />
+        </div>
+        {{ form_widget(form._token) }}
+    {{ form_end(form, {'render_rest': false}) }}
+{% endblock %}
+
+{% block customjavascripts %}
+    <script>
+        $(document).ready(function() {
+            $('#organismo_domicilios_0_Provincia').change(function() {
+                removeElementsButFirst(new Array('#organismo_domicilios_0_Localidad', '#organismo_domicilios_0_Departamento'));
+                searchElements('{{ path('departamento_ajax') }}', '#organismo_domicilios_0_Departamento', '#organismo_domicilios_0_Provincia', 'provincia');
+                $('#organismo_domicilios_0_Localidad option.select-placeholder, #organismo_domicilios_0_Departamento option.select-placeholder').prop('selected', 'selected');
+                $('#organismo_domicilios_0_Localidad, #organismo_domicilios_0_Departamento').change();
+            });
+            $('#organismo_domicilios_0_Departamento').change(function() {
+                removeElementsButFirst(new Array('#organismo_domicilios_0_Localidad'));
+                searchElements('{{ path('localidad_ajax') }}', '#organismo_domicilios_0_Localidad', '#organismo_domicilios_0_Departamento', 'departamento');
+                $('#organismo_domicilios_0_Localidad option.select-placeholder').prop('selected', 'selected');
+                $('#organismo_domicilios_0_Localidad').change();
+            });
+
+            var topYear = new Date().getFullYear()+1;
+            {% image '@SiafcaIntranetBundle/Resources/public/nueva_base/images/ic_event_black_24dp_2x.png' %}
+                $(".date-format").datepicker({
+                    yearRange: (topYear-120)+":"+topYear,
+                    minDate: "-150Y",
+                    buttonImage: "{{ asset_url }}",
+                });
+            {% endimage %}
+
+            var elementToShow;
+            $('#t0, #t1, #t2, #t5, #circuns').hide();
+            $('#conditionalform input, #conditionalform select, #conditionalform textarea').removeAttr('required');
+            $('#organismo_tipoOrganismo').change(function() {
+                $('#conditionalform input, #conditionalform select, #conditionalform textarea').removeAttr('required');
+                $('#t0, #t1, #t2, #t5, #circuns').hide(400);
+                switch ($('#organismo_tipoOrganismo').val()) {
+                    case '1': elementToShow = '#t0, #circuns'; break;
+                    case '2': elementToShow = '#t1'; break;
+                    case '3': elementToShow = '#t2'; break;
+                    case '4': elementToShow = '#t1'; break;
+                    case '5': elementToShow = '#t5, #circuns'; break;
+                }
+                $(elementToShow).show(600);
+                $('#conditionalform option:selected').removeAttr("selected");
+                $('#conditionalform option.select-placeholder').prop("selected", true);
+                $('#organismo_numero').val('');
+                $(elementToShow).find('input, select, textarea').prop('required', true);
+                $('#conditionalform select').trigger("change");
+            });
+            switch ($('#organismo_tipoOrganismo').val()) {
+                case '1': elementToShow = '#t0, #circuns'; break;
+                case '2': elementToShow = '#t1'; break;
+                case '3': elementToShow = '#t2'; break;
+                case '4': elementToShow = '#t1'; break;
+                case '5': elementToShow = '#t5, #circuns'; break;
+            }
+            $(elementToShow).show(600);
+            $(elementToShow).find('input, select, textarea').prop('required', true);
+            $('#conditionalform select').trigger("change");
+        });
+    </script>
+{% endblock customjavascripts %}

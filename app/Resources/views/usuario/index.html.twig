@@ -1,0 +1,69 @@
+{% extends 'index.html.twig' %}
+{% from 'partials/section-title.html.twig' import js as section_title_js %}
+
+{% block section_title %}
+    {% embed "partials/section-title.html.twig" %}
+        {% block titulo %}<i class="material-icons md-inherit md-48">group</i> Usuarios por organismo
+            {% if ayuda is defined and ayuda != "" %}
+                <a href="#" data-toggle="modal"  data-target="#ayudaMessage"><i class="material-icons md-inherit md-48">help</i></a>
+            {% endif %}
+            {% endblock %}
+        {% block subtitulo %}{{ subtitle }}{% endblock %}
+    {% endembed %}
+{% endblock section_title %}
+
+{% block extrabuttons %}
+    
+    <div class="pull-right checkbox" style="margin: 0;">
+        <label><input id="filter-actual" type="checkbox"{% if actualOnly %} checked="checked"{% endif %} /> Ver sólo actuales</label>
+    </div>
+{% endblock extrabuttons %}
+
+{% block thead %}
+    
+    <th>#</th>
+    <th class="text-left">{{ knp_pagination_sortable(usuarios, 'Usuario', 'u.username', { Title: 'Ordenar por nombre' }) }}</th>
+    <th class="text-left">{{ knp_pagination_sortable(usuarios, 'Estado', 'e.nombre', { Title: 'Ordenar por estado' }) }}</th>
+    <th class="text-left">{{ knp_pagination_sortable(usuarios, 'Desde', 'uo.fechaDesde', { Title: 'Ordenar por fecha desde' }) }}</th>
+    <th class="text-left">{{ knp_pagination_sortable(usuarios, 'Hasta', 'uo.fechaHasta', { Title: 'Ordenar por fecha hasta' }) }}</th>
+    <th class="text-left">{{ knp_pagination_sortable(usuarios, 'Rol', 'r.nombre', { Title: 'Ordenar por rol' }) }}</th>
+{% endblock thead %}
+
+{% block tbody %}
+     <tbody class="table-body" style="background-color:#ccffff">
+    {% if usuarios|length == 0 %}
+        <tr><td colspan="6">No hay Usuarios.</td></tr>
+    {% else %}
+        {% for usuarioOrganismo in usuarios %}
+            {{ include(':usuario:row.html.twig', { 'usuarioOrganismo': usuarioOrganismo }) }}
+        {% endfor %}
+    {% endif %}
+         </tbody>
+</table>
+
+ <div class="list-group">
+    <a class="btn btn-primary pull-right" href="{{ path('oficina_show', {'id': orgId}) }}" title="Volver">Volver</a>
+</div> 
+{% endblock tbody %}
+
+{% block pagination %}
+    <div class="navigation">
+        {{ knp_pagination_render(usuarios) }}
+    </div>
+{% endblock %}
+
+{% block customjavascripts %}
+    {{ parent() }}
+    <script>
+        {{ section_title_js() }}
+        $(document).ready(function() {
+            $("#filter-actual").change(function() {
+                if ($(this).is(':checked')) {
+                    window.location = '{{ path('usuario_organismo', {'id': orgId, 'actualOnly': 'yes'}) }}';
+                } else {
+                    window.location = '{{ path('usuario_organismo', {'id': orgId}) }}';
+                }
+            });
+        });
+    </script>
+{% endblock customjavascripts %}

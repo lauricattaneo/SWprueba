@@ -1,0 +1,5 @@
+departamento_ajax:
+    path:     /ajax
+    defaults: { _controller: "SiafcaIntranetBundle:Departamento:ajax" }
+    methods:  [POST,GET]
+

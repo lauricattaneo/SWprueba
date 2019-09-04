@@ -1,0 +1,61 @@
+# To get started with security, check out the documentation:
+# http://symfony.com/doc/current/book/security.html
+security:
+    access_decision_manager:
+        strategy: unanimous
+    # http://symfony.com/doc/current/book/security.html#where-do-users-come-from-user-providers
+    providers:
+        our_db_provider:
+            entity:
+                class: SiafcaIntranetBundle:Usuario
+            
+    encoders:
+      Caja\SiafcaIntranetBundle\Entity\Usuario: sha512
+        
+
+    firewalls:
+        # disables authentication for assets and the profiler, adapt it according to your needs
+        dev:
+            pattern: ^/(_(profiler|wdt)|css|images|js)/
+            security: false
+
+            # http://symfony.com/doc/current/book/security.html#a-configuring-how-your-users-will-authenticate
+
+            # form_login: ~
+            # http://symfony.com/doc/current/cookbook/security/form_login_setup.html
+        secured_area:
+                pattern:  ^/
+                provider:  our_db_provider
+                anonymous: ~
+                cas:
+                    check_path: _demo_login
+#                    failure_path: _demo
+                logout:
+                    path:   _demo_logout
+#                    target: _demo
+                    invalidate_session: false
+                
+                
+    role_hierarchy:
+        ROLE_BASIC: []
+        ROLE_CONTRALOR_ADMIN: [ROLE_CONTRALOR_USER,ROLE_BASIC]
+        ROLE_ORGANISMO_ADMIN: [ROLE_ORGANISMO_USER,ROLE_BASIC]
+        ROLE_ADMIN:       [ROLE_CONTRALOR_ADMIN, ROLE_ORGANISMO_ADMIN]
+        ROLE_SUPER_ADMIN: [ROLE_ADMIN, ROLE_ALLOWED_TO_SWITCH]
+
+    access_control:
+#        - { path: ^/, roles: IS_AUTHENTICATED_ANONYMOUSLY, requires_channel: http}
+        - { path: ^/usuario/ingresar, roles: IS_AUTHENTICATED_ANONYMOUSLY, requires_channel: http}
+        - { path: ^/demo/secured/loginCAS, roles: IS_AUTHENTICATED_ANONYMOUSLY, requires_channel: http }
+        - { path: ^/wsbe, roles: IS_AUTHENTICATED_ANONYMOUSLY, requires_channel: http}
+        - { path: ^/uorganismo/validar, roles: ROLE_CONTRALOR_ADMIN }
+        - { path: ^/uorganismo/bloquear, roles: ROLE_CONTRALOR_ADMIN }
+        - { path: ^/uorganismo/desbloquear, roles: ROLE_CONTRALOR_ADMIN }
+        - { path: ^/uorganismo/inhabilitarB, roles: ROLE_CONTRALOR_ADMIN }
+        - { path: ^/uorganismo/inhabilitarH, roles: ROLE_CONTRALOR_ADMIN }
+        - { path: ^/organismo, roles: ROLE_CONTRALOR_USER }
+        #- { path: ^/oficina/app.user.isAdmOficina.idOficina/show, roles: ROLE_CONTRALOR_ADMIN }
+        #- { path: ^/oficina, roles: ROLE_ADMIN }
+        - { path: ^/, roles: ROLE_CONTRALOR_USER }
+
+        

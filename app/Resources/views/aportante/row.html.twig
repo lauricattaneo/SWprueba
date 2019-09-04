@@ -1,0 +1,16 @@
+<tr class="row-index">
+    <td class="grey-background">{{ aportantes.getPaginationData.firstItemNumber + loop.index - 1 }}</td>
+    <td class="text-left">{{ aportante.persona.getNombreCompleto() }}</td>
+     <td class="text-left">
+        {% if aportante.persona.cuil is not empty and aportante.persona.cuil|length == 11 %}
+            {{ '%s-%s-%s'|format(aportante.persona.cuil[:2], aportante.persona.cuil[2:aportante.persona.cuil|length-3], aportante.persona.cuil[aportante.persona.cuil|length-1:]) }}
+        {% else %}
+            {{ aportante.persona.cuil }}
+        {% endif %}
+    </td>
+    <td class="text-left">{{ aportante.fechaAlta is empty ? '' : aportante.fechaAlta|date }}</td>
+    <td class="text-left">{{ aportante.fechaBaja is empty ? '' : aportante.fechaBaja|date }}</td>
+    <td class="text-left">{{ aportante.cargo }}</td>
+    <td class="text-left">{{ aportante.nroliq }}</td>
+    <td class="text-left">{{ aportante.revista }}</td>
+</tr>

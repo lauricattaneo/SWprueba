@@ -1,0 +1,24 @@
+concepto_index:
+    path:     /
+    defaults: { _controller: "SiafcaIntranetBundle:Concepto:index" }
+    methods:  GET
+
+concepto_show:
+    path:     /{id}/show
+    defaults: { _controller: "SiafcaIntranetBundle:Concepto:show" }
+    methods:  GET
+
+concepto_new:
+    path:     /new
+    defaults: { _controller: "SiafcaIntranetBundle:Concepto:new" }
+    methods:  [GET, POST]
+
+concepto_edit:
+    path:     /{id}/edit
+    defaults: { _controller: "SiafcaIntranetBundle:Concepto:edit" }
+    methods:  [GET, POST]
+
+concepto_delete:
+    path:     /{id}/delete
+    defaults: { _controller: "SiafcaIntranetBundle:Concepto:delete" }
+    methods:  DELETE

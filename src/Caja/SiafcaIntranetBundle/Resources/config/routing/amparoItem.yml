@@ -1,0 +1,35 @@
+amparo_item_index:
+    path:     /{id}
+    defaults: { _controller: "SiafcaIntranetBundle:AmparoItem:index" }
+    requirements:
+        id: \d+
+    methods:  GET
+
+amparo_item_show:
+    path:     /{id}/{orgId}/show
+    defaults: { _controller: "SiafcaIntranetBundle:AmparoItem:show" }
+    requirements:
+        id: \d+
+        orgId: \d+
+    methods:  GET
+
+amparo_item_new:
+    path:     /new/{orgId}
+    defaults: { _controller: "SiafcaIntranetBundle:AmparoItem:new" }
+    requirements:
+        orgId: \d+ 
+    methods:  [GET, POST]
+
+amparo_item_edit:
+    path:     /{id}/edit
+    defaults: { _controller: "SiafcaIntranetBundle:AmparoItem:edit" }
+    requirements:
+        id: \d+    
+    methods:  [GET, POST]
+
+amparo_item_delete:
+    path:     /{id}/delete
+    defaults: { _controller: "SiafcaIntranetBundle:AmparoItem:delete" }
+    requirements:
+        id: \d+    
+    methods:  DELETE

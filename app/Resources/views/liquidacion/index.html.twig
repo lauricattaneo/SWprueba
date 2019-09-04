@@ -1,0 +1,31 @@
+{% form_theme filterForm 'form/form_buttons.html.twig' %}
+{% form_theme searchForm 'form/form_input-group.html.twig' %}
+
+{% embed "liquidacion/search.html.twig" %}
+    {% block section_title %}
+        {% embed "partials/section-title.html.twig" %}
+            {% block titulo %}<i class="material-icons md-inherit md-48">assignment</i>
+                Liquidaciones
+                            {% if ayuda is defined and ayuda != "" %}
+                <a href="#" data-toggle="modal"  data-target="#ayudaMessage"><i class="material-icons md-inherit md-48">help</i></a>
+            {% endif %}
+            {% endblock %}
+            {% block subtitulo %}
+                {{ subtitulo }}
+            {% endblock %}
+            {% block extracontenttitle %}
+                {{ form_start(searchForm) }}
+                {{ form_widget(searchForm) }}
+                {{ form_rest(searchForm) }}
+                {{ form_end(searchForm) }}
+            {% endblock %}
+        {% endembed %}
+    {% endblock section_title %}
+
+    {% block filterbuttons %}
+        {{ form_start(filterForm) }}
+        {{ form_widget(filterForm) }}
+        {{ form_rest(filterForm) }}
+        {{ form_end(filterForm) }}
+    {% endblock %}
+{% endembed %}

@@ -1,0 +1,47 @@
+{% extends "show_base.html.twig" %}
+{% from 'partials/section-title.html.twig' import js as section_title_js %}
+
+{% block sectiontitle %}
+    {% embed "partials/section-title.html.twig" %}
+        {%block titulo%}
+            <i class="material-icons md-inherit md-48">person</i>Usuario: {{ usuario }}
+        {%endblock titulo%}
+    {% endembed %}
+{% endblock sectiontitle %}
+
+{% block description %}
+    <div class="col-sm-6 col-md-4">
+        <div class="panel panel-default text-center">
+            <div class="panel-heading" style="font-size: 24px;">
+                <i class="material-icons md-36 md-dark" style="vertical-align: middle;">account_circle</i>
+                Nombre de Usuario
+            </div>
+            <div class="panel-body" style="font-size: 20px;">
+              {{ usuario.username }}
+              <a href="#">
+                  <i class="material-icons md-24 md-dark">mode_edit</i>
+              </a>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-md-4">
+        <div class="panel panel-default text-center">
+            <div class="panel-heading" style="font-size: 24px;">
+                <i class="material-icons md-36 md-dark" style="vertical-align: middle;">https</i>
+                Contraseña
+            </div>
+            <div class="panel-body" style="font-size: 20px;">
+                &#9679;	&#9679;	&#9679;	&#9679;	&#9679;	&#9679;	&#9679;	&#9679;	&#9679;	
+              <a href="#">
+                  <i class="material-icons md-24 md-dark">mode_edit</i>
+              </a>
+            </div>
+        </div>
+    </div>
+{% endblock description %}
+
+{% block customjavascripts %}
+    <script>
+        {{ section_title_js() }}
+    </script>
+{% endblock customjavascripts %}

@@ -1,0 +1,55 @@
+{% extends 'index.html.twig' %}
+{# form_theme searchForm 'form/form_input-group.html.twig' #}
+{% block titulo %}
+    {{ expteAmapro.organismo }}
+{% endblock %}
+{% block subtitulo %}
+    {{'Nro. Expte: ' ~ expteAmapro }}
+{% endblock %}
+{% block thead %}
+    {% block nuevo %}
+   <a id="buscarXCuil" href="javascript:void(0);" class="list-group-item">
+        <h4 class="list-group-item-heading">Buscar Aportante por C.U.I.L.</h4>
+        <p class="list-group-item-text">
+            El Aportante deberá estar cargado en el sistema, deberá buscarlo por el C.U.I.L. para agregarlo como aportante amparado.
+        </p>
+    </a>
+    <div class="panel-body">
+        <input style="margin-top: 10px;" type="text" class="col-md-offset-5 btn btn-lg btn-primary"value="" />
+        <input style="margin-top: 10px;" type="submit" class="col-md-offset-5 btn btn-lg btn-primary"value="Enviar" />
+    </div>
+{% endblock %}
+    <th>#</th>
+    <th>Aportante</th>
+    <th>Cargo</th>
+    <th>Nro. Liq.</th>
+    <th></th>
+{% endblock thead %}
+
+{% block tbody %}
+    {% if expteAmparoItems is null %}
+        <tr>
+            <td colspan="6">Este Expediente no tiene amparados registrados.</td>
+        </tr>
+    {% else %}
+        {% for expteAmparoItem in expteAmparoItems %}
+            {{ include(':amparoItem:row.html.twig', { 'expteAmparoItem' : expteAmparoItem }) }}
+        {% endfor %}
+    {% endif %}
+{% endblock tbody %}
+
+
+{% block customjavascripts %}
+    <script>
+        $( document ).ready(function() {
+            $('.panel-body').hide();
+            $('.list-group-item').click(function(){
+                $(this).toggleClass('active');
+            });
+            $('#buscarXCuil').click(function(){
+                
+                $('.panel-body').slideToggle(1000);
+            });
+        });
+    </script>
+{% endblock %}
